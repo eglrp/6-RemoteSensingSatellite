@@ -334,7 +334,7 @@ void GeoCalibration::calcRMS(GeoModelArray* pModel,string out,StrGCP *pGCP,int n
 //作者：GZC
 //日期：2017.08.23
 ////////////////////////////////////////////
-void GeoCalibration::calcGCPerr(GeoModelArray* pModel, string strImg,string out,vector<RMS>&acc,bool isPlus1)
+void GeoCalibration::calcGCPerr(GeoModelArray* pModel, string strImg,string out,vector<strRMS>&acc,bool isPlus1)
 {
 	string tmp1 = strImg.substr(strImg.rfind('_') - 3, 3);
 	string tmp2 = strImg.substr(0, strImg.rfind('_') - 4);
@@ -380,9 +380,475 @@ void GeoCalibration::calcGCPerr(GeoModelArray* pModel, string strImg,string out,
 	fprintf(fpres, "x: %lf\t%lf\t%lf\n", minx, maxx, rmsx);
 	fprintf(fpres, "y: %lf\t%lf\t%lf\n", miny, maxy, rmsy);
 	fprintf(fpres, "plane: %lf", plane);
-	RMS tmpRms;
+	strRMS tmpRms;
 	tmpRms.rmsall = plane; tmpRms.rmsx = rmsx; tmpRms.rmsy = rmsy;
 	acc.push_back(tmpRms);
 	fclose(fp);
 	fclose(fpres);
+}
+
+// 立体定位精度分析接口
+void GeoCalibration::Cal3DAccuracy(long step, long times, long ctlnum, string outpath)
+{	
+	// 以下参数通过用户传参传进,这儿赋值是为了让外界能够访问
+	m_step = step;
+	m_times = times;
+	if (m_model.size()<2)
+	{
+		printf("成像模型个数少于2个,无法进行立体定位精度分析!");
+	}
+
+	// 刺点误差
+	double tmpX, tmpY;
+
+	// 控制点选项
+	vector<GeoTranslation> m_transall;
+	m_transall.resize(m_model.size());
+	// 计算控制点仿射变换系数
+	double *pointx0, *pointy0, *pointx1, *pointy1, *index0;
+	pointx0 = pointy0 = pointx1 = pointy1 = index0 = NULL;
+	if (ctlnum>0)
+	{
+		pointx0 = new double[ctlnum];	pointy0 = new double[ctlnum];
+		pointx1 = new double[ctlnum];	pointy1 = new double[ctlnum];
+		index0 = new double[2 * ctlnum];
+		srand(_time64(NULL) + times);
+		for (int i = 0; i<2 * ctlnum; i++)
+			index0[i] = (double)rand() / RAND_MAX;
+	}
+	long height, width;
+	double lat, lon;
+	for (int k = 0; k<m_model.size(); k++)
+	{
+		tmpX = m_model[k]->get_m_height();
+		tmpY = m_model[k]->get_m_width();
+		double *pointX = new double[ctlnum];
+		m_base.RandomDistribution(0, tmpX, ctlnum, 0, pointX);
+		double *pointY = new double[ctlnum];
+		m_base.RandomDistribution(0, tmpY, ctlnum, 0, pointY);
+		for (int i = 0; i<ctlnum; i++)
+		{
+			height = m_model[k]->get_m_height();
+			width = m_model[k]->get_m_width();
+			pointx0[i] = (height - 1)*index0[2 * i + 0];
+			pointy0[i] = (width - 1)*index0[2 * i + 1];
+			double hh = 0;
+			m_model[k]->FromXY2LatLon(pointx0[i], pointy0[i], hh, lat, lon);
+			m_model[k]->FromLatLon2XY(lat, lon, 0, pointx1[i], pointy1[i]);
+			pointx1[i] += pointX[i];
+			pointy1[i] += pointY[i];
+		}
+		m_transall[k].CalAffineParam(pointx0, pointy0, pointx1, pointy1, ctlnum);
+		if (pointX != NULL)	delete[]pointX;	pointX = NULL;
+		if (pointY != NULL)	delete[]pointY;	pointY = NULL;
+	}
+	if (pointx0 != NULL)	delete[]pointx0;	pointx0 = NULL;
+	if (pointx1 != NULL)	delete[]pointx1;	pointx1 = NULL;
+	if (pointy0 != NULL)	delete[]pointy0;	pointy0 = NULL;
+	if (pointy1 != NULL)	delete[]pointy1;	pointy1 = NULL;
+	if (index0 != NULL)	delete[]index0;	index0 = NULL;
+
+	// 开始计算几个模型的公共重叠部分
+	long level;
+	OGRLinearRing *m_Ring = new OGRLinearRing[m_model.size()];   // 这儿会造成内存泄露,将来应该想办法解决
+	OGRPolygon *m_Polygon = new OGRPolygon[m_model.size()];
+	for (int i = 0; i<m_model.size(); i++)
+	{
+		// 获得积分级数和宽、高
+		//m_model[i]->GetLevel(&level);
+		height = m_model[i]->get_m_height();
+		width = m_model[i]->get_m_width();
+		// 计算四个角点的坐标并保存
+		double hh = 0;
+		m_model[i]->FromXY2LatLon(0, 0, hh, lat, lon);
+		m_Ring[i].addPoint(lat, lon);		// 左上角
+		m_model[i]->FromXY2LatLon(0, width - 1, hh, lat, lon);
+		m_Ring[i].addPoint(lat, lon);		// 右上角
+		m_model[i]->FromXY2LatLon(height - 1, width - 1, hh, lat, lon);
+		m_Ring[i].addPoint(lat, lon);		// 右下角
+		m_model[i]->FromXY2LatLon(height - 1, 0, hh, lat, lon);
+		m_Ring[i].addPoint(lat, lon);		// 左下角
+		m_Ring[i].closeRings();				// 将环闭合
+		m_Polygon[i].addRing(&m_Ring[i]);	//转化成Polygon
+	}
+	OGRPolygon *m_PolygonTemp;
+	for (int i = 0; i<m_model.size() - 1; i++)
+	{
+		//如果没有相交部分,则无法进行立体定位精度分析
+		if (m_Polygon[i].Intersect(&m_Polygon[i + 1]) == 0)
+		{
+			printf("三维精度分析:没有重叠部分");
+		}
+		m_PolygonTemp = (OGRPolygon *)m_Polygon[i].Intersection(&m_Polygon[i + 1]);
+		OGRLinearRing *m_RingTemp = m_PolygonTemp->getExteriorRing();
+		m_Polygon[i + 1].empty();
+		m_Polygon[i + 1].addRing(m_RingTemp);
+	}
+
+	OGRLinearRing *m_LinearRing = m_PolygonTemp->getExteriorRing();
+	int ringNum = m_LinearRing->getNumPoints();   // 获得点个数
+	double *x1 = new double[ringNum];
+	double *y1 = new double[ringNum];
+	double minx, maxx, miny, maxy;
+	int indexminx, indexmaxx, indexminy, indexmaxy;
+	minx = miny = DBL_MAX;
+	maxx = maxy = DBL_MIN;
+	OGRPoint m_ogrpoint;
+	for (int i = 0; i<ringNum; i++)
+	{
+		m_LinearRing->getPoint(i, &m_ogrpoint);
+		x1[i] = m_ogrpoint.getX();
+		if (x1[i]>maxx) { maxx = x1[i]; indexmaxx = i; }
+		if (x1[i]<minx) { minx = x1[i]; indexminx = i; }
+		y1[i] = m_ogrpoint.getY();
+		if (y1[i]>maxy) { maxy = y1[i]; indexmaxy = i; }
+		if (y1[i]<miny) { miny = y1[i]; indexminy = i; }
+	}
+	// 对重叠区域划分格网
+	GeoTranslation m_trans;
+	double xtemp[4], ytemp[4], lattemp[4], lontemp[4];
+	xtemp[0] = -1;					 ytemp[0] = -1;
+	cornerlat[0] = lattemp[0] = x1[indexminx];
+	cornerlon[0] = lontemp[0] = y1[indexminx];
+	xtemp[1] = m_step + 1;			 ytemp[1] = -1;
+	cornerlat[1] = lattemp[1] = x1[indexmaxy];
+	cornerlon[1] = lontemp[1] = y1[indexmaxy];
+	xtemp[2] = m_step + 1;			 ytemp[2] = m_step + 1;
+	cornerlat[2] = lattemp[2] = x1[indexmaxx];
+	cornerlon[2] = lontemp[2] = y1[indexmaxx];
+	xtemp[3] = -1;					 ytemp[3] = m_step + 1;
+	cornerlat[3] = lattemp[3] = x1[indexminy];
+	cornerlon[3] = lontemp[3] = y1[indexminy];
+	m_trans.CalAffineParam(xtemp, ytemp, lattemp, lontemp, 4);
+	//清空之前的数据,并分配新的空间
+	if (pStatis != NULL)
+	{
+		delete[]pStatis;
+		pStatis = NULL;
+	}
+
+	pStatis = new Str3DAccuracyData[m_step*m_step];
+	memset(pStatis, 0, sizeof(Str3DAccuracyData)*m_step*m_step);
+	//给统计值赋初值
+	for (int l = 0; l< m_step; l += 1)
+	{
+		for (int s = 0; s < m_step; s += 1)
+		{
+			pStatis[l*m_step + s].min = DBL_MAX;   //存储平面最小值
+			pStatis[l*m_step + s].max = DBL_MIN;   //存储平面最大值
+			pStatis[l*m_step + s].minh = DBL_MAX;  //存储高程最小值
+			pStatis[l*m_step + s].maxh = DBL_MIN;  //存储高程最大值
+		}
+	}
+	
+	double m_step2 = (double)m_step*m_step;
+	// 循环计算多次定位误差
+	for (int time = 0; time<times; time++)
+	{
+		// 重新计算模型
+		for (int k = 0; k<m_model.size(); k++)
+		{
+			//m_model[k]->ReCalPosAndAtt(m_model);
+		}
+		// 划分格网分别进行计算
+		for (int l = 0; l< m_step; l += 1)
+		{
+			for (int s = 0; s < m_step; s += 1)
+			{
+				long index = l*m_step + s;
+				m_trans.GetValueBaseAffine(l, s, lat, lon);
+				struct Str3DAccuracyData data;
+				CalPointAccuracy(lat, lon, 0, ctlnum, data, m_transall);
+				// 当定位误差小于0.001m时,几乎可以认为是没有定位误差
+				if (fabs(data.exy)<0.001&&fabs(data.eh)<0.001)
+				{
+					data.ex = 0;
+					data.ey = 0;
+					data.eh = 0;
+					data.exy = 0;
+				}
+				// 存储下来
+				pStatis[index].lat += lat*180.0 / PI;
+				pStatis[index].lon += lon*180.0 / PI;
+				pStatis[index].eh += data.eh*data.eh;
+				pStatis[index].ex += data.ex*data.ex;
+				pStatis[index].ey += data.ey*data.ey;
+				if (pStatis[index].min>fabs(data.exy))	pStatis[index].min = fabs(data.exy);	// 平面最小值
+				if (pStatis[index].max<fabs(data.exy))	pStatis[index].max = fabs(data.exy);   // 平面最大值
+				if (pStatis[index].minh>fabs(data.eh))	pStatis[index].minh = fabs(data.eh);	// 高程最小值
+				if (pStatis[index].maxh<fabs(data.eh))	pStatis[index].maxh = fabs(data.eh);	// 高程最大值
+			}		
+		}
+	}
+	for (int l = 0; l< m_step; l += 1)
+	{
+		for (int s = 0; s < m_step; s += 1)
+		{
+			long index = l*m_step + s;
+			pStatis[index].ex = sqrt(pStatis[index].ex / times);
+			pStatis[index].ey = sqrt(pStatis[index].ey / times);
+			pStatis[index].eh = sqrt(pStatis[index].eh / times);
+			pStatis[index].exy = sqrt(pow(pStatis[index].ex, 2) + pow(pStatis[index].ey, 2));
+			pStatis[index].lat = pStatis[index].lat / times;
+			pStatis[index].lon = pStatis[index].lon / times;
+		}
+	}
+	// 计算平面RMS
+	RMS = 0.0;
+	for (int l = 0; l< m_step; l += 1)
+	{
+		for (int s = 0; s < m_step; s += 1)
+		{
+			long index = l*m_step + s;
+			RMS += pow(pStatis[index].exy, 2);
+		}
+	}
+	RMS = sqrt(RMS / (m_step2 - 1));
+	// 计算RMSx
+	RMSx = 0.0;
+	for (int l = 0; l< m_step; l += 1)
+	{
+		for (int s = 0; s < m_step; s += 1)
+		{
+			long index = l*m_step + s;
+			RMSx += pow(pStatis[index].ex, 2);
+		}
+	}
+	RMSx = sqrt(RMSx / (m_step2 - 1));
+	// 计算平面RMSy
+	RMSy = 0.0;
+	for (int l = 0; l< m_step; l += 1)
+	{
+		for (int s = 0; s < m_step; s += 1)
+		{
+			long index = l*m_step + s;
+			RMSy += pow(pStatis[index].ey, 2);
+		}
+	}
+	RMSy = sqrt(RMSy / (m_step2 - 1));
+	// 计算高程RMSh
+	RMSh = 0.0;
+	for (int l = 0; l< m_step; l += 1)
+	{
+		for (int s = 0; s < m_step; s += 1)
+		{
+			long index = l*m_step + s;
+			RMSh += pow(pStatis[index].eh, 2);
+		}
+	}
+	RMSh = sqrt(RMSh / (m_step2 - 1));
+
+
+	string temp1 = outpath + "\\3DAccuracy.txt";
+	Write3DAccuracyResult(temp1);
+}
+
+////////////////////////////////////////////////////////////////
+// 对单独一个点进行法化和前方交会
+////////////////////////////////////////////////////////////////
+bool GeoCalibration::CalPointAccuracy(double lat, double lon, double h, int ctlnum,
+	struct Str3DAccuracyData &data, vector<GeoTranslation> m_trans)
+{
+	// 刺点误差
+	double tmpX, tmpY;
+	// 计算三维点的初始值
+	double elat, elon, eh;
+	// 求取具有多少个模型
+	long num = m_model.size();
+	long level = 0;
+	// 中间变量
+	struct StrOrbitPoint pos;			// WGS84系下的坐标
+	struct StrAttPoint att;				// cam2wgs84
+	double innerx, innery;
+	double x1, y1, x2, y2;
+	double a[3], aa[9], al[3], L, temp;
+	memset(aa, 0, sizeof(double) * 9);		memset(al, 0, sizeof(double) * 3);
+	// 对带误差的模型进行前方交会
+	for (long i = 0; i<num; i++)
+	{
+		tmpX = m_model[i]->get_m_height();
+		tmpY = m_model[i]->get_m_width();
+		double *pointX = new double[10];
+		m_base.RandomDistribution(0, tmpX, 10, 0, pointX);
+		double *pointY = new double[10];
+		m_base.RandomDistribution(0, tmpY, 10, 0, pointY);
+		// 首先将物方点通过正确的模型投影到像面上
+		m_model[i]->FromLatLon2XY(lat, lon, h, x1, y1);
+		x1 += pointX[5];
+		y1 += pointY[5];
+		m_trans[i].GetValueBaseAffine(x1, y1, x2, y2);		// 仿射修正
+		// 获取对应的姿轨和内方位元素
+		m_model[i]->GetPosAndInner(x2, y2, &pos, &att, &innerx, &innery);
+		// 第一个方程
+		a[0] = att.R[0] - att.R[2] * innerx;
+		a[1] = att.R[3] - att.R[5] * innerx;
+		a[2] = att.R[6] - att.R[8] * innerx;
+		L = a[0] * pos.X[0] + a[1] * pos.X[1] + a[2] * pos.X[2];
+		m_base.pNormal(a, 3, L, aa, al, 1.0);
+		// 第二个方程
+		a[0] = att.R[1] - att.R[2] * innery;
+		a[1] = att.R[4] - att.R[5] * innery;
+		a[2] = att.R[7] - att.R[8] * innery;
+		L = a[0] * pos.X[0] + a[1] * pos.X[1] + a[2] * pos.X[2];
+		m_base.pNormal(a, 3, L, aa, al, 1.0);
+
+		if (pointX != NULL)	delete[]pointX;	pointX = NULL;
+		if (pointY != NULL)	delete[]pointY;	pointY = NULL;
+	}
+	m_base.solve33(aa, al);
+	StrDATUM datum;
+	m_base.Rect2Geograph(datum, al[0], al[1], al[2], elat, elon, eh);
+	// 开始计算定位误差
+	data.eh = eh - h;
+	data.ex = (elat - lat) * 6378140;
+	data.ey = (elon - lon)*cos(lat) * 6378140;
+	data.exy = sqrt(pow(data.ex, 2) + pow(data.ey, 2));
+
+	return true;
+}
+
+
+////////////////////////////////////////////////////////////////
+// 定位精度分析：输出分析结果
+////////////////////////////////////////////////////////////////
+void GeoCalibration::Write3DAccuracyResult(string outpath)
+{
+	FILE *fsave;
+	fsave = fopen(outpath.c_str(), "w");
+	if (fsave != NULL)
+	{
+		fprintf(fsave, "#Geo3DAccuracyResult#\n");
+		fprintf(fsave, "分析次数：%10d\n", m_times);
+		fprintf(fsave, "垂轨向分析点个数：%10d\n", m_step);
+		fprintf(fsave, "沿轨向分析点个数：%10d\n", m_step);
+		fprintf(fsave, "四个角点信息(经度,纬度)：\n");
+		for (int i = 0; i<4; i++)
+		{
+			fprintf(fsave, "%29.19lf%29.19lf\n", cornerlon[i] * 180.0 / PI, cornerlat[i] * 180.0 / PI);
+		}
+		fprintf(fsave, "计算得到的总体RMS(x, y, 平面, 高程)\n");
+		fprintf(fsave, "%29.19lf%29.19lf%29.19lf%29.19lf\n", RMSx, RMSy, RMS, RMSh);
+		fprintf(fsave, "\n");
+		int index = 0;
+		fprintf(fsave, "计算得到的各个采样点地面平面误差的平均值(单位为m):\n");
+		for (int l = 0; l< m_step; l += 1)
+		{
+			for (int s = 0; s < m_step; s += 1)
+			{
+				fprintf(fsave, "%29.19lf\t", pStatis[index].exy);
+				index++;
+			}
+			fprintf(fsave, "\n");
+		}
+		fprintf(fsave, "\n");
+		index = 0;
+		fprintf(fsave, "计算得到的各个采样点地面平面误差的最大值(单位为m):\n");
+		for (int l = 0; l< m_step; l += 1)
+		{
+			for (int s = 0; s < m_step; s += 1)
+			{
+				fprintf(fsave, "%29.19lf\t", pStatis[index].max);
+				index++;
+			}
+			fprintf(fsave, "\n");
+		}
+		fprintf(fsave, "\n");
+		index = 0;
+		fprintf(fsave, "计算得到的各个采样点地面平面误差的最小值(单位为m):\n");
+		for (int l = 0; l< m_step; l += 1)
+		{
+			for (int s = 0; s < m_step; s += 1)
+			{
+				fprintf(fsave, "%29.19lf\t", pStatis[index].min);
+				index++;
+			}
+			fprintf(fsave, "\n");
+		}
+		fprintf(fsave, "\n");
+		index = 0;
+		fprintf(fsave, "计算得到的各个采样点地面高程误差的平均值(单位为m):\n");
+		for (int l = 0; l< m_step; l += 1)
+		{
+			for (int s = 0; s < m_step; s += 1)
+			{
+				fprintf(fsave, "%29.19lf\t", pStatis[index].eh);
+				index++;
+			}
+			fprintf(fsave, "\n");
+		}
+		fprintf(fsave, "\n");
+		index = 0;
+		fprintf(fsave, "计算得到的各个采样点地面高程误差的最大值(单位为m):\n");
+		for (int l = 0; l< m_step; l += 1)
+		{
+			for (int s = 0; s < m_step; s += 1)
+			{
+				fprintf(fsave, "%29.19lf\t", pStatis[index].maxh);
+				index++;
+			}
+			fprintf(fsave, "\n");
+		}
+		fprintf(fsave, "\n");
+		index = 0;
+		fprintf(fsave, "计算得到的各个采样点地面高程误差的最小值(单位为m):\n");
+		for (int l = 0; l< m_step; l += 1)
+		{
+			for (int s = 0; s < m_step; s += 1)
+			{
+				fprintf(fsave, "%29.19lf\t", pStatis[index].minh);
+				index++;
+			}
+			fprintf(fsave, "\n");
+		}
+		fprintf(fsave, "\n");
+		index = 0;
+		fprintf(fsave, "计算得到的各个采样点地面平面误差在纬线上的投影的平均值(单位为m):\n");
+		for (int l = 0; l< m_step; l += 1)
+		{
+			for (int s = 0; s < m_step; s += 1)
+			{
+				fprintf(fsave, "%29.19lf\t", pStatis[index].ex);
+				index++;
+			}
+			fprintf(fsave, "\n");
+		}
+		fprintf(fsave, "\n");
+		index = 0;
+		fprintf(fsave, "计算得到的各个采样点地面平面误差在经线上的投影的平均值(单位为m):\n");
+		for (int l = 0; l< m_step; l += 1)
+		{
+			for (int s = 0; s < m_step; s += 1)
+			{
+				fprintf(fsave, "%29.19lf\t", pStatis[index].ey);
+				index++;
+			}
+			fprintf(fsave, "\n");
+		}
+		fprintf(fsave, "\n");
+		index = 0;
+		fprintf(fsave, "计算得到的各个采样点地面的纬度(单位为°):\n");
+		for (int l = 0; l< m_step; l += 1)
+		{
+			for (int s = 0; s < m_step; s += 1)
+			{
+				fprintf(fsave, "%29.19lf\t", pStatis[index].lat);
+				index++;
+			}
+			fprintf(fsave, "\n");
+		}
+		fprintf(fsave, "\n");
+		index = 0;
+		fprintf(fsave, "计算得到的各个采样点地面的经度(单位为°):\n");
+		for (int l = 0; l< m_step; l += 1)
+		{
+			for (int s = 0; s < m_step; s += 1)
+			{
+				fprintf(fsave, "%29.19lf\t", pStatis[index].lon);
+				index++;
+			}
+			fprintf(fsave, "\n");
+		}
+		fprintf(fsave, "\n");
+	}
+	fclose(fsave);
 }

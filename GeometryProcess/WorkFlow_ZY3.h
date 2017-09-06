@@ -60,7 +60,7 @@ public:
 	//对比
 	void CompareMeasModifyAndReal(vector<Attitude>Meas, vector<Attitude>Modify, string realAttPath);
 	//对比RMS
-	void OutputRMS(string outFile, vector<RMS>accuracy1, vector<RMS>accuracy2);
+	void OutputRMS(string outFile, vector<strRMS>accuracy1, vector<strRMS>accuracy2);
 
 	//根据匹配计算角速度，然后结合真实姿态做卡尔曼滤波
 	void CalcOmegaKalman(string workpath);

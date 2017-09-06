@@ -704,7 +704,7 @@ struct OffsetAngle
 };
 
 //残差
-struct RMS
+struct strRMS
 {
 	double rmsx, rmsy, rmsall;
 };
@@ -731,5 +731,19 @@ struct conjugatePoints
 	float Y;
 	float Z;
 	int nIndex[2];  //record the where are the conjugate points from； 
+};
+//立体精度控制点结构体
+struct Str3DAccuracyData
+{
+	double lat;
+	double lon;
+	double ex;
+	double ey;
+	double exy;
+	double min;
+	double max;
+	double eh;
+	double minh;
+	double maxh;
 };
 #endif

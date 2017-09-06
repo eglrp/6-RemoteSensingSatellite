@@ -667,7 +667,7 @@ void WorkFlow_ZY3::CalcRealMatchPoint(string workpath)
 	m_File.search_directory(workpath + "\\", "tif", filePath);
 	vector<Attitude>attMeas, attModify, attRelative;
 	OffsetAngle Ru;
-	vector<RMS>accuracy1, accuracy2;
+	vector<strRMS>accuracy1, accuracy2;
 
 	for (int i = 0; i < allTime.size() - 1; i++)
 	{
@@ -798,7 +798,7 @@ void WorkFlow_ZY3::CalcRealAttitude(string workpath)
 	m_File.search_directory(workpath + "\\", "pts", filePath);
 	vector<Attitude>attMeas, attModify, attRelative;
 	OffsetAngle Ru;	vector<OffsetAngle>RuForward, RuBackward;
-	vector<RMS>accuracy1, accuracy2;
+	vector<strRMS>accuracy1, accuracy2;
 	//正向计算姿态
 	for (int i = 0; i < allTime.size() - 1; i++)
 	{
@@ -1036,7 +1036,7 @@ void WorkFlow_ZY3::CompareMeasModifyAndReal(vector<Attitude>Meas, vector<Attitud
 //作者：GZC
 //日期：2017.08.23
 //////////////////////////////////////////////////////////////////////////
-void WorkFlow_ZY3::OutputRMS(string outFile, vector<RMS>accuracy1, vector<RMS>accuracy2)
+void WorkFlow_ZY3::OutputRMS(string outFile, vector<strRMS>accuracy1, vector<strRMS>accuracy2)
 {
 	string strOut = outFile + "\\CompareRMS.txt";
 	FILE *fp = fopen(strOut.c_str(), "w");
@@ -1135,7 +1135,7 @@ void WorkFlow_ZY3::CalcOmegaKalman(string workpath)
 	m_File.search_directory(workpath + "\\", "pts", filePath);
 	vector<Attitude>attMeas, attModify, attRelative;
 	OffsetAngle Ru;	vector<OffsetAngle>RuForward, RuBackward;
-	vector<RMS>accuracy1, accuracy2;
+	vector<strRMS>accuracy1, accuracy2;
 	vector<Gyro>omega;
 
 	//正向计算姿态
@@ -1286,7 +1286,7 @@ void WorkFlow_ZY3::CalcRealAttitude_sparse(string workpath)
 	vector<string>filePath;
 	m_File.search_directory(workpath + "\\", "pts", filePath);
 	OffsetAngle Ru;	vector<OffsetAngle>RuForward, RuBackward;
-	vector<RMS>accuracy1, accuracy2;
+	vector<strRMS>accuracy1, accuracy2;
 
 	int nMatch = 0;//计算所有匹配点的数量
 	for (int i = 0; i < allTime.size() - 1; i++)
