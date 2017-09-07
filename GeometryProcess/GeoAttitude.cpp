@@ -37,6 +37,11 @@ void GeoAttitude::get_ROff(double *R)
 	memcpy(R, m_Input.ROff, sizeof(double)*9);
 }
 
+//设置从测姿坐标系到本体坐标系的旋转矩阵
+void GeoAttitude::set_ROff(double *R)
+{
+	memcpy(m_Input.ROff, R, sizeof(double) * 9);
+}
 
 //////////////////////////////////////
 // 功能：获取姿态拟合模型

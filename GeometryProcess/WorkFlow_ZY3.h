@@ -43,6 +43,12 @@ public:
 	void ModelVerify();
 	//线阵相机模型
 	void NADCamera(string auxpath);
+	//获得前后视真实模型
+	GeoModelLine FwdBwdModel(string workpath,double omg);
+	//得到推扫相机真实控制点
+	void CalcFwdBwdRealMatchPoint(char* argv[]);
+
+
 	//小面阵阵相机模型
 	void LittleArrayCamera(string auxpath);
 	//基于RPC匹配

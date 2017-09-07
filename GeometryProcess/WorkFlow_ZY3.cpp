@@ -315,7 +315,7 @@ void WorkFlow_ZY3::ModelVerify()
 	while (x != 0 || y != 0)
 	{
 		cout << "请输入Sample和Line和h(输入两个0本程序退出)" << endl;
-		cin >> x >> y >> h;
+		cin >> y >> x >> h;
 		pModel->FromXY2LatLon(x, y, h, lat, lon);
 		lat = lat * 180 / PI;
 		lon = lon * 180 / PI;
@@ -342,6 +342,7 @@ void WorkFlow_ZY3::NADCamera(string auxpath)
 	vector<LineScanTime> allTime;
 	string sOrb, sAtt, sTime, sCam;
 	ZY3_01.ZY3SimPATH(auxpath, sAtt, sOrb, sTime, sCam);
+	//ZY3_01.ZY3RealPATH(auxpath, sAtt, sOrb, sTime, sCam);
 	ZY3_01.ReadZY301OrbTXT(sOrb, allEp);
 	ZY3_01.ReadZY301AttTXT(sAtt, allAtt);
 	ZY3_01.ReadZY3SimTimeTXT(sTime, allTime);
@@ -360,7 +361,8 @@ void WorkFlow_ZY3::NADCamera(string auxpath)
 	StrAttParamInput attitudeinput;
 	attitudeinput.DatumName = "WGS84";
 	attitudeinput.m_PolyOrder = 2;
-	attitude->ReadZY3AttFile(allAtt, attitudeinput, orbit);
+	attitude->ReadZY3AttFile(allAtt, attitudeinput, orbit,auxpath);
+	//attitude->ReadZY3RealAttFile(allAtt, attitudeinput, orbit, auxpath);
 
 	// 时间
 	GeoTime *time = new GeoTime_ZY3();
@@ -369,14 +371,6 @@ void WorkFlow_ZY3::NADCamera(string auxpath)
 	// 相机
 	GeoCamera *inner = new GeoCameraLine();
 	StrCamParamInput caminput;
-	//caminput.f = 1.7;
-	//caminput.Xsize = 1. / 1e6;
-	//caminput.Ysize = 1. / 1e6;
-	//caminput.Xnum = 1;
-	//caminput.Ynum = 1000;
-	//caminput.Xstart = 0.0;
-	//caminput.Ystart = -500;
-	//inner->InitInnerFile("", caminput);
 	inner->ReadCamFile(sCam, caminput);//读取内方位元素
 
 	// 模型
@@ -387,19 +381,140 @@ void WorkFlow_ZY3::NADCamera(string auxpath)
 	modelinput.timeExtend = 4;
 	model->InitModelLine(orbit, attitude, time, inner, modelinput);
 	pModel = model;
+	
+}
 
-	////获取控制点
-	//vector<StrGCP> ZY3_GCP;
-	//GetGCP(auxpath, ZY3_GCP);
+//////////////////////////////////////////////////////////////////////////
+//功能：获取前后视真实模型
+//输入：工作空间路径
+//输出：真实控制点match.pts
+//作者：GZC
+//日期：2017.09.07
+//////////////////////////////////////////////////////////////////////////
+GeoModelLine WorkFlow_ZY3::FwdBwdModel(string workpath,double omg)
+{
+	//读取ZY3Sim辅助数据
+	ParseZY3Aux ZY3_01;
+	vector<Orbit_Ep> allEp;
+	vector<Attitude> allAtt;
+	vector<LineScanTime> allTime;
+	string sOrb, sAtt, sTime, sCam;
+	ZY3_01.ZY3RealPATH(workpath, sAtt, sOrb, sTime, sCam);
+	ZY3_01.ReadZY301OrbTXT(sOrb, allEp);
+	ZY3_01.ReadZY301AttTXT(sAtt, allAtt);
+	ZY3_01.ReadZY3SimTimeTXT(sTime, allTime);
 
-	//// 模型
-	//GeoCalibration *model = new GeoCalibration();
-	//StrModelParamInput modelinput;
-	//modelinput.isOrbitPoly = false;
-	//modelinput.isAttPoly = false;
-	//modelinput.timeExtend = 4;
-	//model->ExtOrientCali(orbit, attitude, time, inner, modelinput, ZY3_GCP);
-	//pModel = model;
+	// 轨道
+	GeoOrbit *orbit = new GeoOrbitEarth_ZY3();
+	StrOrbitParamInput orbitinput;
+	orbitinput.DatumName = "WGS84";
+	orbitinput.m_EOP = sEOP;
+	orbitinput.m_JPL = "";
+	orbitinput.m_PolyOrder = 3;
+	orbit->ReadZY3EphFile(allEp, orbitinput);
+
+	// 姿态
+	GeoAttitude *attitude = new GeoAttitude_ZY3();
+	StrAttParamInput attitudeinput;
+	attitudeinput.DatumName = "WGS84";
+	attitudeinput.m_PolyOrder = 2;
+	double R[9];
+	attitude->ReadZY3RealAttFile(allAtt, attitudeinput, orbit, workpath);
+	m_base.Eulor2Matrix(0, omg, 0, 123, R);
+	attitude->set_ROff(R);
+
+	// 时间
+	GeoTime *time = new GeoTime_ZY3();
+	time->ReadZY3TimeFile(allTime);
+
+	// 相机
+	GeoCamera *inner = new GeoCameraLine();
+	StrCamParamInput caminput;
+	inner->ReadCamFile(sCam, caminput);//读取内方位元素
+
+	// 模型
+	StrModelParamInput modelinput;
+	GeoModelLine model ;
+	modelinput.isOrbitPoly = false;
+	modelinput.isAttPoly = false;
+	modelinput.timeExtend = 4;
+	model.InitModelLine(orbit, attitude, time, inner, modelinput);
+	return model;
+}
+
+//////////////////////////////////////////////////////////////////////////
+//功能：获取前后视影像的真实控制点
+//输入：工作空间路径
+//输出：真实控制点match.pts
+//作者：GZC
+//日期：2017.09.07
+//////////////////////////////////////////////////////////////////////////
+void WorkFlow_ZY3::CalcFwdBwdRealMatchPoint(char* argv[])
+{
+	GeoModelLine model[2];
+	string workpath = argv[1];
+	model[0] = FwdBwdModel(argv[1], -22. / 180 * PI);
+	model[1] = FwdBwdModel(argv[2], 22. / 180 * PI);
+
+	//读取DEM
+	GeoReadImage DEM;
+	DEM.Open("C:\\Users\\wcsgz\\Documents\\5-工具软件\\几何精度检校v5.0\\全球DEM.tif", GA_ReadOnly);
+	DEM.ReadBlock(0, 0, DEM.m_xRasterSize, DEM.m_yRasterSize, 0, DEM.pBuffer[0]);
+
+	ParseZY3Aux m_File;
+	vector<string>filePath;
+	m_File.search_directory(workpath + "\\", "tif", filePath);
+
+	int height = model[0].get_m_height();
+	int width = model[0].get_m_width();
+
+	vector<MatchPoint>pGCP;	MatchPoint pGCPtmp;
+	double line, sample, rline, rsample, H = 0, Lat, Lon;
+	for (line = 1; line < height; )
+	{
+		for (sample = 1; sample < width;)
+		{
+			model[0].FromXY2LatLon(line, sample, H, Lat, Lon);
+			int j = 0;
+			while (1)
+			{
+				double HH = DEM.GetDataValue(Lon / PI * 180, Lat / PI * 180, -99999, 0, 0);
+				if (abs(HH - H) > 1e-4&&j++ < 30)
+				{
+					H = HH;
+					model[0].FromXY2LatLon(line, sample, H, Lat, Lon);
+				}
+				else
+				{
+					break;
+				}
+			}
+			if (fabs(H + 99999.) < 1.e-6)
+				continue;
+
+			model[1].FromLatLon2XY(Lat, Lon, H, rline, rsample);
+			if (rline > 0 && rline < height && rsample>0 && rsample < width)
+			{
+				pGCPtmp.lx = line; pGCPtmp.ly = sample;
+				pGCPtmp.rx = rline; pGCPtmp.ry = rsample;
+				pGCP.push_back(pGCPtmp);
+			}
+
+			sample += 100;
+		}
+		line += 200;
+	}
+
+	string output = filePath[0].substr(0, filePath[0].rfind('.')) + "_match.pts";
+	FILE *fp = fopen(output.c_str(), "w");
+	fprintf(fp, "; %d\n", pGCP.size());
+	for (int i = 0; i < pGCP.size(); i++)
+	{
+		fprintf(fp, "%f\t%f\t%f\t%f\n", pGCP[i].ly, pGCP[i].lx, pGCP[i].ry, pGCP[i].rx);
+	}
+	fclose(fp);
+
+	DEM.Destroy();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1302,7 +1417,7 @@ void WorkFlow_ZY3::CalcRealAttitude_sparse(string workpath)
 	nMatch = 0;
 	for (int i = 0; i < allTime.size() - 1; i++)
 	{
-		model[i].SetDEMpath(strDEM); model[i+1].SetDEMpath(strDEM);
+		//model[i].SetDEMpath(strDEM); model[i+1].SetDEMpath(strDEM);
 		model[i].InitModelArray(orbit, attitude, inner, modelinput, allTime[i].lineTimeUT);
 		model[i+1].InitModelArray(orbit, attitude, inner, modelinput, allTime[i + 1].lineTimeUT);
 
@@ -1316,6 +1431,12 @@ void WorkFlow_ZY3::CalcRealAttitude_sparse(string workpath)
 		{
 			//读取匹配结果像素坐标，注意x为沿轨坐标，y为垂轨坐标
 			fscanf(fp, "%lf\t%lf\t%lf\t%lf\n", &ly, &lx, &ry, &rx);
+			MatchPoint pts;
+			pts.lx = lx, pts.ly = ly, pts.rx = rx, pts.ry = ry;
+			GeoModelArray intersec;
+			double XYZ[3];
+			intersec.Intersection(model, pts, XYZ);
+
 			pMatchs[nMatch].xl = lx; pMatchs[nMatch].yl = ly;
 			pMatchs[nMatch].xr = rx; pMatchs[nMatch].yr = ry;
 			pMatchs[nMatch].nIndex[0] = i;

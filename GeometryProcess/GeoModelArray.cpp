@@ -304,6 +304,43 @@ double GeoModelArray::CalcHeihtFromDEM(double lx,double ly,double &Lat,double &L
 	return H;
 }
 
+//////////////////////////////////////////////////////////////////////////
+//功能：前方交会代码
+//输入：左右影像模型，匹配控制点
+//输出：交会点空间坐标XYZ
+//作者：GZC
+//时间：2017.09.07
+//////////////////////////////////////////////////////////////////////////
+void GeoModelArray::Intersection(GeoModelArray *model,MatchPoint pts, double *XYZ)
+{
+	double inner1[3], inner2[3], Rcam2wgs84L[9], Rcam2wgs84R[9],XYZ1[3],XYZ2[3], S1[3], S2[3];
+	model[0].GetInner(pts.lx, pts.ly, inner1[0], inner1[1]);
+	model[1].GetInner(pts.rx, pts.ry, inner2[0], inner2[1]);	
+	inner1[2] = inner2[2] = 1;
+	model[0].GetCam2WGS84(Rcam2wgs84L);
+	model[1].GetCam2WGS84(Rcam2wgs84R);
+	m_base.Multi(Rcam2wgs84L, inner1, S1, 3, 3, 1);
+	m_base.Multi(Rcam2wgs84R, inner2, S2, 3, 3, 1);
+	
+	double Bu, Bv, Bw;
+	model[0].GetCamPos(XYZ1);
+	model[1].GetCamPos(XYZ2);
+	Bu = XYZ1[0] - XYZ2[0]; 
+	Bv = XYZ1[1] - XYZ2[1]; 
+	Bw = XYZ1[2] - XYZ2[2];
+
+	double N1 = (Bu * S2[2] - Bw * S2[0]) / (S1[0] * S2[2] - S2[0] * S1[2]);
+	double N2 = (Bu * S1[2] - Bw * S1[0]) / (S1[0] * S2[2] - S2[0] * S1[2]);
+
+	XYZ[0] = XYZ1[0] + N1 * S1[0];
+	XYZ[1] = 0.5 * ((XYZ1[1] + N1 * S1[1]) + (XYZ2[1] + N2 * S2[1]));
+	XYZ[2] = XYZ1[2] + N1 * S1[2];
+
+	double lat, lon, H;
+	m_base.Rect2Geograph(m_datum, XYZ[0], XYZ[1], XYZ[2], lat, lon, H);
+	
+}
+
 
 // 根据行列号获得位置、姿态、内方位元素-真实姿态内方位元素
 void GeoModelArray::GetPosAndInner(double x, double y, struct StrOrbitPoint *pos,

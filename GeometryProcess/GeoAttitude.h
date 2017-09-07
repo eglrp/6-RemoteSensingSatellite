@@ -26,6 +26,7 @@ protected:
 public:
 	long get_num();										// 获取姿态点个数
 	void get_ROff(double *R);							// 获取从测姿坐标系到本体坐标系的旋转矩阵
+	void set_ROff(double *R);
 	StrAttPolyModel *GetPolyModel();					// 获取姿态拟合模型
 	void SetPolyModel(StrAttPolyModel attModel);		// 设置姿态拟合模型
 	void ModifyPolyModelPara(double *para);				// 修正姿态拟合模型系数

@@ -41,7 +41,11 @@ void GeoCamera::get_ROff(double *R)
 {
 	memcpy(R, m_Input.ROff, sizeof(double)*9);
 }
-
+// 设置从相机坐标系到本体坐标系的旋转矩阵
+void GeoCamera::set_ROff(double *R)
+{
+	memcpy( m_Input.ROff, R,sizeof(double) * 9);
+}
 
 /////////////////////////////////////////////////////
 // 以下几个函数需要分别实现,但是注意不要用纯虚函数,否则无法实例化

@@ -12,22 +12,26 @@ using namespace std;
 int main(int argc, char* argv[])
 {	
 	string argv2 = "C:\\Users\\wcsgz\\Documents\\2-CProject\\6-严密模型\\ExtDlls\\EOP00.txt";
+	WorkFlow_ZY3 *pflow = new WorkFlow_ZY3();
+	pflow->getEOP(argv2);
 	//////////////////////////////////////////////////////////////////////////
 	//功能：以下为小面阵相机仿真与验证
 	//日期：2017.08.14
 	/////////////////////////////////////////////////////////////////////////
-	WorkFlow_ZY3 *pflow = new WorkFlow_ZY3();
-	pflow->getEOP(argv2);	
 	//pflow->LittleArrayCamera(argv[1]);//根据模型自己生产rpc	
 	//pflow->Image_registration_rpc(argv[1]);//根据siftGPU来匹配控制点
 	//pflow->CalcRealMatchPoint(argv[1]);//根据不带误差的模型生产一定数量控制点,目前可以在无差点上加系统差
 	//pflow->CalcRealAttitude(argv[1]);//根据第一帧和匹配点递推姿态
 	//pflow->CalcOmegaKalman(argv[1]);//根据匹配点采用卡尔曼滤波计算姿态
-	pflow->CalcRealAttitude_sparse(argv[1]);
+	//pflow->CalcRealAttitude_sparse(argv[1]);
 
-
-	//pflow->NADCamera(argv[1]);
+	//////////////////////////////////////////////////////////////////////////
+	//功能：以下为正视前后视相机仿真与验证
+	//日期：2017.08.14
+	/////////////////////////////////////////////////////////////////////////
+	//plow->NADCamera(argv[1]);
 	//pflow->ModelVerify();
+	pflow->CalcFwdBwdRealMatchPoint(argv);//根据前后视不带误差模型计算真实匹配点
 
 
 	//////////////////////////////////////////////////////////////////////////

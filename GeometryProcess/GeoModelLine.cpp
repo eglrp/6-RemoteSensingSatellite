@@ -17,7 +17,7 @@ GeoModelLine::GeoModelLine(void)
 
 GeoModelLine::~GeoModelLine(void)
 {
-	Destroy();
+	//Destroy();
 }
 
 
@@ -222,6 +222,7 @@ bool GeoModelLine::InitExtFile(string fpath)
 		return true;
 	}
 }
+
 
 //////////////////////////////////////
 // 功能：从影像到地面(光学正算)
