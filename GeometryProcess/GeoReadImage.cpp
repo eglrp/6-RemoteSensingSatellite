@@ -50,6 +50,105 @@ bool GeoReadImage::CreatePyramids(string path, int ratio)
 	return true;
 }
 
+//////////////////////////////////////////////////////////
+// 计算缩放比率
+//////////////////////////////////////////////////////////
+void GeoReadImage::CalRatio(int &ratio)
+{
+	int width0 = GDALGetRasterBandXSize(GDALGetOverview(pBand[0], 0));
+	int num = pBand[0]->GetOverviewCount();
+	int temp0 = int(1.0*m_xRasterSize / width0 + 0.5);
+	int temp1 = 1;
+	int temp2 = temp0;
+	for (int i = 1; i <= num; i++)
+	{
+		if ((ratio >= temp1) && (ratio < temp2))
+		{
+			if ((ratio - temp1) >= (temp2 - ratio))
+			{
+				ratio = temp2;
+				return;
+			}
+			else
+			{
+				ratio = temp1;
+				return;
+			}
+		}
+		temp1 *= temp0;
+		temp2 *= temp0;
+	}
+	ratio = pow(temp0, 1.0*num);
+}
+
+
+
+/////////////////////////////////////////////////////////
+// 获取最大接边矩形坐标
+/////////////////////////////////////////////////////////
+bool GeoReadImage::GetRectangle(double *lat, double *lon, int extend, long &sample,
+	long &line, long &width, long &height, double res, int &ratio)
+{
+	ratio = res;
+	// °的单位
+	if (m_xsize < 0.01)
+	{
+		ratio = ratio / 6378000 * 180 / PI;
+	}
+	if (ratio / m_xsize >= 2.0)
+	{
+		ratio = ratio / m_xsize;
+		CalRatio(ratio);
+	}
+	else
+	{
+		ratio = 1;
+	}
+	// 没有地理参考系则无法运行
+	if (m_xsize == 0 && m_ysize == 0)
+		return false;
+	double sample1, line1, width1, height1;
+	GridInterBL2PixelRect(lon, lat, sample1, line1, width1, height1);
+	int extend2 = extend * 2;
+	sample1 -= extend;	line1 -= extend;
+	width1 += extend2;	height1 += extend2;
+	// 存储需要获取的影像像素范围
+	OGRLinearRing ringtemp;
+	long tempx = sample1 + width1;
+	long tempy = line1 + height1;
+	ringtemp.addPoint(sample1, line1);
+	ringtemp.addPoint(tempx, line1);
+	ringtemp.addPoint(tempx, tempy);
+	ringtemp.addPoint(sample1, tempy);
+	ringtemp.closeRings();
+	OGRPolygon polygon;
+	polygon.addRing(&ringtemp);
+	//如果没有相交部分,则无法获取像素
+	if (polygon.Intersect(&m_PolygonImage) == 0)
+	{
+		m_errorinfo = ("获取影像内容失败");
+		return false;
+	}
+	OGRPolygon *polygontemp = (OGRPolygon *)polygon.Intersection(&m_PolygonImage); // 求交
+	m_LinearRing = polygontemp->getExteriorRing();
+	// 获取范围
+	OGRPoint point[4];
+	m_LinearRing->getPoint(0, &point[0]);
+	m_LinearRing->getPoint(1, &point[1]);
+	m_LinearRing->getPoint(2, &point[2]);
+	m_LinearRing->getPoint(3, &point[3]);
+	minx = min(min(point[0].getX(), point[1].getX()), min(point[2].getX(), point[3].getX()));
+	miny = min(min(point[0].getY(), point[1].getY()), min(point[2].getY(), point[3].getY()));
+	maxx = max(max(point[0].getX(), point[1].getX()), max(point[2].getX(), point[3].getX())) - 1;
+	maxy = max(max(point[0].getY(), point[1].getY()), max(point[2].getY(), point[3].getY())) - 1;
+	sample = minx;			line = miny;
+	width = maxx - minx - 1;	height = maxy - miny - 1;
+
+	return true;
+}
+
+
+
 
 
 GeoReadImage::GeoReadImage(void)
@@ -389,6 +488,58 @@ bool GeoReadImage::New(string lpFilePath, string pFormat, GDALDataType type, lon
 		pBuffer[i] = NULL;
 	}
 	m_isopen = true;	// 创建成功
+
+	return 0;
+}
+
+
+//////////////////////////////////////////////////////////
+//创建新影像
+// lpFilePath: 影像保存路径
+// pFormat：   影像驱动名称
+//////////////////////////////////////////////////////////
+bool GeoReadImage::New(string lpFilePath, string pFormat, GDALDataType type, long xsize, long ysize,
+	int bandnum, double *adfGeoTransform, string projectName)
+{
+	m_xRasterSize = xsize;
+	m_yRasterSize = ysize;
+	m_BandType = type;
+	m_nBands = bandnum;
+
+	Destroy();
+	GDALAllRegister();	// 注册驱动
+	GDALDriver *pDriver;
+	char** pMetadata;
+	char **papszOptions = NULL;
+	pDriver = GetGDALDriverManager()->GetDriverByName(pFormat.c_str());
+	if (pDriver == NULL)
+	{
+		m_errorinfo = ("驱动信息获取失败");
+		return false;
+	}
+	pMetadata = pDriver->GetMetadata();
+	if (!CSLFetchBoolean(pMetadata, GDAL_DCAP_CREATE, FALSE))
+	{
+		m_errorinfo =  ("此格式GDAL不支持写入");
+		return false;
+	}
+	// 开始创建
+	papszOptions = CSLSetNameValue(papszOptions, "BLOCKXSIZE", "256");
+	poDataset = pDriver->Create(lpFilePath.c_str(), xsize, ysize, m_nBands, type, papszOptions);
+	if (adfGeoTransform != NULL)
+	{
+		poDataset->SetGeoTransform(adfGeoTransform);
+	}
+	poDataset->SetProjection(projectName.c_str());
+	pBand = new GDALRasterBand*[m_nBands];
+	pBuffer = new void*[m_nBands];
+	for (int i = 0; i < m_nBands; i++)
+	{
+		// 将波段指针对象指向波段
+		pBand[i] = poDataset->GetRasterBand(i + 1);
+		pBuffer[i] = NULL;
+	}
+	ratio = 1;
 
 	return 0;
 }

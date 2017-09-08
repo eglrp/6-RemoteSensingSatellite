@@ -7,6 +7,7 @@
 #include "GDAL/ogrsf_frmts.h"
 #include "GDAL/ogr_geometry.h"
 #include "GDAL/ogr_spatialref.h"
+#include "GeoDefine.h"
 #include <vector>
 using namespace std;
 
@@ -34,6 +35,8 @@ public:
 	bool Open(string lpFilePath, unsigned char *&pData);
 	//创建新影像
 	bool New(string lpFilePath, string pFormat, GDALDataType type, long xsize, long ysize, int bandnum);
+	bool New(string lpFilePath, string pFormat, GDALDataType type, long xsize, long ysize,
+		int bandnum, double *adfGeoTransform, string projectName);
 	// 获得影像的块信息
 	bool ReadBlock(long nPosX, long nPosY, unsigned long OffsetX, unsigned long OffsetY, int indexBand, void* &pData, float ratiox = 1, float ratioy = 1);
 	// 分配空间
@@ -75,10 +78,16 @@ public:
 	void GrayEqualizeTemplate(unsigned char* pDst, T* pSrc, int nWidth, int nHeight);
 	// 建立影像金字塔
 	bool CreatePyramids(string path, int ratio = 2);
-
+	// 计算缩放比率
+	void CalRatio(int &ratio);
+	// 获取最大接边矩形坐标
+	bool GetRectangle(double *lat, double *lon, int extend, long &sample, long &line, long &width, long &height, double res, int &ratio);
+	
 public:
 	double m_maxvalue, m_minvalue, m_meanvalue; // 整个数据集的最大、最小、平均数值(针对DEM)
 	int m_SizeInBytes;                          // 每个像素的字节大小
+	int ratio;									// 放缩比例，目前仅仅对读有效
+	string m_ProjectionRef;						// 投影信息
 
 public:
 	bool m_isopen;								// 是否打开影像成功的标识

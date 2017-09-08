@@ -14,6 +14,7 @@
 #include "ParseZY3Aux.h"
 #include "GeoCalibration.h"
 #include "GeoReadImage.h"
+#include "GeoImage.h"
 #include "GeoHarris.h"
 #include "LSMatching.h"
 #include "PhaseCorrelation.h"
@@ -44,10 +45,11 @@ public:
 	//线阵相机模型
 	void NADCamera(string auxpath);
 	//获得前后视真实模型
-	GeoModelLine FwdBwdModel(string workpath,double omg);
+	GeoModelLine FwdBwdModel(string workpath,double omg, bool isReal);
 	//得到推扫相机真实控制点
-	void CalcFwdBwdRealMatchPoint(char* argv[]);
-
+	void CalcFwdBwdRealMatchPoint(char* argv[]);	
+	//前后视相机前方交会
+	void CalcFwdBwdIntersection(char* argv[]);
 
 	//小面阵阵相机模型
 	void LittleArrayCamera(string auxpath);

@@ -230,6 +230,7 @@ copy $(SolutionDir)ExtDlls\*.* $(SolutionDir)bin\$(Platform)\$(Configuration)\</
     <ClCompile Include="GeoCameraArray.cpp" />
     <ClCompile Include="GeoCameraLine.cpp" />
     <ClCompile Include="GeoHarris.cpp" />
+    <ClCompile Include="GeoImage.cpp" />
     <ClCompile Include="GeoModelArray.cpp" />
     <ClCompile Include="GeoModelRFM.cpp" />
     <ClCompile Include="GeoOrbitEarth_ZY3.cpp" />
@@ -259,6 +260,7 @@ copy $(SolutionDir)ExtDlls\*.* $(SolutionDir)bin\$(Platform)\$(Configuration)\</
     <ClInclude Include="GeoCalibration.h" />
     <ClInclude Include="GeoCameraArray.h" />
     <ClInclude Include="GeoHarris.h" />
+    <ClInclude Include="GeoImage.h" />
     <ClInclude Include="GeoModelArray.h" />
     <ClInclude Include="GeoModelRFM.h" />
     <ClInclude Include="GeoOrbitEarth_ZY3.h" />

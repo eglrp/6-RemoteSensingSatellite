@@ -386,12 +386,13 @@ void WorkFlow_ZY3::NADCamera(string auxpath)
 
 //////////////////////////////////////////////////////////////////////////
 //功能：获取前后视真实模型
-//输入：工作空间路径
-//输出：真实控制点match.pts
+//输入：workpath,工作空间路径；omg,安装角；
+//			 isReal=1真实模型，isReal=0带误差模型；
+//输出：匹配点match.pts；控制点GCP.txt
 //作者：GZC
 //日期：2017.09.07
 //////////////////////////////////////////////////////////////////////////
-GeoModelLine WorkFlow_ZY3::FwdBwdModel(string workpath,double omg)
+GeoModelLine WorkFlow_ZY3::FwdBwdModel(string workpath,double omg,bool isReal)
 {
 	//读取ZY3Sim辅助数据
 	ParseZY3Aux ZY3_01;
@@ -399,7 +400,8 @@ GeoModelLine WorkFlow_ZY3::FwdBwdModel(string workpath,double omg)
 	vector<Attitude> allAtt;
 	vector<LineScanTime> allTime;
 	string sOrb, sAtt, sTime, sCam;
-	ZY3_01.ZY3RealPATH(workpath, sAtt, sOrb, sTime, sCam);
+	if (isReal)	{		ZY3_01.ZY3RealPATH(workpath, sAtt, sOrb, sTime, sCam);	} 
+	else			{		ZY3_01.ZY3SimPATH(workpath, sAtt, sOrb, sTime, sCam);	}
 	ZY3_01.ReadZY301OrbTXT(sOrb, allEp);
 	ZY3_01.ReadZY301AttTXT(sAtt, allAtt);
 	ZY3_01.ReadZY3SimTimeTXT(sTime, allTime);
@@ -419,7 +421,8 @@ GeoModelLine WorkFlow_ZY3::FwdBwdModel(string workpath,double omg)
 	attitudeinput.DatumName = "WGS84";
 	attitudeinput.m_PolyOrder = 2;
 	double R[9];
-	attitude->ReadZY3RealAttFile(allAtt, attitudeinput, orbit, workpath);
+	if (isReal)	{	attitude->ReadZY3RealAttFile(allAtt, attitudeinput, orbit, workpath); }
+	else			{	attitude->ReadZY3AttFile(allAtt, attitudeinput, orbit, workpath);	}	
 	m_base.Eulor2Matrix(0, omg, 0, 123, R);
 	attitude->set_ROff(R);
 
@@ -453,12 +456,15 @@ void WorkFlow_ZY3::CalcFwdBwdRealMatchPoint(char* argv[])
 {
 	GeoModelLine model[2];
 	string workpath = argv[1];
-	model[0] = FwdBwdModel(argv[1], -22. / 180 * PI);
-	model[1] = FwdBwdModel(argv[2], 22. / 180 * PI);
+	model[0] = FwdBwdModel(argv[1], -22. / 180 * PI,1);
+	model[1] = FwdBwdModel(argv[2], 22. / 180 * PI,1);
 
 	//读取DEM
-	GeoReadImage DEM;
-	DEM.Open("C:\\Users\\wcsgz\\Documents\\5-工具软件\\几何精度检校v5.0\\全球DEM.tif", GA_ReadOnly);
+	GeoReadImage DEM; GeoImage WarpImg;
+	//string strDEM= "D:\\2_ImageData\\0.1\\Point1\\FWD\\2.影像文件\\dem1.img";
+	//WarpImg.ImageWarp("D:\\1_控制数据\\参考影像\\Henan2000\\ss2000dtm50cm_utm84-float_chu10.img",	strDEM,model);
+	DEM.Open("D:\\2_ImageData\\0.1\\Point1\\FWD\\2.影像文件\\dem.img", GA_ReadOnly);
+	//DEM.Open("C:\\Users\\wcsgz\\Documents\\5-工具软件\\几何精度检校v5.0\\全球DEM.tif", GA_ReadOnly);
 	DEM.ReadBlock(0, 0, DEM.m_xRasterSize, DEM.m_yRasterSize, 0, DEM.pBuffer[0]);
 
 	ParseZY3Aux m_File;
@@ -468,7 +474,8 @@ void WorkFlow_ZY3::CalcFwdBwdRealMatchPoint(char* argv[])
 	int height = model[0].get_m_height();
 	int width = model[0].get_m_width();
 
-	vector<MatchPoint>pGCP;	MatchPoint pGCPtmp;
+	vector<MatchPoint>pMatch;	MatchPoint pMatchtmp;
+	vector<StrGCP>pGCP; StrGCP pGCPtmp;
 	double line, sample, rline, rsample, H = 0, Lat, Lon;
 	for (line = 1; line < height; )
 	{
@@ -495,9 +502,12 @@ void WorkFlow_ZY3::CalcFwdBwdRealMatchPoint(char* argv[])
 			model[1].FromLatLon2XY(Lat, Lon, H, rline, rsample);
 			if (rline > 0 && rline < height && rsample>0 && rsample < width)
 			{
-				pGCPtmp.lx = line; pGCPtmp.ly = sample;
-				pGCPtmp.rx = rline; pGCPtmp.ry = rsample;
+				pGCPtmp.x = line; pGCPtmp.y = sample;
+				pGCPtmp.lat = Lat; pGCPtmp.lon = Lon; pGCPtmp.h = H;
 				pGCP.push_back(pGCPtmp);
+				pMatchtmp.lx = line; pMatchtmp.ly = sample;
+				pMatchtmp.rx = rline; pMatchtmp.ry = rsample;
+				pMatch.push_back(pMatchtmp);
 			}
 
 			sample += 100;
@@ -506,14 +516,91 @@ void WorkFlow_ZY3::CalcFwdBwdRealMatchPoint(char* argv[])
 	}
 
 	string output = filePath[0].substr(0, filePath[0].rfind('.')) + "_match.pts";
+	string output2 = filePath[0].substr(0, filePath[0].rfind('.')) + "_GCP.txt";
 	FILE *fp = fopen(output.c_str(), "w");
-	fprintf(fp, "; %d\n", pGCP.size());
-	for (int i = 0; i < pGCP.size(); i++)
+	FILE *fp2 = fopen(output2.c_str(), "w");
+	fprintf(fp, "; %d\n", pMatch.size());
+	fprintf(fp2, "; %d\n", pGCP.size());
+	for (int i = 0; i < pMatch.size(); i++)
 	{
-		fprintf(fp, "%f\t%f\t%f\t%f\n", pGCP[i].ly, pGCP[i].lx, pGCP[i].ry, pGCP[i].rx);
+		fprintf(fp, "%f\t%f\t%f\t%f\n", pMatch[i].ly, pMatch[i].lx, pMatch[i].ry, pMatch[i].rx);
+		fprintf(fp2, "%f\t%f\t%.9f\t%.9f\t%.9f\n", pGCP[i].x, pGCP[i].y, pGCP[i].lat, pGCP[i].lon, pGCP[i].h);
 	}
-	fclose(fp);
+	fclose(fp); fclose(fp2);
 
+	DEM.Destroy();
+}
+
+//////////////////////////////////////////////////////////////////////////
+//功能：前方交会并求精度
+//输入：
+//输出：
+//作者：GZC
+//日期：2017.09.07
+//////////////////////////////////////////////////////////////////////////
+void WorkFlow_ZY3::CalcFwdBwdIntersection(char* argv[])
+{
+	GeoModelLine model[2];
+	string workpath = argv[1];
+	model[0] = FwdBwdModel(argv[1], -22. / 180 * PI,1);
+	model[1] = FwdBwdModel(argv[2], 22. / 180 * PI,1);
+
+	//读取DEM
+	GeoReadImage DEM;
+	DEM.Open("D:\\2_ImageData\\0.1\\Point1\\FWD\\2.影像文件\\dem.img", GA_ReadOnly);
+	//DEM.Open("C:\\Users\\wcsgz\\Documents\\5-工具软件\\几何精度检校v5.0\\全球DEM.tif", GA_ReadOnly);
+	DEM.ReadBlock(0, 0, DEM.m_xRasterSize, DEM.m_yRasterSize, 0, DEM.pBuffer[0]);
+
+	ParseZY3Aux m_File;
+	vector<string>filePath;
+	m_File.search_directory(workpath + "\\", "tif", filePath);
+	string output = filePath[0].substr(0, filePath[0].rfind('.')) + "_match.pts";
+	string output2 = filePath[0].substr(0, filePath[0].rfind('.')) + "_GCP.txt";
+	string output3 = filePath[0].substr(0, filePath[0].rfind('.')) + "_RMS.txt";
+	FILE *fp = fopen(output.c_str(), "r");
+	FILE *fp2 = fopen(output2.c_str(), "r");
+	FILE *fp3 = fopen(output3.c_str(), "w");
+	int num; double H = 0, Lat, Lon;
+	fscanf(fp, "; %d\n", &num);
+	fscanf(fp2, "; %d\n", &num);
+	MatchPoint *pts = new MatchPoint[num];
+	StrGCP *pGCP = new StrGCP[num];
+	double rmsLat, rmsLon, rmsH, maxLat, maxLon, maxH, minLat, minLon, minH;
+	rmsLat = rmsLon = rmsH= 0.;
+	maxLat = maxLon = maxH = 0.;
+	minLat = minLon = minH= 999999999.;
+	for (int i = 0; i < num; i++)
+	{
+		fscanf(fp, "%lf\t%lf\t%lf\t%lf\n", &pts[i].ly, &pts[i].lx, &pts[i].ry, &pts[i].rx);
+		fscanf(fp2, "%lf\t%lf\t%lf\t%lf\t%lf\n", &pGCP[i].x, &pGCP[i].y, &pGCP[i].lat, &pGCP[i].lon, &pGCP[i].h);
+		double LatLonH[3];
+		model->Intersection(model, pts[i], LatLonH);	
+		double eLat = LatLonH[0] - pGCP[i].lat;
+		double eLon = LatLonH[1] - pGCP[i].lon;
+		double eH = LatLonH[2] - pGCP[i].h;
+
+		minLat = min(minLat, fabs(eLat));
+		minLon = min(minLon, fabs(eLon));
+		minH = min(minH, fabs(eH));
+
+		maxLat = max(maxLat, fabs(eLat));
+		maxLon = max(maxLon, fabs(eLon));
+		maxH = max(maxH, fabs(eH));
+
+		rmsLat += eLat*eLat / num;
+		rmsLon += eLon*eLon / num;
+		rmsH += eH*eH / num;
+
+		fprintf(fp3, "%04d\t%lf\t%lf\t%lf\t%lf\t%lf\n", i, pGCP[i].x, pGCP[i].y, eLat, eLon,eH);
+	}	
+	rmsLat = sqrt(rmsLat);
+	rmsLon = sqrt(rmsLon);
+	rmsH = sqrt(rmsH);
+	fprintf(fp3, "min Lat Lon H: %.15f\t%.15f\t%.15f\n", minLat, minLon, minH);
+	fprintf(fp3, "max Lat Lon H: %.15f\t%.15f\t%.15f\n", maxLat,maxLon,maxH);
+	fprintf(fp3, "rms Lat Lon H: %.15f\t%.15f\t%.15f\n", rmsLat,rmsLon,rmsH);
+
+	fcloseall();
 	DEM.Destroy();
 }
 
@@ -773,8 +860,8 @@ void WorkFlow_ZY3::CalcRealMatchPoint(string workpath)
 
 	//读取DEM
 	GeoReadImage DEM;
-	//DEM.Open("E:\\0.1\\Point1\\LAC\\7.匹配test\\dem.img", GA_ReadOnly);
-	DEM.Open("C:\\Users\\wcsgz\\Documents\\5-工具软件\\几何精度检校v5.0\\全球DEM.tif", GA_ReadOnly);
+	DEM.Open("D:\\2_ImageData\\0.1\\Point1\\FWD\\2.影像文件\\dem.img", GA_ReadOnly);
+	//DEM.Open("C:\\Users\\wcsgz\\Documents\\5-工具软件\\几何精度检校v5.0\\全球DEM.tif", GA_ReadOnly);
 	DEM.ReadBlock(0, 0, DEM.m_xRasterSize, DEM.m_yRasterSize, 0, DEM.pBuffer[0]);
 
 	ParseZY3Aux m_File;
@@ -817,7 +904,7 @@ void WorkFlow_ZY3::CalcRealMatchPoint(string workpath)
 				if (rline>0&& rline<1000&&rsample>0&&rsample<1000)
 				{
 					pGCPtmp.lx = line; pGCPtmp.ly = sample;
-					pGCPtmp.rx = rline; pGCPtmp.ry = rsample+0.1;
+					pGCPtmp.rx = rline; pGCPtmp.ry = rsample;
 					pGCP.push_back(pGCPtmp);
 				}
 

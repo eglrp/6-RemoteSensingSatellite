@@ -159,6 +159,42 @@ void GeoModelLine::PreciseBasedAffine(double &x,double &y,double lat,double lon,
 	m_transtemp.GetValueBaseAffine(lat, lon, x, y);
 }
 
+//////////////////////////////////////////////////////////////////////////
+//功能：前方交会代码
+//输入：左右影像模型，匹配控制点
+//输出：交会点空间坐标XYZ
+//作者：GZC
+//时间：2017.09.08
+//////////////////////////////////////////////////////////////////////////
+void GeoModelLine::Intersection(GeoModelLine *model, MatchPoint pts, double *LatLonH)
+{
+	double inner1[3], inner2[3], Rcam2wgs84L[9], Rcam2wgs84R[9], XYZ1[3], XYZ2[3], S1[3], S2[3];
+	model[0].GetOrbitAttitudeInnerBaseXY(pts.lx, pts.ly, XYZ1, Rcam2wgs84L, inner1);
+	model[1].GetOrbitAttitudeInnerBaseXY(pts.rx, pts.ry, XYZ2, Rcam2wgs84R, inner2);
+
+	m_base.Multi(Rcam2wgs84L, inner1, S1, 3, 3, 1);
+	m_base.Multi(Rcam2wgs84R, inner2, S2, 3, 3, 1);
+
+	double Bu, Bv, Bw;
+	Bu = XYZ2[0] - XYZ1[0];
+	Bv = XYZ2[1] - XYZ1[1];
+	Bw = XYZ2[2] - XYZ1[2];
+
+	double N1 = (Bu * S2[2] - Bw * S2[0]) / (S1[0] * S2[2] - S2[0] * S1[2]);
+	double N2 = (Bu * S1[2] - Bw * S1[0]) / (S1[0] * S2[2] - S2[0] * S1[2]);
+
+	LatLonH[0] = XYZ1[0] + N1 * S1[0];
+	LatLonH[1] = 0.5 * ((XYZ1[1] + N1 * S1[1]) + (XYZ2[1] + N2 * S2[1]));
+	LatLonH[2] = XYZ1[2] + N1 * S1[2];
+
+	double lat, lon, H;
+	m_base.Rect2Geograph(m_datum, LatLonH[0], LatLonH[1], LatLonH[2], lat, lon, H);
+	LatLonH[0] = lat;
+	LatLonH[1] = lon;
+	LatLonH[2] = H;
+}
+
+
 
 //////////////////////////////////////
 // 功能：线阵模型初始化函数

@@ -129,6 +129,9 @@
     <ClCompile Include="AttDeter.cpp">
       <Filter>3.GeoAttitude</Filter>
     </ClCompile>
+    <ClCompile Include="GeoImage.cpp">
+      <Filter>9.GeoImage</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeoBase.h">
@@ -220,6 +223,9 @@
     </ClInclude>
     <ClInclude Include="AttDeter.h">
       <Filter>3.GeoAttitude</Filter>
+    </ClInclude>
+    <ClInclude Include="GeoImage.h">
+      <Filter>9.GeoImage</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
