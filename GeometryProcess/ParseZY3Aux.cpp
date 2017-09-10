@@ -250,45 +250,58 @@ bool ParseZY3Aux::ReadZY301AttTXT(string sAtt,vector<Attitude> &arr_att)
 	Attitude att;
 	char c_read[1024];
 	string tmpStr;
-	while(!feof(fp))
+	fgets(c_read, 1024, fp);
+	if (tmpStr.assign(c_read) == "\n")
 	{
-		if(fgets(c_read,1024,fp) == NULL)
-			continue;
-		tmpStr.assign(c_read);
-		if(tmpStr.find("groupNumber",0) != -1)
+		while (!feof(fp))
 		{
-			sscanf(tmpStr.c_str(),"%*s%*s%d",&num);
-			if(num <= 0)
+			if (fgets(c_read, 1024, fp) == NULL)
+				continue;
+			tmpStr.assign(c_read);
+			if (tmpStr.find("groupNumber", 0) != -1)
 			{
-				printf("=>zero quaternion!\n");
-				fclose(fp);
-				return false;
+				sscanf(tmpStr.c_str(), "%*s%*s%d", &num);
+				if (num <= 0)
+				{
+					printf("=>zero quaternion!\n");
+					fclose(fp);
+					return false;
+				}
+			}
+
+			if (tmpStr.find("attData", 0) != -1)
+			{
+				while (fgets(c_read, 1024, fp) != NULL)
+				{
+					tmpStr.assign(c_read);
+					if (tmpStr.find("}") != -1)
+						break;
+					if (tmpStr.find("timeCode", 0) != -1)
+						sscanf(tmpStr.c_str(), "%*s%*s%lf", &att.UTC);
+					if (tmpStr.find("q1 ", 0) != -1)
+						sscanf(tmpStr.c_str(), "%*s%*s%lf", &att.Q1);
+					if (tmpStr.find("q2 ", 0) != -1)
+						sscanf(tmpStr.c_str(), "%*s%*s%lf", &att.Q2);
+					if (tmpStr.find("q3 ", 0) != -1)
+						sscanf(tmpStr.c_str(), "%*s%*s%lf", &att.Q3);
+					if (tmpStr.find("q4 ", 0) != -1)
+						sscanf(tmpStr.c_str(), "%*s%*s%lf", &att.Q0);
+				}
+				//att.Q0 = sqrt(1-att.Q1*att.Q1-att.Q3*att.Q3-att.Q2*att.Q2);
+				arr_att.push_back(att);
 			}
 		}
-
-		if(tmpStr.find("attData",0) != -1)
+	}
+	else
+	{
+		rewind(fp);
+		fscanf(fp, "%d\n", &num);
+		for (int i=0;i<num;i++)
 		{
-			while(fgets(c_read,1024,fp) != NULL)
-			{
-				tmpStr.assign(c_read);
-				if(tmpStr.find("}") !=-1)
-					break;
-				if(tmpStr.find("timeCode",0) != -1)
-					sscanf(tmpStr.c_str(),"%*s%*s%lf",&att.UTC);
-				if(tmpStr.find("q1 ",0) != -1)
-					sscanf(tmpStr.c_str(),"%*s%*s%lf",&att.Q1);
-				if(tmpStr.find("q2 ",0) != -1)
-					sscanf(tmpStr.c_str(),"%*s%*s%lf",&att.Q2);
-				if(tmpStr.find("q3 ",0) != -1)
-					sscanf(tmpStr.c_str(),"%*s%*s%lf",&att.Q3);
-				if (tmpStr.find("q4 ", 0) != -1)
-					sscanf(tmpStr.c_str(), "%*s%*s%lf", &att.Q0);
-			}
-			//att.Q0 = sqrt(1-att.Q1*att.Q1-att.Q3*att.Q3-att.Q2*att.Q2);
+			fscanf(fp, "%lf\t%lf\t%lf\t%lf\t%lf\n", &att.UTC, &att.Q1, &att.Q2, &att.Q3, &att.Q0);
 			arr_att.push_back(att);
 		}
 	}
-
 	fclose(fp);
 	return true;
 }

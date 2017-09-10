@@ -463,8 +463,8 @@ void WorkFlow_ZY3::CalcFwdBwdRealMatchPoint(char* argv[])
 	GeoReadImage DEM; GeoImage WarpImg;
 	//string strDEM= "D:\\2_ImageData\\0.1\\Point1\\FWD\\2.影像文件\\dem1.img";
 	//WarpImg.ImageWarp("D:\\1_控制数据\\参考影像\\Henan2000\\ss2000dtm50cm_utm84-float_chu10.img",	strDEM,model);
-	DEM.Open("D:\\2_ImageData\\0.1\\Point1\\FWD\\2.影像文件\\dem.img", GA_ReadOnly);
-	//DEM.Open("C:\\Users\\wcsgz\\Documents\\5-工具软件\\几何精度检校v5.0\\全球DEM.tif", GA_ReadOnly);
+	//DEM.Open("D:\\2_ImageData\\0.1\\Point1\\FWD\\2.影像文件\\dem.img", GA_ReadOnly);
+	DEM.Open("C:\\Users\\wcsgz\\Documents\\5-工具软件\\几何精度检校v5.0\\全球DEM.tif", GA_ReadOnly);
 	DEM.ReadBlock(0, 0, DEM.m_xRasterSize, DEM.m_yRasterSize, 0, DEM.pBuffer[0]);
 
 	ParseZY3Aux m_File;
@@ -542,13 +542,13 @@ void WorkFlow_ZY3::CalcFwdBwdIntersection(char* argv[])
 {
 	GeoModelLine model[2];
 	string workpath = argv[1];
-	model[0] = FwdBwdModel(argv[1], -22. / 180 * PI,1);
-	model[1] = FwdBwdModel(argv[2], 22. / 180 * PI,1);
+	model[0] = FwdBwdModel(argv[1], -22. / 180 * PI,0);
+	model[1] = FwdBwdModel(argv[2], 22. / 180 * PI,0);
 
 	//读取DEM
 	GeoReadImage DEM;
-	DEM.Open("D:\\2_ImageData\\0.1\\Point1\\FWD\\2.影像文件\\dem.img", GA_ReadOnly);
-	//DEM.Open("C:\\Users\\wcsgz\\Documents\\5-工具软件\\几何精度检校v5.0\\全球DEM.tif", GA_ReadOnly);
+	//DEM.Open("D:\\2_ImageData\\0.1\\Point1\\FWD\\2.影像文件\\dem.img", GA_ReadOnly);
+	DEM.Open("C:\\Users\\wcsgz\\Documents\\5-工具软件\\几何精度检校v5.0\\全球DEM.tif", GA_ReadOnly);
 	DEM.ReadBlock(0, 0, DEM.m_xRasterSize, DEM.m_yRasterSize, 0, DEM.pBuffer[0]);
 
 	ParseZY3Aux m_File;
@@ -860,8 +860,8 @@ void WorkFlow_ZY3::CalcRealMatchPoint(string workpath)
 
 	//读取DEM
 	GeoReadImage DEM;
-	DEM.Open("D:\\2_ImageData\\0.1\\Point1\\FWD\\2.影像文件\\dem.img", GA_ReadOnly);
-	//DEM.Open("C:\\Users\\wcsgz\\Documents\\5-工具软件\\几何精度检校v5.0\\全球DEM.tif", GA_ReadOnly);
+	//DEM.Open("D:\\2_ImageData\\0.1\\Point1\\FWD\\2.影像文件\\dem.img", GA_ReadOnly);
+	DEM.Open("C:\\Users\\wcsgz\\Documents\\5-工具软件\\几何精度检校v5.0\\全球DEM.tif", GA_ReadOnly);
 	DEM.ReadBlock(0, 0, DEM.m_xRasterSize, DEM.m_yRasterSize, 0, DEM.pBuffer[0]);
 
 	ParseZY3Aux m_File;
@@ -1054,7 +1054,7 @@ void WorkFlow_ZY3::CalcRealAttitude(string workpath)
 
 		//偏置计算前残差
 		GeoCalibration m_Cali;
-		m_Cali.calcGCPerr(model + 1, filePath[i], "_before", accuracy1,1);
+		//m_Cali.calcGCPerr(model + 1, filePath[i], "_before", accuracy1,1);
 		//m_Cali.calcRMS(model + 1, workpath + "\\before_ru.txt", pGCP, numGCP);
 
 		printf("=>Modify quaternion %d Now\n", i + 1);
@@ -1156,6 +1156,132 @@ void WorkFlow_ZY3::CalcRealAttitude(string workpath)
 }
 
 //////////////////////////////////////////////////////////////////////////
+//功能：计算恢复的姿态
+//输入：工作空间路径
+//输出：恢复的姿态
+//注意：调用外检校
+//作者：GZC
+//日期：2017.09.10
+//////////////////////////////////////////////////////////////////////////
+void WorkFlow_ZY3::CalcModifyAttitude(string workpath)
+{
+	//读取ZY3Sim辅助数据
+	ParseZY3Aux ZY3_01;
+	vector<Orbit_Ep> allEp;
+	vector<Attitude> allAtt;
+	vector<LineScanTime> allTime;
+	string sOrb, sAtt, sTime, sCam;
+	ZY3_01.ZY3SimPATH(workpath, sAtt, sOrb, sTime, sCam);
+	//ZY3_01.ZY3RealPATH(workpath, sAtt, sOrb, sTime, sCam);
+	ZY3_01.ReadZY301OrbTXT(sOrb, allEp);
+	ZY3_01.ReadZY301AttTXT(sAtt, allAtt);
+	ZY3_01.ReadLittleCameraTimeTXT(sTime, allTime);
+
+	// 轨道
+	GeoOrbit *orbit = new GeoOrbitEarth_ZY3();
+	StrOrbitParamInput orbitinput;
+	orbitinput.DatumName = "WGS84";
+	orbitinput.m_EOP = sEOP;
+	orbitinput.m_JPL = "";
+	orbitinput.m_PolyOrder = 3;
+	orbit->ReadZY3EphFile(allEp, orbitinput);
+
+	// 姿态
+	GeoAttitude *attitude = new GeoAttitude_ZY3();
+	StrAttParamInput attitudeinput;
+	attitudeinput.DatumName = "WGS84";
+	attitudeinput.m_PolyOrder = 2;
+	//attitude->ReadZY3RealAttFile(allAtt, attitudeinput, orbit, workpath);
+	attitude->ReadZY3AttFile(allAtt, attitudeinput, orbit, workpath);
+
+	// 时间
+	GeoTime *time = new GeoTime_ZY3();
+	time->ReadZY3TimeFile(allTime);
+
+	// 相机
+	GeoCamera *inner = new GeoCameraArray();
+	StrCamParamInput caminput;
+	caminput.f = 1.7;
+	caminput.Xsize = 1. / 1e6;
+	caminput.Ysize = 1. / 1e6;
+	caminput.Xnum = 1000;
+	caminput.Ynum = 1000;
+	caminput.Xstart = -500;
+	caminput.Ystart = -500;
+	inner->InitInnerFile("", caminput);//读取内方位元素
+
+	 // 模型
+	//GeoModel *model = new GeoModelArray[2];
+	GeoModelArray model[2];
+	StrModelParamInput modelinput;
+	modelinput.isOrbitPoly = false;
+	modelinput.isAttPoly = false;
+	modelinput.timeExtend = 4;
+
+	//读取DEM
+	GeoReadImage DEM;
+	//DEM.Open("E:\\0.1\\Point1\\LAC\\7.匹配test\\dem.img", GA_ReadOnly);
+	DEM.Open("C:\\Users\\wcsgz\\Documents\\5-工具软件\\几何精度检校v5.0\\全球DEM.tif", GA_ReadOnly);
+	DEM.ReadBlock(0, 0, DEM.m_xRasterSize, DEM.m_yRasterSize, 0, DEM.pBuffer[0]);
+
+	ParseZY3Aux m_File;
+	vector<string>filePath;
+	m_File.search_directory(workpath + "\\", "pts", filePath);
+	vector<Attitude>attModify;
+	OffsetAngle Ru;	
+	for (int i = 0; i < allTime.size() - 1; i++)
+	{
+		model[0].InitModelArray(orbit, attitude, inner, modelinput, allTime[i].lineTimeUT);
+		model[1].InitModelArray(orbit, attitude, inner, modelinput, allTime[i + 1].lineTimeUT);
+		if (i != 0)	{ model[0].updateOffsetmatrix(Ru); }
+		attModify.push_back(model[0].GetQuatCam2wgs84());
+
+		FILE *fp = fopen(filePath[i].c_str(), "r");
+		int num;
+		fscanf(fp, "%*s %d", &num);
+		double lx, ly, rx, ry, H = 0, Lat, Lon;
+		StrGCP *pGCP = new StrGCP[num];
+		int numGCP = 0;
+		for (int k = 0; k < num; k++)
+		{
+			//读取匹配结果像素坐标，注意x为沿轨坐标，y为垂轨坐标
+			fscanf(fp, "%lf\t%lf\t%lf\t%lf\n", &ly, &lx, &ry, &rx);
+			model[0].FromXY2LatLon(lx, ly, H, Lat, Lon);
+			//结合DEM计算影像1像点(x1,y1)对应物点坐标(Lon,Lat,H);
+			int j = 0;
+			while (1)
+			{
+				double HH = DEM.GetDataValue(Lon / PI * 180, Lat / PI * 180, -99999, 0, 0);
+				if (abs(HH - H) > 1e-4&&j++ < 30)
+				{
+					H = HH;
+					model[0].FromXY2LatLon(lx, ly, H, Lat, Lon);
+				}
+				else
+				{
+					break;
+				}
+			}
+			if (fabs(H + 99999.) < 1.e-6)
+				continue;
+			pGCP[k].x = rx; pGCP[k].y = ry;
+			pGCP[k].h = H; pGCP[k].lat = Lat; pGCP[k].lon = Lon;
+			numGCP++;
+		}
+		fclose(fp);
+
+		GeoCalibration m_Cali;
+		printf("=>Modify quaternion %d Now\n", i + 1);
+		m_Cali.calcOffsetMatrix(model + 1, pGCP, numGCP, Ru);
+		delete[]pGCP; pGCP = NULL;
+	}	
+	//输出修正后四元数
+	OutputQuat(workpath, attModify);
+
+	DEM.Destroy();
+}
+
+//////////////////////////////////////////////////////////////////////////
 //功能：融合前向和后向偏置矩阵Ru
 //输入：前向Ru计算值RuForward，后向Ru计算值RuBackward
 //输出：Ru中间值RuForward
@@ -1247,6 +1373,30 @@ void WorkFlow_ZY3::OutputRMS(string outFile, vector<strRMS>accuracy1, vector<str
 	{
 		fprintf(fp, "%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\n", accuracy1[i].rmsx, accuracy1[i].rmsy, accuracy1[i].rmsall,
 			accuracy2[i].rmsx, accuracy2[i].rmsy, accuracy2[i].rmsall);
+	}
+	fclose(fp);
+}
+
+void WorkFlow_ZY3::OutputQuat(string path, vector<Attitude> att)
+{
+	double jd0, refMJD, RJ20002WGS84[9], Rm[9],Rbody2J2000[9];
+	Attitude attT;
+	StrAttPoint tmp;
+	Cal2JD(2009, 1, 1, 0, &jd0,&refMJD);
+
+	string outfile = path + "\\ATT_Modify.txt";
+	FILE *fp = fopen(outfile.c_str(), "w");
+	fprintf(fp, "%d\n", att.size());
+	for (int i=0;i<att.size();i++)
+	{
+		m_base.FromSecondtoYMD(refMJD,att[i].UTC, tmp.year, tmp.month, tmp.day, tmp.hour, tmp.minute, tmp.second);
+		IAU2000ABaseCIOCelToTer(tmp.year, tmp.month, tmp.day, tmp.hour, tmp.minute, tmp.second, (char*)sEOP.c_str(), 2, RJ20002WGS84);// J20002WGS84
+		m_base.invers_matrix(RJ20002WGS84, 3);
+		m_base.Quat2Matrix(att[i].Q1, att[i].Q2, att[i].Q3, att[i].Q0, Rm);//body2wgs84
+		m_base.Multi(RJ20002WGS84, Rm, Rbody2J2000, 3, 3, 3);
+		m_base.invers_matrix(Rbody2J2000, 3);
+		m_base.Matrix2Quat(Rbody2J2000, attT.Q1, attT.Q2, attT.Q3, attT.Q0);
+		fprintf(fp, "%.9f\t%.9f\t%.9f\t%.9f\t%.9f\n", att[i].UTC, attT.Q1, attT.Q2, attT.Q3, attT.Q0);
 	}
 	fclose(fp);
 }

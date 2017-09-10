@@ -15,9 +15,9 @@ void GeoAttitude_ZY3::ReadZY3AttFile(vector<Attitude> allAtt, StrAttParamInput i
 	// 清空数据
 	ClearData();
 
-	int num;
-	FILE *fp = fopen((workpath + "\\WGS84ToJ2000_Error.txt").c_str(), "r");
-	fscanf(fp, "%d\n", &num);
+	//int num;
+	//FILE *fp = fopen((workpath + "\\WGS84ToJ2000_Error.txt").c_str(), "r");
+	//fscanf(fp, "%d\n", &num);
 
 	// 获得参数
 	m_Input = input;
@@ -43,9 +43,9 @@ void GeoAttitude_ZY3::ReadZY3AttFile(vector<Attitude> allAtt, StrAttParamInput i
 		m_Base.Quat2Matrix(tmp.q[1], tmp.q[2], tmp.q[3], tmp.q[0], tmp.R);	// J20002body									
 		m_Base.Transpose(tmp.R, 3, 3);										// body2J2000
 		memcpy(R1, tmp.R, 9*sizeof(double));								// 保存
-		fscanf(fp, "%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\n", &R[0], &R[1], &R[2], &R[3], &R[4], &R[5], &R[6], &R[7], &R[8]);// WGS84ToJ2000
-		//m_Orbit->GetJ20002WGS84Rotation(tmp.UT, R);							// J20002WGS84
-		m_Base.invers_matrix(R, 3);
+		//fscanf(fp, "%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\n", &R[0], &R[1], &R[2], &R[3], &R[4], &R[5], &R[6], &R[7], &R[8]);// WGS84ToJ2000
+		m_Orbit->GetJ20002WGS84Rotation(tmp.UT, R);							// J20002WGS84
+		//m_Base.invers_matrix(R, 3);
 		m_Base.Multi(R, R1, tmp.R, 3, 3, 3);								// body2WGS84
 		m_Base.Matrix2Quat(tmp.R, tmp.q[0], tmp.q[1], tmp.q[2], tmp.q[3]);
 		m_Base.Matrix2Eulor(tmp.R, 213, tmp.Eulor[0], tmp.Eulor[1], tmp.Eulor[2]);
@@ -61,7 +61,7 @@ void GeoAttitude_ZY3::ReadZY3AttFile(vector<Attitude> allAtt, StrAttParamInput i
 			tmp.Eulor[i] = tmp.Eulor[i]*180/PI;
 		m_Body2Orbittmp.push_back(tmp);
 	}
-	fclose(fp);
+	//fclose(fp);
 	m_num = m_Body2WGS84tmp.size();
 	// 存储
 	m_Body2WGS84 = new StrAttPoint[m_num];

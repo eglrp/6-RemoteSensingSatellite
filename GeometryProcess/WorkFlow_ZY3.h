@@ -57,10 +57,12 @@ public:
 	int Image_registration_rpc(string tifPath);
 	//匹配过程
 	void MatchBasedGeoModel(MatchPoint *gcp, int num, string imgL, string imgR);
-	//计算真实控制点
+	//计算真实匹配控制点
 	void CalcRealMatchPoint(string workpath);
-	//计算恢复姿态
+	//计算恢复的姿态（计算并比较）
 	void CalcRealAttitude(string workpath);
+	//计算恢复的姿态（仅计算）
+	void CalcModifyAttitude(string workpath);
 	//融合两次RU
 	void RuFusion(vector<OffsetAngle>&RuForward, vector<OffsetAngle>RuBackward);
 	//根据模型计算残差
@@ -69,6 +71,8 @@ public:
 	void CompareMeasModifyAndReal(vector<Attitude>Meas, vector<Attitude>Modify, string realAttPath);
 	//对比RMS
 	void OutputRMS(string outFile, vector<strRMS>accuracy1, vector<strRMS>accuracy2);
+	//输出四元数结果
+	void OutputQuat(string path,vector<Attitude>att);
 
 	//根据匹配计算角速度，然后结合真实姿态做卡尔曼滤波
 	void CalcOmegaKalman(string workpath);
