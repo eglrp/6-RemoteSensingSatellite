@@ -50,6 +50,8 @@ public:
 	void CalcFwdBwdRealMatchPoint(char* argv[]);	
 	//前后视相机前方交会
 	void CalcFwdBwdIntersection(char* argv[]);
+	//将前后视路径下四元数改过来
+	void ChangeAttPath(char* argv[]);
 
 	//小面阵阵相机模型
 	void LittleArrayCamera(string auxpath);
@@ -83,6 +85,7 @@ public:
 		conjugatePoints* pMatch,int nMatch, int xOrder, int yOrder, double *&pRes, string sRes);
 private:
 	string sEOP;
+	static int outCount;
 	//GeoModelArray *pModelArray;
 };
 

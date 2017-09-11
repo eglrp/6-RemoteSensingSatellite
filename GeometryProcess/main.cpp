@@ -34,7 +34,9 @@ int main(int argc, char* argv[])
 	//pflow->ModelVerify();
 	pflow->CalcFwdBwdRealMatchPoint(argv);//根据前后视不带误差模型计算真实匹配点
 	pflow->CalcFwdBwdIntersection(argv);//对前后视进行前方交会，然后解求精度
-
+	pflow->ChangeAttPath(argv);//改变姿态文件
+	pflow->CalcFwdBwdRealMatchPoint(argv);//根据前后视不带误差模型计算真实匹配点
+	pflow->CalcFwdBwdIntersection(argv);//对前后视进行前方交会，然后解求精度
 
 	//////////////////////////////////////////////////////////////////////////
 	//功能：以下为资三02星定标和定位模型

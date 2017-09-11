@@ -8,6 +8,7 @@ WorkFlow_ZY3::WorkFlow_ZY3(void)
 WorkFlow_ZY3::~WorkFlow_ZY3(void)
 {
 }
+int WorkFlow_ZY3::outCount = 1;
 
 //获取EOP路径
 void WorkFlow_ZY3::getEOP(string eoppath)
@@ -556,7 +557,10 @@ void WorkFlow_ZY3::CalcFwdBwdIntersection(char* argv[])
 	m_File.search_directory(workpath + "\\", "tif", filePath);
 	string output = filePath[0].substr(0, filePath[0].rfind('.')) + "_match.pts";
 	string output2 = filePath[0].substr(0, filePath[0].rfind('.')) + "_GCP.txt";
-	string output3 = filePath[0].substr(0, filePath[0].rfind('.')) + "_RMS.txt";
+	char outFileCount[128];
+	sprintf(outFileCount, "%d", outCount++);
+	string output3 = filePath[0].substr(0, filePath[0].rfind('.')) + "_RMS" + outFileCount+ ".txt" ;
+
 	FILE *fp = fopen(output.c_str(), "r");
 	FILE *fp2 = fopen(output2.c_str(), "r");
 	FILE *fp3 = fopen(output3.c_str(), "w");
@@ -602,6 +606,26 @@ void WorkFlow_ZY3::CalcFwdBwdIntersection(char* argv[])
 
 	fcloseall();
 	DEM.Destroy();
+}
+
+//////////////////////////////////////////////////////////////////////////
+//功能：改变前后视相机姿态文件
+//输入：小面阵相机产生的姿态文件：ATT_Modify.txt
+//输出：前后视相机的姿态文件：ATT_Error.txt
+//作者：GZC
+//日期：2017.09.11
+//////////////////////////////////////////////////////////////////////////
+void WorkFlow_ZY3::ChangeAttPath(char * argv[])
+{
+	string sourceTmp = (string)argv[3] + "\\ATT_Modify.txt";
+	char * source = (char*)sourceTmp.c_str();//源文件
+	string destinationTmp = (string)argv[1] + "\\ATT_Error.txt";
+	char * destination = (char*)destinationTmp.c_str();//目标文件
+	CopyFile(source, destination, FALSE);//false代表覆盖，true不覆盖
+
+	destinationTmp = (string)argv[2] + "\\ATT_Error.txt";
+	destination = (char*)destinationTmp.c_str();//目标文件
+	CopyFile(source, destination, FALSE);//false代表覆盖，true不覆盖
 }
 
 //////////////////////////////////////////////////////////////////////////
