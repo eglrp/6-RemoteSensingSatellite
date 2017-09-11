@@ -524,7 +524,7 @@ void WorkFlow_ZY3::CalcFwdBwdRealMatchPoint(char* argv[])
 	fprintf(fp2, "; %d\n", pGCP.size());
 	for (int i = 0; i < pMatch.size(); i++)
 	{
-		fprintf(fp, "%f\t%f\t%f\t%f\n", pMatch[i].ly, pMatch[i].lx, pMatch[i].ry, pMatch[i].rx);
+		fprintf(fp, "%.9f\t%.9f\t%.9f\t%.9f\n", pMatch[i].ly, pMatch[i].lx, pMatch[i].ry, pMatch[i].rx);
 		fprintf(fp2, "%f\t%f\t%.9f\t%.9f\t%.9f\n", pGCP[i].x, pGCP[i].y, pGCP[i].lat, pGCP[i].lon, pGCP[i].h);
 	}
 	fclose(fp); fclose(fp2);
@@ -595,7 +595,7 @@ void WorkFlow_ZY3::CalcFwdBwdIntersection(char* argv[])
 		rmsLon += eLon*eLon / num;
 		rmsH += eH*eH / num;
 
-		fprintf(fp3, "%04d\t%lf\t%lf\t%lf\t%lf\t%lf\n", i, pGCP[i].x, pGCP[i].y, eLat, eLon,eH);
+		fprintf(fp3, "%04d\t%.9f\t%.9f\t%.9f\t%.9f\t%.9f\n", i, pGCP[i].x, pGCP[i].y, eLat, eLon,eH);
 	}	
 	rmsLat = sqrt(rmsLat);
 	rmsLon = sqrt(rmsLon);

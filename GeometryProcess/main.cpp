@@ -20,15 +20,15 @@ int main(int argc, char* argv[])
 	/////////////////////////////////////////////////////////////////////////
 	//pflow->LittleArrayCamera(argv[3]);//根据模型自己生产rpc	
 	//pflow->Image_registration_rpc(argv[3]);//根据siftGPU来匹配控制点
-	//pflow->CalcRealMatchPoint(argv[3]);//根据不带误差的模型生产一定数量控制点,目前可以在无差点上加系统差
+	pflow->CalcRealMatchPoint(argv[3]);//根据不带误差的模型生产一定数量控制点,目前可以在无差点上加系统差
 	//pflow->CalcRealAttitude(argv[3]);//根据第一帧和匹配点递推姿态
 	//pflow->CalcOmegaKalman(argv[1]);//根据匹配点采用卡尔曼滤波计算姿态
 	//pflow->CalcRealAttitude_sparse(argv[1]);
-	//pflow->CalcModifyAttitude(argv[3]);//根据第一帧和匹配点递推姿态
+	pflow->CalcModifyAttitude(argv[3]);//根据第一帧和匹配点递推姿态
 
 	//////////////////////////////////////////////////////////////////////////
 	//功能：以下为正视前后视相机仿真与验证
-	//日期：2017.08.14
+	//日期：2017.09.07
 	/////////////////////////////////////////////////////////////////////////
 	//plow->NADCamera(argv[1]);
 	//pflow->ModelVerify();
