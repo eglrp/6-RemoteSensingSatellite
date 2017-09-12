@@ -32,6 +32,7 @@ int main(int argc, char* argv[])
 	/////////////////////////////////////////////////////////////////////////
 	//plow->NADCamera(argv[1]);
 	//pflow->ModelVerify();
+	//pflow->FwdBwdModelVerify(argv[1], -22. / 180 * PI, 0);//验证模型精度
 	pflow->CalcFwdBwdRealMatchPoint(argv);//根据前后视不带误差模型计算真实匹配点
 	pflow->CalcFwdBwdIntersection(argv);//对前后视进行前方交会，然后解求精度
 	pflow->ChangeAttPath(argv);//改变姿态文件

@@ -446,6 +446,71 @@ GeoModelLine WorkFlow_ZY3::FwdBwdModel(string workpath,double omg,bool isReal)
 	return model;
 }
 
+GeoModelLine WorkFlow_ZY3::FwdBwdModelVerify(string workpath, double omg, bool isReal)
+{
+	//读取ZY3Sim辅助数据
+	ParseZY3Aux ZY3_01;
+	vector<Orbit_Ep> allEp;
+	vector<Attitude> allAtt;
+	vector<LineScanTime> allTime;
+	string sOrb, sAtt, sTime, sCam;
+	if (isReal) { ZY3_01.ZY3RealPATH(workpath, sAtt, sOrb, sTime, sCam); }
+	else { ZY3_01.ZY3SimPATH(workpath, sAtt, sOrb, sTime, sCam); }
+	ZY3_01.ReadZY301OrbTXT(sOrb, allEp);
+	ZY3_01.ReadZY301AttTXT(sAtt, allAtt);
+	ZY3_01.ReadZY3SimTimeTXT(sTime, allTime);
+
+	// 轨道
+	GeoOrbit *orbit = new GeoOrbitEarth_ZY3();
+	StrOrbitParamInput orbitinput;
+	orbitinput.DatumName = "WGS84";
+	orbitinput.m_EOP = sEOP;
+	orbitinput.m_JPL = "";
+	orbitinput.m_PolyOrder = 3;
+	orbit->ReadZY3EphFile(allEp, orbitinput);
+
+	// 姿态
+	GeoAttitude *attitude = new GeoAttitude_ZY3();
+	StrAttParamInput attitudeinput;
+	attitudeinput.DatumName = "WGS84";
+	attitudeinput.m_PolyOrder = 2;
+	double R[9];
+	if (isReal) { attitude->ReadZY3RealAttFile(allAtt, attitudeinput, orbit, workpath); }
+	else { attitude->ReadZY3AttFile(allAtt, attitudeinput, orbit, workpath); }
+	m_base.Eulor2Matrix(0, omg, 0, 123, R);
+	attitude->set_ROff(R);
+
+	// 时间
+	GeoTime *time = new GeoTime_ZY3();
+	time->ReadZY3TimeFile(allTime);
+
+	// 相机
+	GeoCamera *inner = new GeoCameraLine();
+	StrCamParamInput caminput;
+	inner->ReadCamFile(sCam, caminput);//读取内方位元素
+
+									   // 模型
+	StrModelParamInput modelinput;
+	GeoModelLine model;
+	modelinput.isOrbitPoly = false;
+	modelinput.isAttPoly = false;
+	modelinput.timeExtend = 4;
+	model.InitModelLine(orbit, attitude, time, inner, modelinput);
+
+	double lat, lon, h = 0, x = 1, y = 1;
+	while (x != 0 || y != 0)
+	{
+		cout << "请输入Sample和Line和h(输入两个0本程序退出)" << endl;
+		cin >> lat >> lon >> h;
+		model.FromLatLon2XY(lat/ 180 * PI,lon / 180 * PI,h,x,y);
+		cout << "xy像素分别是" << endl;
+		cout << setiosflags(ios::fixed);//加上这句话，控制的就是小数的精度了
+		cout << setprecision(10) << x << "," << y << endl;
+	}
+
+	return model;
+}
+
 //////////////////////////////////////////////////////////////////////////
 //功能：获取前后视影像的真实控制点
 //输入：工作空间路径
@@ -499,6 +564,29 @@ void WorkFlow_ZY3::CalcFwdBwdRealMatchPoint(char* argv[])
 			}
 			if (fabs(H + 99999.) < 1.e-6)
 				continue;
+			
+			//double H2, Lat2, Lon2;
+			//model[1].FromXY2LatLon(line, sample, H2, Lat2, Lon2);
+			//j = 0;
+			//while (1)
+			//{
+			//	double HH = DEM.GetDataValue(Lon2 / PI * 180, Lat2 / PI * 180, -99999, 0, 0);
+			//	if (abs(HH - H2) > 1e-4&&j++ < 30)
+			//	{
+			//		H2 = HH;
+			//		model[1].FromXY2LatLon(line, sample, H2, Lat2, Lon2);
+			//	}
+			//	else
+			//	{
+			//		break;
+			//	}
+			//}
+			//if (fabs(H2 + 99999.) < 1.e-6)
+			//	continue;
+
+			//double eLat = (Lat-Lat2) * 6378140;
+			//double eLon = (Lon-Lon2)*cos(Lat) * 6378140;
+			//double eH = H-H2;
 
 			model[1].FromLatLon2XY(Lat, Lon, H, rline, rsample);
 			if (rline > 0 && rline < height && rsample>0 && rsample < width)
@@ -577,11 +665,54 @@ void WorkFlow_ZY3::CalcFwdBwdIntersection(char* argv[])
 	{
 		fscanf(fp, "%lf\t%lf\t%lf\t%lf\n", &pts[i].ly, &pts[i].lx, &pts[i].ry, &pts[i].rx);
 		fscanf(fp2, "%lf\t%lf\t%lf\t%lf\t%lf\n", &pGCP[i].x, &pGCP[i].y, &pGCP[i].lat, &pGCP[i].lon, &pGCP[i].h);
+
+		//model[0].FromXY2LatLon(pGCP[i].x, pGCP[i].y, H, Lat, Lon);
+		//int j = 0;
+		//while (1)
+		//{
+		//	double HH = DEM.GetDataValue(Lon / PI * 180, Lat / PI * 180, -99999, 0, 0);
+		//	if (abs(HH - H) > 1e-4&&j++ < 30)
+		//	{
+		//		H = HH;
+		//		model[0].FromXY2LatLon(pGCP[i].x, pGCP[i].y, H, Lat, Lon);
+		//	}
+		//	else
+		//	{
+		//		break;
+		//	}
+		//}
+		//if (fabs(H + 99999.) < 1.e-6)
+		//	continue;
+
+		//model[1].FromXY2LatLon(pts[i].rx, pts[i].ry, H, Lat, Lon);
+		//j = 0;
+		//while (1)
+		//{
+		//	double HH = DEM.GetDataValue(Lon / PI * 180, Lat / PI * 180, -99999, 0, 0);
+		//	if (abs(HH - H) > 1e-4&&j++ < 30)
+		//	{
+		//		H = HH;
+		//		model[1].FromXY2LatLon(pts[i].rx, pts[i].ry, H, Lat, Lon);
+		//	}
+		//	else
+		//	{
+		//		break;
+		//	}
+		//}
+		//if (fabs(H + 99999.) < 1.e-6)
+		//	continue;
+
 		double LatLonH[3];
 		model->Intersection(model, pts[i], LatLonH);	
-		double eLat = LatLonH[0] - pGCP[i].lat;
-		double eLon = LatLonH[1] - pGCP[i].lon;
+		double eLat = (LatLonH[0] - pGCP[i].lat) * 6378140;
+		double eLon = (LatLonH[1] - pGCP[i].lon)*cos(pGCP[i].lat) * 6378140;
 		double eH = LatLonH[2] - pGCP[i].h;
+
+		//double lx, ly, rx, ry;
+		//model[0].FromLatLon2XY(LatLonH[0], LatLonH[1], LatLonH[2], lx, ly);
+		//model[1].FromLatLon2XY(LatLonH[0], LatLonH[1], LatLonH[2], rx, ry);
+		//lx = lx - pts[i].lx;	ly = ly - pts[i].ly;
+		//rx = rx - pts[i].rx; ry = ry - pts[i].ry;
 
 		minLat = min(minLat, fabs(eLat));
 		minLon = min(minLon, fabs(eLon));

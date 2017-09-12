@@ -112,7 +112,7 @@ void GeoAttitude_ZY3::ReadZY3RealAttFile(vector<Attitude> allAtt, StrAttParamInp
 		m_Base.Transpose(tmp.R, 3, 3);										// body2J2000
 		memcpy(R1, tmp.R, 9 * sizeof(double));								// ±£´æ
 		fscanf(fp, "%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\n", &R[0], &R[1], &R[2], &R[3], &R[4], &R[5], &R[6], &R[7], &R[8]);// WGS84ToJ2000
-																																   //m_Orbit->GetJ20002WGS84Rotation(tmp.UT, R);							// J20002WGS84
+		//m_Orbit->GetJ20002WGS84Rotation(tmp.UT, R);							// J20002WGS84
 		m_Base.invers_matrix(R, 3);
 		m_Base.Multi(R, R1, tmp.R, 3, 3, 3);								// body2WGS84
 		m_Base.Matrix2Quat(tmp.R, tmp.q[0], tmp.q[1], tmp.q[2], tmp.q[3]);

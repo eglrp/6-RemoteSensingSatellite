@@ -46,6 +46,7 @@ public:
 	void NADCamera(string auxpath);
 	//获得前后视真实模型
 	GeoModelLine FwdBwdModel(string workpath,double omg, bool isReal);
+	GeoModelLine FwdBwdModelVerify(string workpath, double omg, bool isReal);
 	//得到推扫相机真实控制点
 	void CalcFwdBwdRealMatchPoint(char* argv[]);	
 	//前后视相机前方交会
