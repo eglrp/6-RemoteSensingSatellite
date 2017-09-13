@@ -11,9 +11,13 @@ WorkFlow_ZY3::~WorkFlow_ZY3(void)
 int WorkFlow_ZY3::outCount = 1;
 
 //获取EOP路径
-void WorkFlow_ZY3::getEOP(string eoppath)
+void WorkFlow_ZY3::GetEOP(string eoppath)
 {
 	sEOP = eoppath;
+}
+void WorkFlow_ZY3::GetDEM(string dempath)
+{
+	sDEM = dempath;
 }
 //////////////////////////////////////////////////////////////////////////
 // 成像模型构建
@@ -530,7 +534,7 @@ void WorkFlow_ZY3::CalcFwdBwdRealMatchPoint(char* argv[])
 	//string strDEM= "D:\\2_ImageData\\0.1\\Point1\\FWD\\2.影像文件\\dem1.img";
 	//WarpImg.ImageWarp("D:\\1_控制数据\\参考影像\\Henan2000\\ss2000dtm50cm_utm84-float_chu10.img",	strDEM,model);
 	//DEM.Open("D:\\2_ImageData\\0.1\\Point1\\FWD\\2.影像文件\\dem.img", GA_ReadOnly);
-	DEM.Open("C:\\Users\\wcsgz\\Documents\\5-工具软件\\几何精度检校v5.0\\全球DEM.tif", GA_ReadOnly);
+	DEM.Open(sDEM, GA_ReadOnly);
 	DEM.ReadBlock(0, 0, DEM.m_xRasterSize, DEM.m_yRasterSize, 0, DEM.pBuffer[0]);
 
 	ParseZY3Aux m_File;
@@ -622,8 +626,8 @@ void WorkFlow_ZY3::CalcFwdBwdRealMatchPoint(char* argv[])
 
 //////////////////////////////////////////////////////////////////////////
 //功能：前方交会并求精度
-//输入：
-//输出：
+//输入：模型1路径argv[1]，模型2路径[2]
+//输出：在模型1路径下输出前方交会精度
 //作者：GZC
 //日期：2017.09.07
 //////////////////////////////////////////////////////////////////////////
@@ -636,8 +640,7 @@ void WorkFlow_ZY3::CalcFwdBwdIntersection(char* argv[])
 
 	//读取DEM
 	GeoReadImage DEM;
-	//DEM.Open("D:\\2_ImageData\\0.1\\Point1\\FWD\\2.影像文件\\dem.img", GA_ReadOnly);
-	DEM.Open("C:\\Users\\wcsgz\\Documents\\5-工具软件\\几何精度检校v5.0\\全球DEM.tif", GA_ReadOnly);
+	DEM.Open(sDEM, GA_ReadOnly);
 	DEM.ReadBlock(0, 0, DEM.m_xRasterSize, DEM.m_yRasterSize, 0, DEM.pBuffer[0]);
 
 	ParseZY3Aux m_File;
@@ -665,54 +668,12 @@ void WorkFlow_ZY3::CalcFwdBwdIntersection(char* argv[])
 	{
 		fscanf(fp, "%lf\t%lf\t%lf\t%lf\n", &pts[i].ly, &pts[i].lx, &pts[i].ry, &pts[i].rx);
 		fscanf(fp2, "%lf\t%lf\t%lf\t%lf\t%lf\n", &pGCP[i].x, &pGCP[i].y, &pGCP[i].lat, &pGCP[i].lon, &pGCP[i].h);
-
-		//model[0].FromXY2LatLon(pGCP[i].x, pGCP[i].y, H, Lat, Lon);
-		//int j = 0;
-		//while (1)
-		//{
-		//	double HH = DEM.GetDataValue(Lon / PI * 180, Lat / PI * 180, -99999, 0, 0);
-		//	if (abs(HH - H) > 1e-4&&j++ < 30)
-		//	{
-		//		H = HH;
-		//		model[0].FromXY2LatLon(pGCP[i].x, pGCP[i].y, H, Lat, Lon);
-		//	}
-		//	else
-		//	{
-		//		break;
-		//	}
-		//}
-		//if (fabs(H + 99999.) < 1.e-6)
-		//	continue;
-
-		//model[1].FromXY2LatLon(pts[i].rx, pts[i].ry, H, Lat, Lon);
-		//j = 0;
-		//while (1)
-		//{
-		//	double HH = DEM.GetDataValue(Lon / PI * 180, Lat / PI * 180, -99999, 0, 0);
-		//	if (abs(HH - H) > 1e-4&&j++ < 30)
-		//	{
-		//		H = HH;
-		//		model[1].FromXY2LatLon(pts[i].rx, pts[i].ry, H, Lat, Lon);
-		//	}
-		//	else
-		//	{
-		//		break;
-		//	}
-		//}
-		//if (fabs(H + 99999.) < 1.e-6)
-		//	continue;
-
+		
 		double LatLonH[3];
 		model->Intersection(model, pts[i], LatLonH);	
 		double eLat = (LatLonH[0] - pGCP[i].lat) * 6378140;
 		double eLon = (LatLonH[1] - pGCP[i].lon)*cos(pGCP[i].lat) * 6378140;
 		double eH = LatLonH[2] - pGCP[i].h;
-
-		//double lx, ly, rx, ry;
-		//model[0].FromLatLon2XY(LatLonH[0], LatLonH[1], LatLonH[2], lx, ly);
-		//model[1].FromLatLon2XY(LatLonH[0], LatLonH[1], LatLonH[2], rx, ry);
-		//lx = lx - pts[i].lx;	ly = ly - pts[i].ly;
-		//rx = rx - pts[i].rx; ry = ry - pts[i].ry;
 
 		minLat = min(minLat, fabs(eLat));
 		minLon = min(minLon, fabs(eLon));
@@ -726,14 +687,14 @@ void WorkFlow_ZY3::CalcFwdBwdIntersection(char* argv[])
 		rmsLon += eLon*eLon / num;
 		rmsH += eH*eH / num;
 
-		fprintf(fp3, "%04d\t%.9f\t%.9f\t%.9f\t%.9f\t%.9f\n", i, pGCP[i].x, pGCP[i].y, eLat, eLon,eH);
+		fprintf(fp3, "%04d\t%.9f\t%.9f\t%.9f\t%.9f\t%.9f\n", i, pGCP[i].x, pGCP[i].y, eLat, eLon,abs(eH));
 	}	
 	rmsLat = sqrt(rmsLat);
 	rmsLon = sqrt(rmsLon);
 	rmsH = sqrt(rmsH);
 	fprintf(fp3, "min Lat Lon H: %.15f\t%.15f\t%.15f\n", minLat, minLon, minH);
-	fprintf(fp3, "max Lat Lon H: %.15f\t%.15f\t%.15f\n", maxLat,maxLon,maxH);
-	fprintf(fp3, "rms Lat Lon H: %.15f\t%.15f\t%.15f\n", rmsLat,rmsLon,rmsH);
+	fprintf(fp3, "max Lat Lon H: %.15f\t%.15f\t%.15f\n", maxLat, maxLon, maxH);
+	fprintf(fp3, "rms Lat Lon H: %.15f\t%.15f\t%.15f\n", rmsLat, rmsLon, rmsH);
 
 	fcloseall();
 	DEM.Destroy();
@@ -956,7 +917,6 @@ void WorkFlow_ZY3::MatchBasedGeoModel(MatchPoint *gcp, int num, string imgL, str
 //功能：获取真实控制点
 //输入：工作空间路径
 //输出：真实控制点match.pts
-//注意：
 //作者：GZC
 //日期：2017.08.25
 //////////////////////////////////////////////////////////////////////////
@@ -1016,7 +976,7 @@ void WorkFlow_ZY3::CalcRealMatchPoint(string workpath)
 	//读取DEM
 	GeoReadImage DEM;
 	//DEM.Open("D:\\2_ImageData\\0.1\\Point1\\FWD\\2.影像文件\\dem.img", GA_ReadOnly);
-	DEM.Open("C:\\Users\\wcsgz\\Documents\\5-工具软件\\几何精度检校v5.0\\全球DEM.tif", GA_ReadOnly);
+	DEM.Open(sDEM, GA_ReadOnly);
 	DEM.ReadBlock(0, 0, DEM.m_xRasterSize, DEM.m_yRasterSize, 0, DEM.pBuffer[0]);
 
 	ParseZY3Aux m_File;
@@ -1376,7 +1336,7 @@ void WorkFlow_ZY3::CalcModifyAttitude(string workpath)
 	//读取DEM
 	GeoReadImage DEM;
 	//DEM.Open("E:\\0.1\\Point1\\LAC\\7.匹配test\\dem.img", GA_ReadOnly);
-	DEM.Open("C:\\Users\\wcsgz\\Documents\\5-工具软件\\几何精度检校v5.0\\全球DEM.tif", GA_ReadOnly);
+	DEM.Open(sDEM, GA_ReadOnly);
 	DEM.ReadBlock(0, 0, DEM.m_xRasterSize, DEM.m_yRasterSize, 0, DEM.pBuffer[0]);
 
 	ParseZY3Aux m_File;

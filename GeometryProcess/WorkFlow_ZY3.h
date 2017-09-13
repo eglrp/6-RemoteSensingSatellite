@@ -26,7 +26,8 @@ public:
 	WorkFlow_ZY3(void);
 	virtual ~WorkFlow_ZY3(void);
 	
-	void getEOP(string eoppath);
+	void GetEOP(string eoppath);
+	void GetDEM(string dempath);
 	// 严密模型构建
 	void GenerateRigorousModel(string auxpath, string eoppath);
 	//检校模型构建
@@ -85,7 +86,7 @@ public:
 	bool autoGeoCalibration_sparse(GeoModelArray *pGeoModel, int num, 
 		conjugatePoints* pMatch,int nMatch, int xOrder, int yOrder, double *&pRes, string sRes);
 private:
-	string sEOP;
+	string sEOP,sDEM;
 	static int outCount;
 	//GeoModelArray *pModelArray;
 };

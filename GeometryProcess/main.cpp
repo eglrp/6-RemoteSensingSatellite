@@ -12,8 +12,9 @@ using namespace std;
 int main(int argc, char* argv[])
 {	
 	string argv2 = "C:\\Users\\wcsgz\\Documents\\2-CProject\\6-严密模型\\ExtDlls\\EOP00.txt";
+	string strDEM = "C:\\Users\\wcsgz\\Documents\\5-工具软件\\几何精度检校v5.0\\全球DEM.tif";
 	WorkFlow_ZY3 *pflow = new WorkFlow_ZY3();
-	pflow->getEOP(argv2);
+	pflow->GetEOP(argv2); pflow->GetDEM(strDEM);
 	//////////////////////////////////////////////////////////////////////////
 	//功能：以下为小面阵相机仿真与验证
 	//日期：2017.08.14
