@@ -567,30 +567,7 @@ void WorkFlow_ZY3::CalcFwdBwdRealMatchPoint(char* argv[])
 				}
 			}
 			if (fabs(H + 99999.) < 1.e-6)
-				continue;
-			
-			//double H2, Lat2, Lon2;
-			//model[1].FromXY2LatLon(line, sample, H2, Lat2, Lon2);
-			//j = 0;
-			//while (1)
-			//{
-			//	double HH = DEM.GetDataValue(Lon2 / PI * 180, Lat2 / PI * 180, -99999, 0, 0);
-			//	if (abs(HH - H2) > 1e-4&&j++ < 30)
-			//	{
-			//		H2 = HH;
-			//		model[1].FromXY2LatLon(line, sample, H2, Lat2, Lon2);
-			//	}
-			//	else
-			//	{
-			//		break;
-			//	}
-			//}
-			//if (fabs(H2 + 99999.) < 1.e-6)
-			//	continue;
-
-			//double eLat = (Lat-Lat2) * 6378140;
-			//double eLon = (Lon-Lon2)*cos(Lat) * 6378140;
-			//double eH = H-H2;
+				continue;		
 
 			model[1].FromLatLon2XY(Lat, Lon, H, rline, rsample);
 			if (rline > 0 && rline < height && rsample>0 && rsample < width)
@@ -607,19 +584,9 @@ void WorkFlow_ZY3::CalcFwdBwdRealMatchPoint(char* argv[])
 		}
 		line += 200;
 	}
-
-	string output = filePath[0].substr(0, filePath[0].rfind('.')) + "_match.pts";
-	string output2 = filePath[0].substr(0, filePath[0].rfind('.')) + "_GCP.txt";
-	FILE *fp = fopen(output.c_str(), "w");
-	FILE *fp2 = fopen(output2.c_str(), "w");
-	fprintf(fp, "; %d\n", pMatch.size());
-	fprintf(fp2, "; %d\n", pGCP.size());
-	for (int i = 0; i < pMatch.size(); i++)
-	{
-		fprintf(fp, "%.9f\t%.9f\t%.9f\t%.9f\n", pMatch[i].ly, pMatch[i].lx, pMatch[i].ry, pMatch[i].rx);
-		fprintf(fp2, "%f\t%f\t%.9f\t%.9f\t%.9f\n", pGCP[i].x, pGCP[i].y, pGCP[i].lat, pGCP[i].lon, pGCP[i].h);
-	}
-	fclose(fp); fclose(fp2);
+	//输出匹配点和GCP
+	OutputMatchAndGCP(filePath[0], pMatch, pGCP);	
+	OutputPxyAndGCP(filePath[0], pMatch, pGCP);
 
 	DEM.Destroy();
 }
@@ -718,6 +685,71 @@ void WorkFlow_ZY3::ChangeAttPath(char * argv[])
 	destinationTmp = (string)argv[2] + "\\ATT_Error.txt";
 	destination = (char*)destinationTmp.c_str();//目标文件
 	CopyFile(source, destination, FALSE);//false代表覆盖，true不覆盖
+}
+
+//////////////////////////////////////////////////////////////////////////
+//功能：调用立体平差软件计算立体精度
+//输入：
+//输出：
+//作者：GZC
+//日期：2017.09.14
+//////////////////////////////////////////////////////////////////////////
+void WorkFlow_ZY3::Calc3DAccuracyByAdjustment()
+{
+		char exe[512];
+		sprintf_s(exe, "%s %s", "C:\\Users\\wcsgz\\Documents\\5-工具软件\\2-精度验证软件\\立体平差软件\\eRPCBlockAdjustment.exe",
+			"D:\\2_ImageData\\0.1\\Point1\\adjustment.txt");
+		system(exe);
+}
+
+//////////////////////////////////////////////////////////////////////////
+//功能：输出匹配点和控制点
+//输入：匹配点和控制点
+//输出：输出匹配点和控制点文件
+//作者：GZC
+//日期：2017.09.14
+//////////////////////////////////////////////////////////////////////////
+void WorkFlow_ZY3::OutputMatchAndGCP(string filePath, vector<MatchPoint>pMatch, vector<StrGCP>pGCP)
+{
+	string output = filePath.substr(0, filePath.rfind('.')) + "_match.pts";
+	string output2 = filePath.substr(0, filePath.rfind('.')) + "_GCP.txt";
+	FILE *fp = fopen(output.c_str(), "w");
+	FILE *fp2 = fopen(output2.c_str(), "w");
+	fprintf(fp, "; %d\n", pMatch.size());
+	fprintf(fp2, "; %d\n", pGCP.size());
+	for (int i = 0; i < pMatch.size(); i++)
+	{
+		fprintf(fp, "%.9f\t%.9f\t%.9f\t%.9f\n", pMatch[i].ly, pMatch[i].lx, pMatch[i].ry, pMatch[i].rx);
+		fprintf(fp2, "%f\t%f\t%.9f\t%.9f\t%.9f\n", pGCP[i].x, pGCP[i].y, pGCP[i].lat, pGCP[i].lon, pGCP[i].h);
+	}
+	fclose(fp); fclose(fp2);
+}
+
+//////////////////////////////////////////////////////////////////////////
+//功能：输出匹配点和控制点（为立体平差格式）
+//输入：匹配点和控制点
+//输出：输出匹配点和控制点文件
+//作者：GZC
+//日期：2017.09.14
+//////////////////////////////////////////////////////////////////////////
+void WorkFlow_ZY3::OutputPxyAndGCP(string filePath, vector<MatchPoint>pMatch, vector<StrGCP>pGCP)
+{
+	string output1 = filePath.substr(0, filePath.rfind('.')) + "_match1.pxy";
+	string output2 = filePath.substr(0, filePath.rfind('.')) + "_match2.pxy";
+	string output3 = filePath.substr(0, filePath.rfind('.')) + "_GCP.gcp";
+	FILE *fp1 = fopen(output1.c_str(), "w");
+	FILE *fp2 = fopen(output2.c_str(), "w");
+	FILE *fp3 = fopen(output3.c_str(), "w");
+	fprintf(fp1, "%d\n", pMatch.size());
+	fprintf(fp2, "%d\n", pMatch.size());
+	fprintf(fp3, "%d\n", pGCP.size());
+	for (int i = 0; i < pMatch.size(); i++)
+	{
+		fprintf(fp1, "%05d\t%.9f\t%.9f\n", i,pMatch[i].ly, pMatch[i].lx); 
+		fprintf(fp2, "%05d\t%.9f\t%.9f\n", i,pMatch[i].ry, pMatch[i].rx);
+		fprintf(fp3, "%05d\t%.9f\t%.9f\t%.9f\t%d\n", i, pGCP[i].lat/PI*180, pGCP[i].lon / PI * 180, pGCP[i].h,0);
+	}
+	fcloseall();
 }
 
 //////////////////////////////////////////////////////////////////////////
