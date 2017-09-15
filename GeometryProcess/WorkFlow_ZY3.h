@@ -55,11 +55,12 @@ public:
 	//将前后视路径下四元数改过来
 	void ChangeAttPath(char* argv[]);
 	//调用立体平差
-	void Calc3DAccuracyByAdjustment();
+	void Calc3DAccuracyByAdjustment(char* argv[]);
 	//输出匹配点和控制点
 	void OutputMatchAndGCP(string filePath, vector<MatchPoint>pMatch, vector<StrGCP>pGCP);
 	void OutputPxyAndGCP(string filePath, vector<MatchPoint>pMatch, vector<StrGCP>pGCP);
-
+	//生产前后视的rpc文件
+	void CalcFwdBwdRPC(char* argv[]);
 
 	//小面阵阵相机模型
 	void LittleArrayCamera(string auxpath);

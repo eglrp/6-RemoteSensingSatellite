@@ -694,12 +694,33 @@ void WorkFlow_ZY3::ChangeAttPath(char * argv[])
 //作者：GZC
 //日期：2017.09.14
 //////////////////////////////////////////////////////////////////////////
-void WorkFlow_ZY3::Calc3DAccuracyByAdjustment()
+void WorkFlow_ZY3::Calc3DAccuracyByAdjustment(char* argv[])
 {
-		char exe[512];
-		sprintf_s(exe, "%s %s", "C:\\Users\\wcsgz\\Documents\\5-工具软件\\2-精度验证软件\\立体平差软件\\eRPCBlockAdjustment.exe",
-			"D:\\2_ImageData\\0.1\\Point1\\adjustment.txt");
-		system(exe);
+	string source1 = (string)argv[1] + "\\GeoSimulationImage_1_GCP.gcp";
+	string source2 = (string)argv[1] + "\\GeoSimulationImage_1_match1.pxy";
+	string source3 = (string)argv[1] + "\\GeoSimulationImage_1_match2.pxy";
+	string source4 = (string)argv[1] + "\\GeoSimulationImage_1_rpc.txt";
+	string source5 = (string)argv[2] + "\\GeoSimulationImage_1_rpc.txt";
+	string destination;
+	if (outCount++ ==1)
+	{		destination = "D:\\2_ImageData\\0.1\\Point1\\adjustment\\";	} 
+	else
+	{		destination = "D:\\2_ImageData\\0.1\\Point1\\adjustment2\\";	}
+	
+	string destination1 = destination + "GeoSimulationImage_1_GCP.gcp";
+	string destination2 = destination + "GeoSimulationImage_1_match1.pxy";
+	string destination3 = destination + "GeoSimulationImage_1_match2.pxy";
+	string destination4 = destination + "GeoSimulationImage_1_rpc.txt";
+	string destination5 = destination + "GeoSimulationImage_2_rpc.txt";
+	CopyFile(source1.c_str(), destination1.c_str(), FALSE);//false代表覆盖，true不覆盖
+	CopyFile(source2.c_str(), destination2.c_str(), FALSE);
+	CopyFile(source3.c_str(), destination3.c_str(), FALSE);
+	CopyFile(source4.c_str(), destination4.c_str(), FALSE);
+	CopyFile(source5.c_str(), destination5.c_str(), FALSE);
+
+	char exe[512];	
+	sprintf_s(exe, "%s", "C:\\Users\\wcsgz\\Documents\\5-工具软件\\2-精度验证软件\\立体平差软件\\eRPCBlockAdjustment.exe");
+	system(exe);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -745,11 +766,26 @@ void WorkFlow_ZY3::OutputPxyAndGCP(string filePath, vector<MatchPoint>pMatch, ve
 	fprintf(fp3, "%d\n", pGCP.size());
 	for (int i = 0; i < pMatch.size(); i++)
 	{
-		fprintf(fp1, "%05d\t%.9f\t%.9f\n", i,pMatch[i].ly, pMatch[i].lx); 
-		fprintf(fp2, "%05d\t%.9f\t%.9f\n", i,pMatch[i].ry, pMatch[i].rx);
-		fprintf(fp3, "%05d\t%.9f\t%.9f\t%.9f\t%d\n", i, pGCP[i].lat/PI*180, pGCP[i].lon / PI * 180, pGCP[i].h,0);
+		fprintf(fp1, "%6d\t%.9f\t%.9f\n", i + 100000, pMatch[i].ly, pMatch[i].lx);
+		fprintf(fp2, "%6d\t%.9f\t%.9f\n", i + 100000,pMatch[i].ry, pMatch[i].rx);
+		fprintf(fp3, "%6d\t%.9f\t%.9f\t%.9f\t%d\n", i + 100000, pGCP[i].lat/PI*180, pGCP[i].lon / PI * 180, pGCP[i].h,0);
 	}
 	fcloseall();
+}
+
+void WorkFlow_ZY3::CalcFwdBwdRPC(char * argv[])
+{
+	GeoModelLine model[2];
+	model[0] = FwdBwdModel(argv[1], -22. / 180 * PI, 0);
+	model[1] = FwdBwdModel(argv[2], 22. / 180 * PI, 0);
+
+	GeoModelRFM rpcModel;
+	rpcModel.GenRPCFile(model, 0, 8000, 20, 20, 10);
+	string rpcPath = (string)argv[1] + "\\GeoSimulationImage_1_rpc.txt";
+	rpcModel.WriteRFMFile(rpcPath);
+	rpcModel.GenRPCFile(model+1, 0, 8000, 20, 20, 10);
+	rpcPath = (string)argv[2] + "\\GeoSimulationImage_1_rpc.txt";
+	rpcModel.WriteRFMFile(rpcPath);
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -404,7 +404,7 @@ bool GeoModelRFM::GenRPCFile(GeoModel *model, double minH, double maxH, int nx, 
 	//得到间隔像素
 	ControlBlockWidth = long(RealWidth/m_ny)+1;
 	//得到点数目
-	m_nx += 1;		m_ny += 1;		m_nz = nz;
+	m_nx -= 1;		m_ny -= 1;		m_nz = nz-1;
 	// 获得最大,最小高程
 	m_MaxHeight = maxH;
 	m_MinHeight = minH;
@@ -462,15 +462,15 @@ bool GeoModelRFM::GenRPCFile(GeoModel *model, double minH, double maxH, int nx, 
 	m_base.Normaliza_avAnddx(m_RFMgcp.m_H, m_RFMgcp.m_nGCPNum, m_rfm.HEIGHT_OFF, m_rfm.HEIGHT_SCALE);
 
 	// 开始进行RPC参数计算
-	// Cal_DirectLM();
-	// Cal_DirectLME();
+	//Cal_DirectLM();
+	//Cal_DirectLME();
 	// Cal_DirectLCurve();
 	// Cal_DirectOMP();
 
-	// Cal_IndirectLM();
-	Cal_IndirectLME();
-	// Cal_IndirectLCurve();
-	// Cal_IndirectOMP();
+	//Cal_IndirectLM();
+	//Cal_IndirectLME();
+	Cal_IndirectLCurve();
+	//Cal_IndirectOMP();
 
 	// 输出精度报告
 	if(errFile.compare("")!=0)

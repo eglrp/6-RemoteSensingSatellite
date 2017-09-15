@@ -39,20 +39,21 @@ int main(int argc, char* argv[])
 		pflow->CalcFwdBwdRealMatchPoint(argv);//根据前后视不带误差模型计算真实匹配点
 		pflow->CalcFwdBwdIntersection(argv);//对前后视进行前方交会，然后解求精度
 		pflow->ChangeAttPath(argv);//改变姿态文件
-		pflow->CalcFwdBwdRealMatchPoint(argv);//根据前后视不带误差模型计算真实匹配点
 		pflow->CalcFwdBwdIntersection(argv);//对前后视进行前方交会，然后解求精度
 	}
 	else if (atoi(argv[4]) == 2)//采用立体平差程序给出结果
 	{
 		//对小面阵处理
-		//pflow->CalcRealMatchPoint(argv[3]);//根据不带误差的模型生产一定数量控制点,目前可以在无差点上加系统差
-		//pflow->CalcModifyAttitude(argv[3]);//根据第一帧和匹配点递推姿态
+		pflow->CalcRealMatchPoint(argv[3]);//根据不带误差的模型生产一定数量控制点,目前可以在无差点上加系统差
+		pflow->CalcModifyAttitude(argv[3]);//根据第一帧和匹配点递推姿态
 		//对前后视处理
+		//pflow->FwdBwdModelVerify(argv[1], -22. / 180 * PI, 1);//验证模型精度
 		pflow->CalcFwdBwdRealMatchPoint(argv);//根据前后视不带误差模型计算真实匹配点
-		pflow->Calc3DAccuracyByAdjustment();//对前后视进行前方交会，然后解求精度
+		pflow->CalcFwdBwdRPC(argv);
+		pflow->Calc3DAccuracyByAdjustment(argv);//解求精度
 		pflow->ChangeAttPath(argv);//改变姿态文件
-		pflow->CalcFwdBwdRealMatchPoint(argv);//根据前后视不带误差模型计算真实匹配点
-		pflow->Calc3DAccuracyByAdjustment();//对前后视进行前方交会，然后解求精度
+		pflow->CalcFwdBwdRPC(argv);
+		pflow->Calc3DAccuracyByAdjustment(argv);//解求精度
 	}
 	else
 	{
