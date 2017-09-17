@@ -699,8 +699,8 @@ void WorkFlow_ZY3::Calc3DAccuracyByAdjustment(char* argv[])
 	string source1 = (string)argv[1] + "\\GeoSimulationImage_1_GCP.gcp";
 	string source2 = (string)argv[1] + "\\GeoSimulationImage_1_match1.pxy";
 	string source3 = (string)argv[1] + "\\GeoSimulationImage_1_match2.pxy";
-	string source4 = (string)argv[1] + "\\GeoSimulationImage_1_rpc.txt";
-	string source5 = (string)argv[2] + "\\GeoSimulationImage_1_rpc.txt";
+	string source4 = (string)argv[1] + "\\GeoSimulationImage_1_error_rpc.txt";
+	string source5 = (string)argv[2] + "\\GeoSimulationImage_1_error_rpc.txt";
 	string destination;
 	if (outCount++ ==1)
 	{		destination = "D:\\2_ImageData\\0.1\\Point1\\adjustment\\";	} 
@@ -781,10 +781,10 @@ void WorkFlow_ZY3::CalcFwdBwdRPC(char * argv[])
 
 	GeoModelRFM rpcModel;
 	rpcModel.GenRPCFile(model, 0, 8000, 20, 20, 10);
-	string rpcPath = (string)argv[1] + "\\GeoSimulationImage_1_rpc.txt";
+	string rpcPath = (string)argv[1] + "\\GeoSimulationImage_1_error_rpc.txt";
 	rpcModel.WriteRFMFile(rpcPath);
 	rpcModel.GenRPCFile(model+1, 0, 8000, 20, 20, 10);
-	rpcPath = (string)argv[2] + "\\GeoSimulationImage_1_rpc.txt";
+	rpcPath = (string)argv[2] + "\\GeoSimulationImage_1_error_rpc.txt";
 	rpcModel.WriteRFMFile(rpcPath);
 }
 
