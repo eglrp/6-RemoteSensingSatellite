@@ -676,15 +676,12 @@ void WorkFlow_ZY3::CalcFwdBwdIntersection(char* argv[])
 //////////////////////////////////////////////////////////////////////////
 void WorkFlow_ZY3::ChangeAttPath(char * argv[])
 {
-	string sourceTmp = (string)argv[3] + "\\ATT_Modify.txt";
-	char * source = (char*)sourceTmp.c_str();//源文件
-	string destinationTmp = (string)argv[1] + "\\ATT_Error.txt";
-	char * destination = (char*)destinationTmp.c_str();//目标文件
-	CopyFile(source, destination, FALSE);//false代表覆盖，true不覆盖
+	string source = (string)argv[3] + "\\ATT_Modify.txt";//源文件
+	string destination = (string)argv[1] + "\\ATT_Error.txt";//目标文件
+	CopyFile(source.c_str(), destination.c_str(), FALSE);//false代表覆盖，true不覆盖
 
-	destinationTmp = (string)argv[2] + "\\ATT_Error.txt";
-	destination = (char*)destinationTmp.c_str();//目标文件
-	CopyFile(source, destination, FALSE);//false代表覆盖，true不覆盖
+	destination = (string)argv[2] + "\\ATT_Error.txt";
+	CopyFile(source.c_str(), destination.c_str(), FALSE);//false代表覆盖，true不覆盖
 }
 
 //////////////////////////////////////////////////////////////////////////
