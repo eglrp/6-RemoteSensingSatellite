@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
 		//对前后视处理
 		//pflow->FwdBwdModelVerify(argv[1], -22. / 180 * PI, 1);//验证模型精度
 		pflow->CalcFwdBwdRealMatchPoint(argv);//根据前后视不带误差模型计算真实匹配点
-		pflow->CalcFwdBwdRPC(argv);
+		//pflow->CalcFwdBwdRPC(argv);
 		pflow->Calc3DAccuracyByAdjustment(argv);//解求精度
 		pflow->ChangeAttPath(argv);//改变姿态文件
 		pflow->CalcFwdBwdRPC(argv);

@@ -590,7 +590,7 @@ void WorkFlow_ZY3::CalcFwdBwdRealMatchPoint(char* argv[])
 		line += 200;
 	}
 	//Êä³öÆ¥ÅäµãºÍGCP
-	OutputMatchAndGCP(filePath[0], pMatch, pGCP);	
+	//OutputMatchAndGCP(filePath[0], pMatch, pGCP);	
 	OutputPxyAndGCP(filePath[0], pMatch, pGCP);
 
 	DEM.Destroy();
@@ -659,7 +659,7 @@ void WorkFlow_ZY3::CalcFwdBwdIntersection(char* argv[])
 		rmsLon += eLon*eLon / num;
 		rmsH += eH*eH / num;
 
-		fprintf(fp3, "%04d\t%.9f\t%.9f\t%.9f\t%.9f\t%.9f\n", i, pGCP[i].x, pGCP[i].y, eLat, eLon,abs(eH));
+		fprintf(fp3, "%04d\t%.9f\t%.9f\t%.9f\t%.9f\t%.9f\n", i, pGCP[i].x, pGCP[i].y, eLat, eLon,eH);
 	}	
 	rmsLat = sqrt(rmsLat);
 	rmsLon = sqrt(rmsLon);
@@ -757,6 +757,11 @@ void WorkFlow_ZY3::OutputMatchAndGCP(string filePath, vector<MatchPoint>pMatch, 
 //////////////////////////////////////////////////////////////////////////
 void WorkFlow_ZY3::OutputPxyAndGCP(string filePath, vector<MatchPoint>pMatch, vector<StrGCP>pGCP)
 {
+	//Ìí¼ÓËæ»úÎó²î
+	int num = pMatch.size();
+	double *Err = new double[2*num];
+	m_base.RandomDistribution(0, 0.3, 2 * num, 0, Err);
+
 	string output1 = filePath.substr(0, filePath.rfind('.')) + "_match1.pxy";
 	string output2 = filePath.substr(0, filePath.rfind('.')) + "_match2.pxy";
 	string output3 = filePath.substr(0, filePath.rfind('.')) + "_GCP.gcp";
@@ -768,9 +773,9 @@ void WorkFlow_ZY3::OutputPxyAndGCP(string filePath, vector<MatchPoint>pMatch, ve
 	fprintf(fp3, "%d\n", pGCP.size());
 	for (int i = 0; i < pMatch.size(); i++)
 	{
-		fprintf(fp1, "%6d\t%.9f\t%.9f\n", i + 100000, pMatch[i].ly, pMatch[i].lx);
-		fprintf(fp2, "%6d\t%.9f\t%.9f\n", i + 100000,pMatch[i].ry, pMatch[i].rx);
-		fprintf(fp3, "%6d\t%.9f\t%.9f\t%.9f\t%d\n", i + 100000, pGCP[i].lat/PI*180, pGCP[i].lon / PI * 180, pGCP[i].h,0);
+		fprintf(fp1, "%6d\t%.9f\t%.9f\n", i, pMatch[i].ly, pMatch[i].lx);
+		fprintf(fp2, "%6d\t%.9f\t%.9f\n", i,pMatch[i].ry+ Err[i], pMatch[i].rx+Err[num+i]);
+		fprintf(fp3, "%6d\t%.9f\t%.9f\t%.9f\t%d\n", i, pGCP[i].lat/PI*180, pGCP[i].lon / PI * 180, pGCP[i].h,0);
 	}
 	fcloseall();
 }
@@ -1090,14 +1095,19 @@ void WorkFlow_ZY3::CalcRealMatchPoint(string workpath)
 			line += 10;
 		}
 
+		//Ìí¼ÓÆ¥ÅäÎó²î
+		int num = pGCP.size();
+		double *Err = new double[2*num];	
+		m_base.RandomDistribution(0, 0.3, 2*num, 0, Err);
 		printf("=>Image %d's GCP has calculated\n", i + 1);
 		string output = filePath[i].substr(0, filePath[i].rfind('.')) + "_match.pts";
 		FILE *fp = fopen(output.c_str(), "w");
 		fprintf(fp, "; %d\n", pGCP.size());
 		for (int i = 0; i < pGCP.size(); i++)
 		{
-			fprintf(fp, "%f\t%f\t%f\t%f\n", pGCP[i].ly, pGCP[i].lx, pGCP[i].ry, pGCP[i].rx);
+			fprintf(fp, "%f\t%f\t%f\t%f\n", pGCP[i].ly, pGCP[i].lx, pGCP[i].ry+ Err[i], pGCP[i].rx+ Err[num+i]);
 		}
+		delete[] Err; Err = NULL;
 		fclose(fp);
 	}
 	DEM.Destroy();
