@@ -401,6 +401,15 @@ struct StrCamParamInput
 		// 测试用的
 		memset(&m_Distor, 0, sizeof(StrDistortion));
 	}
+	// 重载操作符=
+	StrCamParamInput& operator=(const StrCamParamInput &s)
+	{
+		this->f = s.f;
+		this->Xsize = s.Xsize;	this->Ysize = s.Ysize;
+		this->Xnum = s.Xnum; this->Ynum = s.Ynum;
+		this->Xstart = s.Xstart; this->Ystart = s.Ystart;
+		return *this;
+	}
 };
 
 ////////////////////////

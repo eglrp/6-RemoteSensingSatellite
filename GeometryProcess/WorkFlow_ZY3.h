@@ -41,6 +41,8 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	//小面阵相关函数
 	//////////////////////////////////////////////////////////////////////////
+	//设置面阵参数
+	void SetCamInput(StrCamParamInput caminput);
 	//模型建立验证
 	void ModelVerify();
 	//线阵相机模型
@@ -95,6 +97,7 @@ public:
 private:
 	string sEOP,sDEM;
 	static int outCount;
+	StrCamParamInput CameraInput;
 	//GeoModelArray *pModelArray;
 };
 

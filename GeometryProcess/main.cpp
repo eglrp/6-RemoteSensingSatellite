@@ -15,6 +15,15 @@ int main(int argc, char* argv[])
 	string strDEM = "C:\\Users\\wcsgz\\Documents\\5-工具软件\\几何精度检校v5.0\\全球DEM.tif";
 	WorkFlow_ZY3 *pflow = new WorkFlow_ZY3();
 	pflow->GetEOP(argv2); pflow->GetDEM(strDEM);
+	
+	//设置小面阵相机参数
+	StrCamParamInput caminput;
+	caminput.f = 1.524;
+	caminput.Xsize = 5.5 / 1e6;		caminput.Ysize = 5.5 / 1e6;
+	caminput.Xnum = 256;			caminput.Ynum = 256;
+	caminput.Xstart = -128;			caminput.Ystart = -128;
+	pflow->SetCamInput(caminput);
+
 	if (atoi(argv[4]) == 1)//采用点投影法验证交会精度
 	{
 		//////////////////////////////////////////////////////////////////////////

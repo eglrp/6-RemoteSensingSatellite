@@ -306,6 +306,11 @@ void WorkFlow_ZY3::GetGCP(string auxpath, vector<StrGCP> &ZY3_GCP)
 	}
 }
 
+void WorkFlow_ZY3::SetCamInput(StrCamParamInput caminput)
+{
+	CameraInput = caminput;
+}
+
 //////////////////////////////////////////////////////////////////////////
 //功能：根据输入的x，y查看模型建立的是否准确
 //输入：
@@ -1020,15 +1025,7 @@ void WorkFlow_ZY3::CalcRealMatchPoint(string workpath)
 
 	// 相机
 	GeoCamera *inner = new GeoCameraArray();
-	StrCamParamInput caminput;
-	caminput.f = 1.7;
-	caminput.Xsize = 1. / 1e6;
-	caminput.Ysize = 1. / 1e6;
-	caminput.Xnum = 1000;
-	caminput.Ynum = 1000;
-	caminput.Xstart = -500;
-	caminput.Ystart = -500;
-	inner->InitInnerFile("", caminput);//读取内方位元素
+	inner->InitInnerFile("", CameraInput);//读取内方位元素
 
 	// 模型
 	//GeoModel *model = new GeoModelArray[2];
@@ -1380,15 +1377,7 @@ void WorkFlow_ZY3::CalcModifyAttitude(string workpath)
 
 	// 相机
 	GeoCamera *inner = new GeoCameraArray();
-	StrCamParamInput caminput;
-	caminput.f = 1.7;
-	caminput.Xsize = 1. / 1e6;
-	caminput.Ysize = 1. / 1e6;
-	caminput.Xnum = 1000;
-	caminput.Ynum = 1000;
-	caminput.Xstart = -500;
-	caminput.Ystart = -500;
-	inner->InitInnerFile("", caminput);//读取内方位元素
+	inner->InitInnerFile("", CameraInput);//读取内方位元素
 
 	 // 模型
 	//GeoModel *model = new GeoModelArray[2];
