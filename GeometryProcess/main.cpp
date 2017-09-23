@@ -1,4 +1,4 @@
-// GeometryProcess.cpp : Defines the entry point for the console application.
+ï»¿// GeometryProcess.cpp : Defines the entry point for the console application.
 //
 #include <time.h>
 #include <vector>
@@ -11,12 +11,12 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-	string argv2 = "C:\\Users\\wcsgz\\Documents\\2-CProject\\6-ÑÏÃÜÄ£ÐÍ\\ExtDlls\\EOP00.txt";
-	string strDEM = "C:\\Users\\wcsgz\\Documents\\5-¹¤¾ßÈí¼þ\\¼¸ºÎ¾«¶È¼ìÐ£v5.0\\È«ÇòDEM.tif";
+	string argv2 = "C:\\Users\\wcsgz\\Documents\\2-CProject\\6-ä¸¥å¯†æ¨¡åž‹\\ExtDlls\\EOP00.txt";
+	string strDEM = "C:\\Users\\wcsgz\\Documents\\5-å·¥å…·è½¯ä»¶\\å‡ ä½•ç²¾åº¦æ£€æ ¡v5.0\\å…¨çƒDEM.tif";
 	WorkFlow_ZY3 *pflow = new WorkFlow_ZY3();
 	pflow->GetEOP(argv2); pflow->GetDEM(strDEM);
 	
-	//ÉèÖÃÐ¡ÃæÕóÏà»ú²ÎÊý
+	//è®¾ç½®å°é¢é˜µç›¸æœºå‚æ•°
 	StrCamParamInput caminput;
 	caminput.f = 1.524;
 	caminput.Xsize = 5.5 / 1e6;		caminput.Ysize = 5.5 / 1e6;
@@ -24,84 +24,84 @@ int main(int argc, char* argv[])
 	caminput.Xstart = -128;			caminput.Ystart = -128;
 	pflow->SetCamInput(caminput);
 
-	if (atoi(argv[4]) == 1)//²ÉÓÃµãÍ¶Ó°·¨ÑéÖ¤½»»á¾«¶È
+	if (atoi(argv[4]) == 1)//é‡‡ç”¨ç‚¹æŠ•å½±æ³•éªŒè¯äº¤ä¼šç²¾åº¦
 	{
 		//////////////////////////////////////////////////////////////////////////
-		//¹¦ÄÜ£ºÒÔÏÂÎªÐ¡ÃæÕóÏà»ú·ÂÕæÓëÑéÖ¤
-		//ÈÕÆÚ£º2017.08.14
+		//åŠŸèƒ½ï¼šä»¥ä¸‹ä¸ºå°é¢é˜µç›¸æœºä»¿çœŸä¸ŽéªŒè¯
+		//æ—¥æœŸï¼š2017.08.14
 		/////////////////////////////////////////////////////////////////////////
-		//pflow->LittleArrayCamera(argv[3]);//¸ù¾ÝÄ£ÐÍ×Ô¼ºÉú²úrpc	
-		//pflow->Image_registration_rpc(argv[3]);//¸ù¾ÝsiftGPUÀ´Æ¥Åä¿ØÖÆµã
-		pflow->CalcRealMatchPoint(argv[3]);//¸ù¾Ý²»´øÎó²îµÄÄ£ÐÍÉú²úÒ»¶¨ÊýÁ¿¿ØÖÆµã,Ä¿Ç°¿ÉÒÔÔÚÎÞ²îµãÉÏ¼ÓÏµÍ³²î
-		//pflow->CalcRealAttitude(argv[3]);//¸ù¾ÝµÚÒ»Ö¡ºÍÆ¥ÅäµãµÝÍÆ×ËÌ¬
-		//pflow->CalcOmegaKalman(argv[1]);//¸ù¾ÝÆ¥Åäµã²ÉÓÃ¿¨¶ûÂüÂË²¨¼ÆËã×ËÌ¬
+		//pflow->LittleArrayCamera(argv[3]);//æ ¹æ®æ¨¡åž‹è‡ªå·±ç”Ÿäº§rpc	
+		//pflow->Image_registration_rpc(argv[3]);//æ ¹æ®siftGPUæ¥åŒ¹é…æŽ§åˆ¶ç‚¹
+		pflow->CalcRealMatchPoint(argv[3]);//æ ¹æ®ä¸å¸¦è¯¯å·®çš„æ¨¡åž‹ç”Ÿäº§ä¸€å®šæ•°é‡æŽ§åˆ¶ç‚¹,ç›®å‰å¯ä»¥åœ¨æ— å·®ç‚¹ä¸ŠåŠ ç³»ç»Ÿå·®
+		//pflow->CalcRealAttitude(argv[3]);//æ ¹æ®ç¬¬ä¸€å¸§å’ŒåŒ¹é…ç‚¹é€’æŽ¨å§¿æ€
+		//pflow->CalcOmegaKalman(argv[1]);//æ ¹æ®åŒ¹é…ç‚¹é‡‡ç”¨å¡å°”æ›¼æ»¤æ³¢è®¡ç®—å§¿æ€
 		//pflow->CalcRealAttitude_sparse(argv[1]);
-		pflow->CalcModifyAttitude(argv[3]);//¸ù¾ÝµÚÒ»Ö¡ºÍÆ¥ÅäµãµÝÍÆ×ËÌ¬
+		pflow->CalcModifyAttitude(argv[3]);//æ ¹æ®ç¬¬ä¸€å¸§å’ŒåŒ¹é…ç‚¹é€’æŽ¨å§¿æ€
 
 		//////////////////////////////////////////////////////////////////////////
-		//¹¦ÄÜ£ºÒÔÏÂÎªÕýÊÓÇ°ºóÊÓÏà»ú·ÂÕæÓëÑéÖ¤
-		//ÈÕÆÚ£º2017.09.07
+		//åŠŸèƒ½ï¼šä»¥ä¸‹ä¸ºæ­£è§†å‰åŽè§†ç›¸æœºä»¿çœŸä¸ŽéªŒè¯
+		//æ—¥æœŸï¼š2017.09.07
 		/////////////////////////////////////////////////////////////////////////
 		//plow->NADCamera(argv[1]);
 		//pflow->ModelVerify();
-		//pflow->FwdBwdModelVerify(argv[1], -22. / 180 * PI, 0);//ÑéÖ¤Ä£ÐÍ¾«¶È
-		pflow->CalcFwdBwdRealMatchPoint(argv);//¸ù¾ÝÇ°ºóÊÓ²»´øÎó²îÄ£ÐÍ¼ÆËãÕæÊµÆ¥Åäµã
-		pflow->CalcFwdBwdIntersection(argv);//¶ÔÇ°ºóÊÓ½øÐÐÇ°·½½»»á£¬È»ºó½âÇó¾«¶È
-		pflow->ChangeAttPath(argv);//¸Ä±ä×ËÌ¬ÎÄ¼þ
-		pflow->CalcFwdBwdIntersection(argv);//¶ÔÇ°ºóÊÓ½øÐÐÇ°·½½»»á£¬È»ºó½âÇó¾«¶È
+		//pflow->FwdBwdModelVerify(argv[1], -22. / 180 * PI, 0);//éªŒè¯æ¨¡åž‹ç²¾åº¦
+		pflow->CalcFwdBwdRealMatchPoint(argv);//æ ¹æ®å‰åŽè§†ä¸å¸¦è¯¯å·®æ¨¡åž‹è®¡ç®—çœŸå®žåŒ¹é…ç‚¹
+		pflow->CalcFwdBwdIntersection(argv);//å¯¹å‰åŽè§†è¿›è¡Œå‰æ–¹äº¤ä¼šï¼Œç„¶åŽè§£æ±‚ç²¾åº¦
+		pflow->ChangeAttPath(argv);//æ”¹å˜å§¿æ€æ–‡ä»¶
+		pflow->CalcFwdBwdIntersection(argv);//å¯¹å‰åŽè§†è¿›è¡Œå‰æ–¹äº¤ä¼šï¼Œç„¶åŽè§£æ±‚ç²¾åº¦
 	}
-	else if (atoi(argv[4]) == 2)//²ÉÓÃÁ¢ÌåÆ½²î³ÌÐò¸ø³ö½á¹û
+	else if (atoi(argv[4]) == 2)//é‡‡ç”¨ç«‹ä½“å¹³å·®ç¨‹åºç»™å‡ºç»“æžœ
 	{
-		//¶ÔÐ¡ÃæÕó´¦Àí
-		pflow->CalcRealMatchPoint(argv[3]);//¸ù¾Ý²»´øÎó²îµÄÄ£ÐÍÉú²úÒ»¶¨ÊýÁ¿¿ØÖÆµã,Ä¿Ç°¿ÉÒÔÔÚÎÞ²îµãÉÏ¼ÓÏµÍ³²î
-		pflow->CalcModifyAttitude(argv[3]);//¸ù¾ÝµÚÒ»Ö¡ºÍÆ¥ÅäµãµÝÍÆ×ËÌ¬
-		//¶ÔÇ°ºóÊÓ´¦Àí
-		//pflow->FwdBwdModelVerify(argv[1], -22. / 180 * PI, 1);//ÑéÖ¤Ä£ÐÍ¾«¶È
-		pflow->CalcFwdBwdRealMatchPoint(argv);//¸ù¾ÝÇ°ºóÊÓ²»´øÎó²îÄ£ÐÍ¼ÆËãÕæÊµÆ¥Åäµã
+		//å¯¹å°é¢é˜µå¤„ç†
+		pflow->CalcRealMatchPoint(argv[3]);//æ ¹æ®ä¸å¸¦è¯¯å·®çš„æ¨¡åž‹ç”Ÿäº§ä¸€å®šæ•°é‡æŽ§åˆ¶ç‚¹,ç›®å‰å¯ä»¥åœ¨æ— å·®ç‚¹ä¸ŠåŠ ç³»ç»Ÿå·®
+		pflow->CalcModifyAttitude(argv[3]);//æ ¹æ®ç¬¬ä¸€å¸§å’ŒåŒ¹é…ç‚¹é€’æŽ¨å§¿æ€
+		//å¯¹å‰åŽè§†å¤„ç†
+		//pflow->FwdBwdModelVerify(argv[1], -22. / 180 * PI, 1);//éªŒè¯æ¨¡åž‹ç²¾åº¦
+		pflow->CalcFwdBwdRealMatchPoint(argv);//æ ¹æ®å‰åŽè§†ä¸å¸¦è¯¯å·®æ¨¡åž‹è®¡ç®—çœŸå®žåŒ¹é…ç‚¹
 		//pflow->CalcFwdBwdRPC(argv);
-		pflow->Calc3DAccuracyByAdjustment(argv);//½âÇó¾«¶È
-		pflow->ChangeAttPath(argv);//¸Ä±ä×ËÌ¬ÎÄ¼þ
+		pflow->Calc3DAccuracyByAdjustment(argv);//è§£æ±‚ç²¾åº¦
+		pflow->ChangeAttPath(argv);//æ”¹å˜å§¿æ€æ–‡ä»¶
 		pflow->CalcFwdBwdRPC(argv);
-		pflow->Calc3DAccuracyByAdjustment(argv);//½âÇó¾«¶È
+		pflow->Calc3DAccuracyByAdjustment(argv);//è§£æ±‚ç²¾åº¦
 	}
 	else
 	{
 	//////////////////////////////////////////////////////////////////////////
-	//¹¦ÄÜ£ºÒÔÏÂÎª×ÊÈý02ÐÇ¶¨±êºÍ¶¨Î»Ä£ÐÍ
-	//ÈÕÆÚ£º2017.04.25
+	//åŠŸèƒ½ï¼šä»¥ä¸‹ä¸ºèµ„ä¸‰02æ˜Ÿå®šæ ‡å’Œå®šä½æ¨¡åž‹
+	//æ—¥æœŸï¼š2017.04.25
 	/////////////////////////////////////////////////////////////////////////
 	//WorkFlow_ZY3 *pflow = new WorkFlow_ZY3();
-	////Íâ·½Î»ÔªËØ¼ìÐ£
+	////å¤–æ–¹ä½å…ƒç´ æ£€æ ¡
 	////pflow->CalibrationModel2(argv[1], argv2);
-	////ÑÏÃÜÄ£ÐÍ¹¹½¨
+	////ä¸¥å¯†æ¨¡åž‹æž„å»º
 	//pflow->GenerateRigorousModel(argv[1],argv2);
 	//pflow->AccuracyVerify(argv[1]);
 	//double lat, lon, h = 0, x=1, y=1;
 	//while (x!=0&&y!=0)
 	//{
-	//	cout << "ÇëÊäÈëSampleºÍLine(ÊäÈëÁ½¸ö0±¾³ÌÐòÍË³ö)" << endl;
+	//	cout << "è¯·è¾“å…¥Sampleå’ŒLine(è¾“å…¥ä¸¤ä¸ª0æœ¬ç¨‹åºé€€å‡º)" << endl;
 	//	cin >> x >> y;
 	//	pflow->pModel->FromXY2LatLon(y, x, h, lat, lon);
 	//	lat = lat * 180 / PI;
 	//	lon = lon * 180 / PI;
-	//	cout << "¾­Î³¶È·Ö±ðÊÇ" << endl;
-	//	cout << setiosflags(ios::fixed);//¼ÓÉÏÕâ¾ä»°£¬¿ØÖÆµÄ¾ÍÊÇÐ¡ÊýµÄ¾«¶ÈÁË
+	//	cout << "ç»çº¬åº¦åˆ†åˆ«æ˜¯" << endl;
+	//	cout << setiosflags(ios::fixed);//åŠ ä¸Šè¿™å¥è¯ï¼ŒæŽ§åˆ¶çš„å°±æ˜¯å°æ•°çš„ç²¾åº¦äº†
 	//	cout << setprecision(10) << lat << "," << setprecision(10) << lon << endl;
 	//}
 
 
 	//////////////////////////////////////////////////////////////////////////
-	//¹¦ÄÜ£ºÒÔÏÂÎª×ÊÈý01ÐÇ¶¨±êºÍ¶¨Î»Ä£ÐÍ
-	//ÈÕÆÚ£º2016.12.21
+	//åŠŸèƒ½ï¼šä»¥ä¸‹ä¸ºèµ„ä¸‰01æ˜Ÿå®šæ ‡å’Œå®šä½æ¨¡åž‹
+	//æ—¥æœŸï¼š2016.12.21
 	/////////////////////////////////////////////////////////////////////////
 	//WorkFlow_ZY3 *pflow = new WorkFlow_ZY3();
-	//Íâ·½Î»ÔªËØ¼ìÐ£
+	//å¤–æ–¹ä½å…ƒç´ æ£€æ ¡
 	//pflow->CalibrationModel(argv[1],argv[2]);
-	//ÑÏÃÜÄ£ÐÍ¹¹½¨
+	//ä¸¥å¯†æ¨¡åž‹æž„å»º
 	//pflow->GenerateRigorousModel(argv[1],argv[2]);
 	//double lat, lon, h, x, y, lat1, lon1, lat2, lon2, lat3, lon3;
 	//h = 0;
-	//FromXY2LatLon(x,y,h,lat,lon),xÊÇline£¬yÊÇsample
+	//FromXY2LatLon(x,y,h,lat,lon),xæ˜¯lineï¼Œyæ˜¯sample
 	//pflow->pModel->FromXY2LatLon( 7183, 3256,h, lat, lon);
 	//lat1 = lat*180/PI;
 	//lon1 = lon*180/PI;
@@ -112,7 +112,7 @@ int main(int argc, char* argv[])
 	//lat3 = lat*180/PI;
 	//lon3 = lon*180/PI;
 
-	//ºÓÄÏ381¹ì
+	//æ²³å—381è½¨
 	//h = 326.5;
 	//pflow->pModel->FromXY2LatLon(7579, 5267, h, lat, lon);
 	//lat1 = lat*180/PI;
