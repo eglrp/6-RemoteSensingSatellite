@@ -1,4 +1,4 @@
-#include "WorkFlow_ZY3.h"
+ï»¿#include "WorkFlow_ZY3.h"
 
 WorkFlow_ZY3::WorkFlow_ZY3(void)
 {
@@ -10,7 +10,7 @@ WorkFlow_ZY3::~WorkFlow_ZY3(void)
 }
 int WorkFlow_ZY3::outCount = 1;
 
-//»ñÈ¡EOPÂ·¾¶
+//è·å–EOPè·¯å¾„
 void WorkFlow_ZY3::GetEOP(string eoppath)
 {
 	sEOP = eoppath;
@@ -20,31 +20,31 @@ void WorkFlow_ZY3::GetDEM(string dempath)
 	sDEM = dempath;
 }
 //////////////////////////////////////////////////////////////////////////
-// ³ÉÏñÄ£ĞÍ¹¹½¨
+// æˆåƒæ¨¡å‹æ„å»º
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////
-// ¹¦ÄÜ£ºÑÏÃÜÄ£ĞÍ¹¹½¨
-// ÊäÈë:
-//		string auxpath£º	¸¨ÖúÎÄ¼şÂ·¾¶
-//		string eoppath:		EOPÎÄ¼şÂ·¾¶
-// ·µ»ØÖµ£º
+// åŠŸèƒ½ï¼šä¸¥å¯†æ¨¡å‹æ„å»º
+// è¾“å…¥:
+//		string auxpathï¼š	è¾…åŠ©æ–‡ä»¶è·¯å¾„
+//		string eoppath:		EOPæ–‡ä»¶è·¯å¾„
+// è¿”å›å€¼ï¼š
 //		void
 //////////////////////////////////////
 void WorkFlow_ZY3::GenerateRigorousModel(string auxpath, string eoppath)
 {
-	//¸¨ÖúZY302Êı¾İ½âÎö
+	//è¾…åŠ©ZY302æ•°æ®è§£æ
 	ParseZY3Aux ZY3_02;
 	vector<Orbit_Ep> allEp;
 	vector<Attitude> allAtt;
 	vector<LineScanTime> allTime;
 	string sOrb, sAtt, sTime, sInput;
 	ZY3_02.ZY302PATH(auxpath, sAtt, sOrb, sTime);
-	ZY3_02.ReadZY302OrbTXT(sOrb, allEp);//¾«ÃÜ¹ìµÀÊı¾İ
-	//ZY3_02.ReadZY302OrbTXT2(sOrb, allEp);//ĞÇÉÏ¹ìµÀÊı¾İ
+	ZY3_02.ReadZY302OrbTXT(sOrb, allEp);//ç²¾å¯†è½¨é“æ•°æ®
+	//ZY3_02.ReadZY302OrbTXT2(sOrb, allEp);//æ˜Ÿä¸Šè½¨é“æ•°æ®
 	ZY3_02.ReadZY302AttTXT(sAtt, allAtt);
 	ZY3_02.ReadZY302TimeTXT(sTime, allTime);
 
-	//¶ÁÈ¡ZY301¸¨ÖúÊı¾İ
+	//è¯»å–ZY301è¾…åŠ©æ•°æ®
 	/*ParseZY3Aux ZY3_01;
 	vector<Orbit_Ep> allEp;
 	vector<Attitude> allAtt;
@@ -55,7 +55,7 @@ void WorkFlow_ZY3::GenerateRigorousModel(string auxpath, string eoppath)
 	ZY3_01.ReadZY301AttTXT(sAtt,allAtt);
 	ZY3_01.ReadZY301TimeTXT(sTime,sInput,allTime);*/
 
-	// ¹ìµÀ
+	// è½¨é“
 	GeoOrbit *orbit = new GeoOrbitEarth_ZY3();
 	StrOrbitParamInput orbitinput;
 	orbitinput.DatumName = "WGS84";
@@ -64,18 +64,18 @@ void WorkFlow_ZY3::GenerateRigorousModel(string auxpath, string eoppath)
 	orbitinput.m_PolyOrder = 3;
 	orbit->ReadZY3EphFile(allEp, orbitinput);
 
-	// ×ËÌ¬
+	// å§¿æ€
 	GeoAttitude *attitude = new GeoAttitude_ZY3();
 	StrAttParamInput attitudeinput;
 	attitudeinput.DatumName = "WGS84";
 	attitudeinput.m_PolyOrder = 2;
 	attitude->ReadZY3AttFile(allAtt, attitudeinput, orbit);
 
-	// Ê±¼ä
+	// æ—¶é—´
 	GeoTime *time = new GeoTime_ZY3();
 	time->ReadZY3TimeFile(allTime);
 
-	// Ïà»ú
+	// ç›¸æœº
 	GeoCamera *inner = new GeoCameraLine();
 	StrCamParamInput caminput;
 	caminput.f = 1.699712;
@@ -86,37 +86,37 @@ void WorkFlow_ZY3::GenerateRigorousModel(string auxpath, string eoppath)
 	caminput.Xstart = 0.0;
 	caminput.Ystart = -12290.48;
 	//inner->InitInnerFile("", caminput);
-	inner->ReadCamFile("E:\\2_ImageData\\ZY3-02\\1-¶¨Î»¾«¶È\\503\\±ê¶¨²ÎÊı\\2016-07-02.cbr", caminput);//¶ÁÈ¡ÄÚ·½Î»ÔªËØ
+	inner->ReadCamFile("E:\\2_ImageData\\ZY3-02\\1-å®šä½ç²¾åº¦\\503\\æ ‡å®šå‚æ•°\\2016-07-02.cbr", caminput);//è¯»å–å†…æ–¹ä½å…ƒç´ 
 
-	// Ä£ĞÍ
+	// æ¨¡å‹
 	GeoModelLine *model = new GeoModelLine();
 	StrModelParamInput modelinput;
 	modelinput.isOrbitPoly = false;
 	modelinput.isAttPoly = false;
 	modelinput.timeExtend = 4;
-	//model->InitExtFile("D:\\2_ImageData\\ZY3-01\\5-ÑÏÃÜÄ£ĞÍ\\381ºÓÄÏ\\Ru.txt");//¶ÁÈ¡Íâ·½Î»ÔªËØ
-	model->InitExtFile("E:\\2_ImageData\\ZY3-02\\1-¶¨Î»¾«¶È\\503\\±ê¶¨²ÎÊı\\2016-07-02GZC.txt");
+	//model->InitExtFile("D:\\2_ImageData\\ZY3-01\\5-ä¸¥å¯†æ¨¡å‹\\381æ²³å—\\Ru.txt");//è¯»å–å¤–æ–¹ä½å…ƒç´ 
+	model->InitExtFile("E:\\2_ImageData\\ZY3-02\\1-å®šä½ç²¾åº¦\\503\\æ ‡å®šå‚æ•°\\2016-07-02GZC.txt");
 	model->InitModelLine(orbit, attitude, time, inner, modelinput);
 	pModel = model;
 }
 
 /////////////////////////////////////////////
-//¹¦ÄÜ£º¼ìĞ£Ä£ĞÍ
-//ÊäÈë£º¸¨ÖúÊı¾İÂ·¾¶£¬EOPÎÄ¼şÂ·¾¶
-//Êä³ö£º¸ù¾İRu¾ÀÕıºóµÄÄ£ĞÍ
-//×¢Òâ£º
-//ÈÕÆÚ£º2016.12.20
+//åŠŸèƒ½ï¼šæ£€æ ¡æ¨¡å‹
+//è¾“å…¥ï¼šè¾…åŠ©æ•°æ®è·¯å¾„ï¼ŒEOPæ–‡ä»¶è·¯å¾„
+//è¾“å‡ºï¼šæ ¹æ®Ruçº æ­£åçš„æ¨¡å‹
+//æ³¨æ„ï¼š
+//æ—¥æœŸï¼š2016.12.20
 ////////////////////////////////////////////
 void WorkFlow_ZY3::CalibrationModel(string auxpath, string eoppath)
 {
-	//¸¨ÖúZY302Êı¾İ½âÎö
+	//è¾…åŠ©ZY302æ•°æ®è§£æ
 	/*ParseZY3Aux ZY3_02;
 	vector<Orbit_Ep> allEp;
 	vector<Attitude> allAtt;
 	vector<LineScanTime> allTime;
 	ZY3_02.getZY302Aux(auxpath,allEp,allAtt,allTime);*/
 
-	//¶ÁÈ¡ZY301¸¨ÖúÊı¾İ
+	//è¯»å–ZY301è¾…åŠ©æ•°æ®
 	ParseZY3Aux ZY3_01;
 	vector<Orbit_Ep> allEp;
 	vector<Attitude> allAtt;
@@ -127,7 +127,7 @@ void WorkFlow_ZY3::CalibrationModel(string auxpath, string eoppath)
 	ZY3_01.ReadZY301AttTXT(sAtt, allAtt);
 	ZY3_01.ReadZY301TimeTXT(sTime, sInput, allTime);
 
-	// ¹ìµÀ
+	// è½¨é“
 	GeoOrbit *orbit = new GeoOrbitEarth_ZY3();
 	StrOrbitParamInput orbitinput;
 	orbitinput.DatumName = "WGS84";
@@ -136,18 +136,18 @@ void WorkFlow_ZY3::CalibrationModel(string auxpath, string eoppath)
 	orbitinput.m_PolyOrder = 3;
 	orbit->ReadZY3EphFile(allEp, orbitinput);
 
-	// ×ËÌ¬
+	// å§¿æ€
 	GeoAttitude *attitude = new GeoAttitude_ZY3();
 	StrAttParamInput attitudeinput;
 	attitudeinput.DatumName = "WGS84";
 	attitudeinput.m_PolyOrder = 2;
 	attitude->ReadZY3AttFile(allAtt, attitudeinput, orbit);
 
-	// Ê±¼ä
+	// æ—¶é—´
 	GeoTime *time = new GeoTime_ZY3();
 	time->ReadZY3TimeFile(allTime);
 
-	// Ïà»ú
+	// ç›¸æœº
 	GeoCamera *inner = new GeoCameraLine();
 	StrCamParamInput caminput;
 	caminput.f = 1.699712;
@@ -158,13 +158,13 @@ void WorkFlow_ZY3::CalibrationModel(string auxpath, string eoppath)
 	caminput.Xstart = 0.0;
 	caminput.Ystart = -12290.48;
 	//inner->InitInnerFile("", caminput);
-	inner->ReadCamFile("D:\\2_ImageData\\ZY3-01\\3-Ó°ÏñÊı¾İ\\±ê¶¨½á¹û¸üĞÂ\\381Æ½»¬µü´ú\\inner_forhwc.cbr", caminput);//¶ÁÈ¡ÄÚ·½Î»ÔªËØ
+	inner->ReadCamFile("D:\\2_ImageData\\ZY3-01\\3-å½±åƒæ•°æ®\\æ ‡å®šç»“æœæ›´æ–°\\381å¹³æ»‘è¿­ä»£\\inner_forhwc.cbr", caminput);//è¯»å–å†…æ–¹ä½å…ƒç´ 
 
-	//»ñÈ¡¿ØÖÆµã
+	//è·å–æ§åˆ¶ç‚¹
 	vector<StrGCP> ZY3_GCP;
 	GetGCP(auxpath, ZY3_GCP);
 
-	// Ä£ĞÍ
+	// æ¨¡å‹
 	GeoCalibration *model = new GeoCalibration();
 	StrModelParamInput modelinput;
 	modelinput.isOrbitPoly = false;
@@ -175,15 +175,15 @@ void WorkFlow_ZY3::CalibrationModel(string auxpath, string eoppath)
 }
 
 /////////////////////////////////////////////
-//¹¦ÄÜ£º¼ìĞ£Ä£ĞÍ
-//ÊäÈë£º¸¨ÖúÊı¾İÂ·¾¶£¬EOPÎÄ¼şÂ·¾¶
-//Êä³ö£º¸ù¾İRu¾ÀÕıºóµÄÄ£ĞÍ
-//×¢Òâ£º
-//ÈÕÆÚ£º2016.12.20; 2017.04.25
+//åŠŸèƒ½ï¼šæ£€æ ¡æ¨¡å‹
+//è¾“å…¥ï¼šè¾…åŠ©æ•°æ®è·¯å¾„ï¼ŒEOPæ–‡ä»¶è·¯å¾„
+//è¾“å‡ºï¼šæ ¹æ®Ruçº æ­£åçš„æ¨¡å‹
+//æ³¨æ„ï¼š
+//æ—¥æœŸï¼š2016.12.20; 2017.04.25
 ////////////////////////////////////////////
 void WorkFlow_ZY3::CalibrationModel2(string auxpath, string eoppath)
 {
-	//¸¨ÖúZY302Êı¾İ½âÎö
+	//è¾…åŠ©ZY302æ•°æ®è§£æ
 	ParseZY3Aux ZY3_02;
 	vector<Orbit_Ep> allEp;
 	vector<Attitude> allAtt;
@@ -194,7 +194,7 @@ void WorkFlow_ZY3::CalibrationModel2(string auxpath, string eoppath)
 	ZY3_02.ReadZY302AttTXT(sAtt, allAtt);
 	ZY3_02.ReadZY302TimeTXT(sTime, allTime);
 
-	// ¹ìµÀ
+	// è½¨é“
 	GeoOrbit *orbit = new GeoOrbitEarth_ZY3();
 	StrOrbitParamInput orbitinput;
 	orbitinput.DatumName = "WGS84";
@@ -203,18 +203,18 @@ void WorkFlow_ZY3::CalibrationModel2(string auxpath, string eoppath)
 	orbitinput.m_PolyOrder = 3;
 	orbit->ReadZY3EphFile(allEp, orbitinput);
 
-	// ×ËÌ¬
+	// å§¿æ€
 	GeoAttitude *attitude = new GeoAttitude_ZY3();
 	StrAttParamInput attitudeinput;
 	attitudeinput.DatumName = "WGS84";
 	attitudeinput.m_PolyOrder = 2;
 	attitude->ReadZY3AttFile(allAtt, attitudeinput, orbit);
 
-	// Ê±¼ä
+	// æ—¶é—´
 	GeoTime *time = new GeoTime_ZY3();
 	time->ReadZY3TimeFile(allTime);
 
-	// Ïà»ú
+	// ç›¸æœº
 	GeoCamera *inner = new GeoCameraLine();
 	StrCamParamInput caminput;
 	//caminput.f = 1.699712;
@@ -225,13 +225,13 @@ void WorkFlow_ZY3::CalibrationModel2(string auxpath, string eoppath)
 	//caminput.Xstart = 0.0;
 	//caminput.Ystart = -12290.48;
 	//inner->InitInnerFile("", caminput);
-	inner->ReadCamFile("D:\\2_ImageData\\ZY3-02\\1-¶¨Î»¾«¶È\\503\\±ê¶¨²ÎÊı\\2016-07-02.cbr", caminput);//¶ÁÈ¡ÄÚ·½Î»ÔªËØ
+	inner->ReadCamFile("D:\\2_ImageData\\ZY3-02\\1-å®šä½ç²¾åº¦\\503\\æ ‡å®šå‚æ•°\\2016-07-02.cbr", caminput);//è¯»å–å†…æ–¹ä½å…ƒç´ 
 
-	//»ñÈ¡¿ØÖÆµã
+	//è·å–æ§åˆ¶ç‚¹
 	vector<StrGCP> ZY3_GCP;
 	GetGCP(auxpath, ZY3_GCP);
 
-	// Ä£ĞÍ
+	// æ¨¡å‹
 	GeoCalibration *model = new GeoCalibration();
 	StrModelParamInput modelinput;
 	modelinput.isOrbitPoly = false;
@@ -242,12 +242,12 @@ void WorkFlow_ZY3::CalibrationModel2(string auxpath, string eoppath)
 }
 
 //////////////////////////////////////////////////////////////////////////
-//¹¦ÄÜ£º¶ÔÊäÈëµÄ¿ØÖÆµã½øĞĞ¾«¶ÈÑéÖ¤
-//ÊäÈë£º¸¨ÖúÊı¾İÂ·¾¶£¬EOPÎÄ¼şÂ·¾¶
-//Êä³ö£º¾«¶ÈÑéÖ¤½á¹û
-//×¢Òâ£ºÕâ¸öº¯ÊıµÄµ÷ÓÃÒªÔÚÑÏÃÜ¼¸ºÎÄ£ĞÍ¹¹½¨ÒÔºó
-//×÷Õß£ºGZC
-//ÈÕÆÚ£º2017.04.26
+//åŠŸèƒ½ï¼šå¯¹è¾“å…¥çš„æ§åˆ¶ç‚¹è¿›è¡Œç²¾åº¦éªŒè¯
+//è¾“å…¥ï¼šè¾…åŠ©æ•°æ®è·¯å¾„ï¼ŒEOPæ–‡ä»¶è·¯å¾„
+//è¾“å‡ºï¼šç²¾åº¦éªŒè¯ç»“æœ
+//æ³¨æ„ï¼šè¿™ä¸ªå‡½æ•°çš„è°ƒç”¨è¦åœ¨ä¸¥å¯†å‡ ä½•æ¨¡å‹æ„å»ºä»¥å
+//ä½œè€…ï¼šGZC
+//æ—¥æœŸï¼š2017.04.26
 //////////////////////////////////////////////////////////////////////////
 void WorkFlow_ZY3::AccuracyVerify(string auxpath)
 {
@@ -286,11 +286,11 @@ void WorkFlow_ZY3::AccuracyVerify(string auxpath)
 }
 
 /////////////////////////////////////////////
-//¹¦ÄÜ£º¶ÁÈ¡¿ØÖÆµã
-//ÊäÈë£ºauxpath:´æ·ÅGCPÊı¾İµÄÂ·¾¶
-//Êä³ö£º¶ÁÈ¡³öµÄ×ÊÈı¿ØÖÆµã
-//×¢Òâ£º
-//ÈÕÆÚ£º2016.12.20
+//åŠŸèƒ½ï¼šè¯»å–æ§åˆ¶ç‚¹
+//è¾“å…¥ï¼šauxpath:å­˜æ”¾GCPæ•°æ®çš„è·¯å¾„
+//è¾“å‡ºï¼šè¯»å–å‡ºçš„èµ„ä¸‰æ§åˆ¶ç‚¹
+//æ³¨æ„ï¼š
+//æ—¥æœŸï¼š2016.12.20
 ////////////////////////////////////////////
 void WorkFlow_ZY3::GetGCP(string auxpath, vector<StrGCP> &ZY3_GCP)
 {
@@ -312,40 +312,40 @@ void WorkFlow_ZY3::SetCamInput(StrCamParamInput caminput)
 }
 
 //////////////////////////////////////////////////////////////////////////
-//¹¦ÄÜ£º¸ù¾İÊäÈëµÄx£¬y²é¿´Ä£ĞÍ½¨Á¢µÄÊÇ·ñ×¼È·
-//ÊäÈë£º
-//Êä³ö£º
-//×¢Òâ£º
-//×÷Õß£ºGZC
-//ÈÕÆÚ£º2017.08.14
+//åŠŸèƒ½ï¼šæ ¹æ®è¾“å…¥çš„xï¼ŒyæŸ¥çœ‹æ¨¡å‹å»ºç«‹çš„æ˜¯å¦å‡†ç¡®
+//è¾“å…¥ï¼š
+//è¾“å‡ºï¼š
+//æ³¨æ„ï¼š
+//ä½œè€…ï¼šGZC
+//æ—¥æœŸï¼š2017.08.14
 //////////////////////////////////////////////////////////////////////////
 void WorkFlow_ZY3::ModelVerify()
 {
 	double lat, lon, h = 0, x = 1, y = 1;
 	while (x != 0 || y != 0)
 	{
-		cout << "ÇëÊäÈëSampleºÍLineºÍh(ÊäÈëÁ½¸ö0±¾³ÌĞòÍË³ö)" << endl;
+		cout << "è¯·è¾“å…¥Sampleå’ŒLineå’Œh(è¾“å…¥ä¸¤ä¸ª0æœ¬ç¨‹åºé€€å‡º)" << endl;
 		cin >> y >> x >> h;
 		pModel->FromXY2LatLon(x, y, h, lat, lon);
 		lat = lat * 180 / PI;
 		lon = lon * 180 / PI;
-		cout << "¾­Î³¶È·Ö±ğÊÇ" << endl;
-		cout << setiosflags(ios::fixed);//¼ÓÉÏÕâ¾ä»°£¬¿ØÖÆµÄ¾ÍÊÇĞ¡ÊıµÄ¾«¶ÈÁË
+		cout << "ç»çº¬åº¦åˆ†åˆ«æ˜¯" << endl;
+		cout << setiosflags(ios::fixed);//åŠ ä¸Šè¿™å¥è¯ï¼Œæ§åˆ¶çš„å°±æ˜¯å°æ•°çš„ç²¾åº¦äº†
 		cout << setprecision(10) << lat << "," << lon << endl;
 	}
 }
 
 //////////////////////////////////////////////////////////////////////////
-//¹¦ÄÜ£ºNADÏà»úÄ£ĞÍ
-//ÊäÈë£º¸¨ÖúÊı¾İÂ·¾¶£¬EOPÎÄ¼şÂ·¾¶
-//Êä³ö£º¼¸ºÎÄ£ĞÍ
-//×¢Òâ£º
-//×÷Õß£ºGZC
-//ÈÕÆÚ£º2017.08.14
+//åŠŸèƒ½ï¼šNADç›¸æœºæ¨¡å‹
+//è¾“å…¥ï¼šè¾…åŠ©æ•°æ®è·¯å¾„ï¼ŒEOPæ–‡ä»¶è·¯å¾„
+//è¾“å‡ºï¼šå‡ ä½•æ¨¡å‹
+//æ³¨æ„ï¼š
+//ä½œè€…ï¼šGZC
+//æ—¥æœŸï¼š2017.08.14
 //////////////////////////////////////////////////////////////////////////
 void WorkFlow_ZY3::NADCamera(string auxpath)
 {
-	//¶ÁÈ¡ZY3Sim¸¨ÖúÊı¾İ
+	//è¯»å–ZY3Simè¾…åŠ©æ•°æ®
 	ParseZY3Aux ZY3_01;
 	vector<Orbit_Ep> allEp;
 	vector<Attitude> allAtt;
@@ -357,7 +357,7 @@ void WorkFlow_ZY3::NADCamera(string auxpath)
 	ZY3_01.ReadZY301AttTXT(sAtt, allAtt);
 	ZY3_01.ReadZY3SimTimeTXT(sTime, allTime);
 
-	// ¹ìµÀ
+	// è½¨é“
 	GeoOrbit *orbit = new GeoOrbitEarth_ZY3();
 	StrOrbitParamInput orbitinput;
 	orbitinput.DatumName = "WGS84";
@@ -366,7 +366,7 @@ void WorkFlow_ZY3::NADCamera(string auxpath)
 	orbitinput.m_PolyOrder = 3;
 	orbit->ReadZY3EphFile(allEp, orbitinput);
 
-	// ×ËÌ¬
+	// å§¿æ€
 	GeoAttitude *attitude = new GeoAttitude_ZY3();
 	StrAttParamInput attitudeinput;
 	attitudeinput.DatumName = "WGS84";
@@ -374,16 +374,16 @@ void WorkFlow_ZY3::NADCamera(string auxpath)
 	attitude->ReadZY3AttFile(allAtt, attitudeinput, orbit,auxpath);
 	//attitude->ReadZY3RealAttFile(allAtt, attitudeinput, orbit, auxpath);
 
-	// Ê±¼ä
+	// æ—¶é—´
 	GeoTime *time = new GeoTime_ZY3();
 	time->ReadZY3TimeFile(allTime);
 
-	// Ïà»ú
+	// ç›¸æœº
 	GeoCamera *inner = new GeoCameraLine();
 	StrCamParamInput caminput;
-	inner->ReadCamFile(sCam, caminput);//¶ÁÈ¡ÄÚ·½Î»ÔªËØ
+	inner->ReadCamFile(sCam, caminput);//è¯»å–å†…æ–¹ä½å…ƒç´ 
 
-	// Ä£ĞÍ
+	// æ¨¡å‹
 	GeoModelLine *model = new GeoModelLine();
 	StrModelParamInput modelinput;
 	modelinput.isOrbitPoly = false;
@@ -395,16 +395,16 @@ void WorkFlow_ZY3::NADCamera(string auxpath)
 }
 
 //////////////////////////////////////////////////////////////////////////
-//¹¦ÄÜ£º»ñÈ¡Ç°ºóÊÓÕæÊµÄ£ĞÍ
-//ÊäÈë£ºworkpath,¹¤×÷¿Õ¼äÂ·¾¶£»omg,°²×°½Ç£»
-//			 isReal=1ÕæÊµÄ£ĞÍ£¬isReal=0´øÎó²îÄ£ĞÍ£»
-//Êä³ö£ºÆ¥Åäµãmatch.pts£»¿ØÖÆµãGCP.txt
-//×÷Õß£ºGZC
-//ÈÕÆÚ£º2017.09.07
+//åŠŸèƒ½ï¼šè·å–å‰åè§†çœŸå®æ¨¡å‹
+//è¾“å…¥ï¼šworkpath,å·¥ä½œç©ºé—´è·¯å¾„ï¼›omg,å®‰è£…è§’ï¼›
+//			 isReal=1çœŸå®æ¨¡å‹ï¼ŒisReal=0å¸¦è¯¯å·®æ¨¡å‹ï¼›
+//è¾“å‡ºï¼šåŒ¹é…ç‚¹match.ptsï¼›æ§åˆ¶ç‚¹GCP.txt
+//ä½œè€…ï¼šGZC
+//æ—¥æœŸï¼š2017.09.07
 //////////////////////////////////////////////////////////////////////////
 GeoModelLine WorkFlow_ZY3::FwdBwdModel(string workpath,double omg,bool isReal)
 {
-	//¶ÁÈ¡ZY3Sim¸¨ÖúÊı¾İ
+	//è¯»å–ZY3Simè¾…åŠ©æ•°æ®
 	ParseZY3Aux ZY3_01;
 	vector<Orbit_Ep> allEp;
 	vector<Attitude> allAtt;
@@ -416,7 +416,7 @@ GeoModelLine WorkFlow_ZY3::FwdBwdModel(string workpath,double omg,bool isReal)
 	ZY3_01.ReadZY301AttTXT(sAtt, allAtt);
 	ZY3_01.ReadZY3SimTimeTXT(sTime, allTime);
 
-	// ¹ìµÀ
+	// è½¨é“
 	GeoOrbit *orbit = new GeoOrbitEarth_ZY3();
 	StrOrbitParamInput orbitinput;
 	orbitinput.DatumName = "WGS84";
@@ -425,7 +425,7 @@ GeoModelLine WorkFlow_ZY3::FwdBwdModel(string workpath,double omg,bool isReal)
 	orbitinput.m_PolyOrder = 3;
 	orbit->ReadZY3EphFile(allEp, orbitinput);
 
-	// ×ËÌ¬
+	// å§¿æ€
 	GeoAttitude *attitude = new GeoAttitude_ZY3();
 	StrAttParamInput attitudeinput;
 	attitudeinput.DatumName = "WGS84";
@@ -436,16 +436,16 @@ GeoModelLine WorkFlow_ZY3::FwdBwdModel(string workpath,double omg,bool isReal)
 	m_base.Eulor2Matrix(0, omg, 0, 123, R);
 	attitude->set_ROff(R);
 
-	// Ê±¼ä
+	// æ—¶é—´
 	GeoTime *time = new GeoTime_ZY3();
 	time->ReadZY3TimeFile(allTime);
 
-	// Ïà»ú
+	// ç›¸æœº
 	GeoCamera *inner = new GeoCameraLine();
 	StrCamParamInput caminput;
-	inner->ReadCamFile(sCam, caminput);//¶ÁÈ¡ÄÚ·½Î»ÔªËØ
+	inner->ReadCamFile(sCam, caminput);//è¯»å–å†…æ–¹ä½å…ƒç´ 
 
-	// Ä£ĞÍ
+	// æ¨¡å‹
 	StrModelParamInput modelinput;
 	GeoModelLine model ;
 	modelinput.isOrbitPoly = false;
@@ -457,7 +457,7 @@ GeoModelLine WorkFlow_ZY3::FwdBwdModel(string workpath,double omg,bool isReal)
 
 GeoModelLine WorkFlow_ZY3::FwdBwdModelVerify(string workpath, double omg, bool isReal)
 {
-	//¶ÁÈ¡ZY3Sim¸¨ÖúÊı¾İ
+	//è¯»å–ZY3Simè¾…åŠ©æ•°æ®
 	ParseZY3Aux ZY3_01;
 	vector<Orbit_Ep> allEp;
 	vector<Attitude> allAtt;
@@ -469,7 +469,7 @@ GeoModelLine WorkFlow_ZY3::FwdBwdModelVerify(string workpath, double omg, bool i
 	ZY3_01.ReadZY301AttTXT(sAtt, allAtt);
 	ZY3_01.ReadZY3SimTimeTXT(sTime, allTime);
 
-	// ¹ìµÀ
+	// è½¨é“
 	GeoOrbit *orbit = new GeoOrbitEarth_ZY3();
 	StrOrbitParamInput orbitinput;
 	orbitinput.DatumName = "WGS84";
@@ -478,7 +478,7 @@ GeoModelLine WorkFlow_ZY3::FwdBwdModelVerify(string workpath, double omg, bool i
 	orbitinput.m_PolyOrder = 3;
 	orbit->ReadZY3EphFile(allEp, orbitinput);
 
-	// ×ËÌ¬
+	// å§¿æ€
 	GeoAttitude *attitude = new GeoAttitude_ZY3();
 	StrAttParamInput attitudeinput;
 	attitudeinput.DatumName = "WGS84";
@@ -489,16 +489,16 @@ GeoModelLine WorkFlow_ZY3::FwdBwdModelVerify(string workpath, double omg, bool i
 	m_base.Eulor2Matrix(0, omg, 0, 123, R);
 	attitude->set_ROff(R);
 
-	// Ê±¼ä
+	// æ—¶é—´
 	GeoTime *time = new GeoTime_ZY3();
 	time->ReadZY3TimeFile(allTime);
 
-	// Ïà»ú
+	// ç›¸æœº
 	GeoCamera *inner = new GeoCameraLine();
 	StrCamParamInput caminput;
-	inner->ReadCamFile(sCam, caminput);//¶ÁÈ¡ÄÚ·½Î»ÔªËØ
+	inner->ReadCamFile(sCam, caminput);//è¯»å–å†…æ–¹ä½å…ƒç´ 
 
-									   // Ä£ĞÍ
+									   // æ¨¡å‹
 	StrModelParamInput modelinput;
 	GeoModelLine model;
 	modelinput.isOrbitPoly = false;
@@ -509,11 +509,11 @@ GeoModelLine WorkFlow_ZY3::FwdBwdModelVerify(string workpath, double omg, bool i
 	double lat, lon, h = 0, x = 1, y = 1;
 	while (x != 0 || y != 0)
 	{
-		cout << "ÇëÊäÈëSampleºÍLineºÍh(ÊäÈëÁ½¸ö0±¾³ÌĞòÍË³ö)" << endl;
+		cout << "è¯·è¾“å…¥Sampleå’ŒLineå’Œh(è¾“å…¥ä¸¤ä¸ª0æœ¬ç¨‹åºé€€å‡º)" << endl;
 		cin >> lat >> lon >> h;
 		model.FromLatLon2XY(lat/ 180 * PI,lon / 180 * PI,h,x,y);
-		cout << "xyÏñËØ·Ö±ğÊÇ" << endl;
-		cout << setiosflags(ios::fixed);//¼ÓÉÏÕâ¾ä»°£¬¿ØÖÆµÄ¾ÍÊÇĞ¡ÊıµÄ¾«¶ÈÁË
+		cout << "xyåƒç´ åˆ†åˆ«æ˜¯" << endl;
+		cout << setiosflags(ios::fixed);//åŠ ä¸Šè¿™å¥è¯ï¼Œæ§åˆ¶çš„å°±æ˜¯å°æ•°çš„ç²¾åº¦äº†
 		cout << setprecision(10) << x << "," << y << endl;
 	}
 
@@ -521,11 +521,11 @@ GeoModelLine WorkFlow_ZY3::FwdBwdModelVerify(string workpath, double omg, bool i
 }
 
 //////////////////////////////////////////////////////////////////////////
-//¹¦ÄÜ£º»ñÈ¡Ç°ºóÊÓÓ°ÏñµÄÕæÊµ¿ØÖÆµã
-//ÊäÈë£º¹¤×÷¿Õ¼äÂ·¾¶
-//Êä³ö£ºÕæÊµ¿ØÖÆµãmatch.pts
-//×÷Õß£ºGZC
-//ÈÕÆÚ£º2017.09.07
+//åŠŸèƒ½ï¼šè·å–å‰åè§†å½±åƒçš„çœŸå®æ§åˆ¶ç‚¹
+//è¾“å…¥ï¼šå·¥ä½œç©ºé—´è·¯å¾„
+//è¾“å‡ºï¼šçœŸå®æ§åˆ¶ç‚¹match.pts
+//ä½œè€…ï¼šGZC
+//æ—¥æœŸï¼š2017.09.07
 //////////////////////////////////////////////////////////////////////////
 void WorkFlow_ZY3::CalcFwdBwdRealMatchPoint(char* argv[])
 {
@@ -534,11 +534,11 @@ void WorkFlow_ZY3::CalcFwdBwdRealMatchPoint(char* argv[])
 	model[0] = FwdBwdModel(argv[1], -22. / 180 * PI,1);
 	model[1] = FwdBwdModel(argv[2], 22. / 180 * PI,1);
 
-	//¶ÁÈ¡DEM
+	//è¯»å–DEM
 	GeoReadImage DEM; GeoImage WarpImg;
-	//string strDEM= "D:\\2_ImageData\\0.1\\Point1\\FWD\\2.Ó°ÏñÎÄ¼ş\\dem1.img";
-	//WarpImg.ImageWarp("D:\\1_¿ØÖÆÊı¾İ\\²Î¿¼Ó°Ïñ\\Henan2000\\ss2000dtm50cm_utm84-float_chu10.img",	strDEM,model);
-	//DEM.Open("D:\\2_ImageData\\0.1\\Point1\\FWD\\2.Ó°ÏñÎÄ¼ş\\dem.img", GA_ReadOnly);
+	//string strDEM= "D:\\2_ImageData\\0.1\\Point1\\FWD\\2.å½±åƒæ–‡ä»¶\\dem1.img";
+	//WarpImg.ImageWarp("D:\\1_æ§åˆ¶æ•°æ®\\å‚è€ƒå½±åƒ\\Henan2000\\ss2000dtm50cm_utm84-float_chu10.img",	strDEM,model);
+	//DEM.Open("D:\\2_ImageData\\0.1\\Point1\\FWD\\2.å½±åƒæ–‡ä»¶\\dem.img", GA_ReadOnly);
 	DEM.Open(sDEM, GA_ReadOnly);
 	DEM.ReadBlock(0, 0, DEM.m_xRasterSize, DEM.m_yRasterSize, 0, DEM.pBuffer[0]);
 
@@ -589,19 +589,19 @@ void WorkFlow_ZY3::CalcFwdBwdRealMatchPoint(char* argv[])
 		}
 		line += 200;
 	}
-	//Êä³öÆ¥ÅäµãºÍGCP
-	//OutputMatchAndGCP(filePath[0], pMatch, pGCP);	
+	//è¾“å‡ºåŒ¹é…ç‚¹å’ŒGCP
+	OutputMatchAndGCP(filePath[0], pMatch, pGCP);	
 	OutputPxyAndGCP(filePath[0], pMatch, pGCP);
 
 	DEM.Destroy();
 }
 
 //////////////////////////////////////////////////////////////////////////
-//¹¦ÄÜ£ºÇ°·½½»»á²¢Çó¾«¶È
-//ÊäÈë£ºÄ£ĞÍ1Â·¾¶argv[1]£¬Ä£ĞÍ2Â·¾¶[2]
-//Êä³ö£ºÔÚÄ£ĞÍ1Â·¾¶ÏÂÊä³öÇ°·½½»»á¾«¶È
-//×÷Õß£ºGZC
-//ÈÕÆÚ£º2017.09.07
+//åŠŸèƒ½ï¼šå‰æ–¹äº¤ä¼šå¹¶æ±‚ç²¾åº¦
+//è¾“å…¥ï¼šæ¨¡å‹1è·¯å¾„argv[1]ï¼Œæ¨¡å‹2è·¯å¾„[2]
+//è¾“å‡ºï¼šåœ¨æ¨¡å‹1è·¯å¾„ä¸‹è¾“å‡ºå‰æ–¹äº¤ä¼šç²¾åº¦
+//ä½œè€…ï¼šGZC
+//æ—¥æœŸï¼š2017.09.07
 //////////////////////////////////////////////////////////////////////////
 void WorkFlow_ZY3::CalcFwdBwdIntersection(char* argv[])
 {
@@ -610,7 +610,7 @@ void WorkFlow_ZY3::CalcFwdBwdIntersection(char* argv[])
 	model[0] = FwdBwdModel(argv[1], -22. / 180 * PI,0);
 	model[1] = FwdBwdModel(argv[2], 22. / 180 * PI,0);
 
-	//¶ÁÈ¡DEM
+	//è¯»å–DEM
 	GeoReadImage DEM;
 	DEM.Open(sDEM, GA_ReadOnly);
 	DEM.ReadBlock(0, 0, DEM.m_xRasterSize, DEM.m_yRasterSize, 0, DEM.pBuffer[0]);
@@ -673,28 +673,28 @@ void WorkFlow_ZY3::CalcFwdBwdIntersection(char* argv[])
 }
 
 //////////////////////////////////////////////////////////////////////////
-//¹¦ÄÜ£º¸Ä±äÇ°ºóÊÓÏà»ú×ËÌ¬ÎÄ¼ş
-//ÊäÈë£ºĞ¡ÃæÕóÏà»ú²úÉúµÄ×ËÌ¬ÎÄ¼ş£ºATT_Modify.txt
-//Êä³ö£ºÇ°ºóÊÓÏà»úµÄ×ËÌ¬ÎÄ¼ş£ºATT_Error.txt
-//×÷Õß£ºGZC
-//ÈÕÆÚ£º2017.09.11
+//åŠŸèƒ½ï¼šæ”¹å˜å‰åè§†ç›¸æœºå§¿æ€æ–‡ä»¶
+//è¾“å…¥ï¼šå°é¢é˜µç›¸æœºäº§ç”Ÿçš„å§¿æ€æ–‡ä»¶ï¼šATT_Modify.txt
+//è¾“å‡ºï¼šå‰åè§†ç›¸æœºçš„å§¿æ€æ–‡ä»¶ï¼šATT_Error.txt
+//ä½œè€…ï¼šGZC
+//æ—¥æœŸï¼š2017.09.11
 //////////////////////////////////////////////////////////////////////////
 void WorkFlow_ZY3::ChangeAttPath(char * argv[])
 {
-	string source = (string)argv[3] + "\\ATT_Modify.txt";//Ô´ÎÄ¼ş
-	string destination = (string)argv[1] + "\\ATT_Error.txt";//Ä¿±êÎÄ¼ş
-	CopyFile(source.c_str(), destination.c_str(), FALSE);//false´ú±í¸²¸Ç£¬true²»¸²¸Ç
+	string source = (string)argv[3] + "\\ATT_Modify.txt";//æºæ–‡ä»¶
+	string destination = (string)argv[1] + "\\ATT_Error.txt";//ç›®æ ‡æ–‡ä»¶
+	CopyFile(source.c_str(), destination.c_str(), FALSE);//falseä»£è¡¨è¦†ç›–ï¼Œtrueä¸è¦†ç›–
 
 	destination = (string)argv[2] + "\\ATT_Error.txt";
-	CopyFile(source.c_str(), destination.c_str(), FALSE);//false´ú±í¸²¸Ç£¬true²»¸²¸Ç
+	CopyFile(source.c_str(), destination.c_str(), FALSE);//falseä»£è¡¨è¦†ç›–ï¼Œtrueä¸è¦†ç›–
 }
 
 //////////////////////////////////////////////////////////////////////////
-//¹¦ÄÜ£ºµ÷ÓÃÁ¢ÌåÆ½²îÈí¼ş¼ÆËãÁ¢Ìå¾«¶È
-//ÊäÈë£º
-//Êä³ö£º
-//×÷Õß£ºGZC
-//ÈÕÆÚ£º2017.09.14
+//åŠŸèƒ½ï¼šè°ƒç”¨ç«‹ä½“å¹³å·®è½¯ä»¶è®¡ç®—ç«‹ä½“ç²¾åº¦
+//è¾“å…¥ï¼š
+//è¾“å‡ºï¼š
+//ä½œè€…ï¼šGZC
+//æ—¥æœŸï¼š2017.09.14
 //////////////////////////////////////////////////////////////////////////
 void WorkFlow_ZY3::Calc3DAccuracyByAdjustment(char* argv[])
 {
@@ -714,26 +714,31 @@ void WorkFlow_ZY3::Calc3DAccuracyByAdjustment(char* argv[])
 	string destination3 = destination + "GeoSimulationImage_1_match2.pxy";
 	string destination4 = destination + "GeoSimulationImage_1_rpc.txt";
 	string destination5 = destination + "GeoSimulationImage_2_rpc.txt";
-	CopyFile(source1.c_str(), destination1.c_str(), FALSE);//false´ú±í¸²¸Ç£¬true²»¸²¸Ç
+	CopyFile(source1.c_str(), destination1.c_str(), FALSE);//falseä»£è¡¨è¦†ç›–ï¼Œtrueä¸è¦†ç›–
 	CopyFile(source2.c_str(), destination2.c_str(), FALSE);
 	CopyFile(source3.c_str(), destination3.c_str(), FALSE);
 	CopyFile(source4.c_str(), destination4.c_str(), FALSE);
 	CopyFile(source5.c_str(), destination5.c_str(), FALSE);
 
 	char exe[512];	
-	sprintf_s(exe, "%s", "C:\\Users\\wcsgz\\Documents\\5-¹¤¾ßÈí¼ş\\2-¾«¶ÈÑéÖ¤Èí¼ş\\Á¢ÌåÆ½²îÈí¼ş\\eRPCBlockAdjustment.exe");
+	sprintf_s(exe, "%s", "C:\\Users\\wcsgz\\Documents\\5-å·¥å…·è½¯ä»¶\\2-ç²¾åº¦éªŒè¯è½¯ä»¶\\ç«‹ä½“å¹³å·®è½¯ä»¶\\eRPCBlockAdjustment.exe");
 	system(exe);
 }
 
 //////////////////////////////////////////////////////////////////////////
-//¹¦ÄÜ£ºÊä³öÆ¥ÅäµãºÍ¿ØÖÆµã
-//ÊäÈë£ºÆ¥ÅäµãºÍ¿ØÖÆµã
-//Êä³ö£ºÊä³öÆ¥ÅäµãºÍ¿ØÖÆµãÎÄ¼ş
-//×÷Õß£ºGZC
-//ÈÕÆÚ£º2017.09.14
+//åŠŸèƒ½ï¼šè¾“å‡ºåŒ¹é…ç‚¹å’Œæ§åˆ¶ç‚¹
+//è¾“å…¥ï¼šåŒ¹é…ç‚¹å’Œæ§åˆ¶ç‚¹
+//è¾“å‡ºï¼šè¾“å‡ºåŒ¹é…ç‚¹å’Œæ§åˆ¶ç‚¹æ–‡ä»¶
+//ä½œè€…ï¼šGZC
+//æ—¥æœŸï¼š2017.09.14
 //////////////////////////////////////////////////////////////////////////
 void WorkFlow_ZY3::OutputMatchAndGCP(string filePath, vector<MatchPoint>pMatch, vector<StrGCP>pGCP)
 {
+	//æ·»åŠ éšæœºè¯¯å·®
+	int num = pMatch.size();
+	double *Err = new double[2 * num];
+	m_base.RandomDistribution(0, 0.1, 2 * num, 0, Err);
+
 	string output = filePath.substr(0, filePath.rfind('.')) + "_match.pts";
 	string output2 = filePath.substr(0, filePath.rfind('.')) + "_GCP.txt";
 	FILE *fp = fopen(output.c_str(), "w");
@@ -742,25 +747,26 @@ void WorkFlow_ZY3::OutputMatchAndGCP(string filePath, vector<MatchPoint>pMatch, 
 	fprintf(fp2, "; %d\n", pGCP.size());
 	for (int i = 0; i < pMatch.size(); i++)
 	{
-		fprintf(fp, "%.9f\t%.9f\t%.9f\t%.9f\n", pMatch[i].ly, pMatch[i].lx, pMatch[i].ry, pMatch[i].rx);
+		fprintf(fp, "%.9f\t%.9f\t%.9f\t%.9f\n", pMatch[i].ly, pMatch[i].lx, pMatch[i].ry + Err[i], pMatch[i].rx + Err[i+num]);
 		fprintf(fp2, "%f\t%f\t%.9f\t%.9f\t%.9f\n", pGCP[i].x, pGCP[i].y, pGCP[i].lat, pGCP[i].lon, pGCP[i].h);
 	}
+	delete[] Err; Err = NULL;
 	fclose(fp); fclose(fp2);
 }
 
 //////////////////////////////////////////////////////////////////////////
-//¹¦ÄÜ£ºÊä³öÆ¥ÅäµãºÍ¿ØÖÆµã£¨ÎªÁ¢ÌåÆ½²î¸ñÊ½£©
-//ÊäÈë£ºÆ¥ÅäµãºÍ¿ØÖÆµã
-//Êä³ö£ºÊä³öÆ¥ÅäµãºÍ¿ØÖÆµãÎÄ¼ş
-//×÷Õß£ºGZC
-//ÈÕÆÚ£º2017.09.14
+//åŠŸèƒ½ï¼šè¾“å‡ºåŒ¹é…ç‚¹å’Œæ§åˆ¶ç‚¹ï¼ˆä¸ºç«‹ä½“å¹³å·®æ ¼å¼ï¼‰
+//è¾“å…¥ï¼šåŒ¹é…ç‚¹å’Œæ§åˆ¶ç‚¹
+//è¾“å‡ºï¼šè¾“å‡ºåŒ¹é…ç‚¹å’Œæ§åˆ¶ç‚¹æ–‡ä»¶
+//ä½œè€…ï¼šGZC
+//æ—¥æœŸï¼š2017.09.14
 //////////////////////////////////////////////////////////////////////////
 void WorkFlow_ZY3::OutputPxyAndGCP(string filePath, vector<MatchPoint>pMatch, vector<StrGCP>pGCP)
 {
-	//Ìí¼ÓËæ»úÎó²î
+	//æ·»åŠ éšæœºè¯¯å·®
 	int num = pMatch.size();
 	double *Err = new double[2*num];
-	m_base.RandomDistribution(0, 0.3, 2 * num, 0, Err);
+	m_base.RandomDistribution(0, 0.1, 2 * num, 0, Err);
 
 	string output1 = filePath.substr(0, filePath.rfind('.')) + "_match1.pxy";
 	string output2 = filePath.substr(0, filePath.rfind('.')) + "_match2.pxy";
@@ -777,6 +783,7 @@ void WorkFlow_ZY3::OutputPxyAndGCP(string filePath, vector<MatchPoint>pMatch, ve
 		fprintf(fp2, "%6d\t%.9f\t%.9f\n", i,pMatch[i].ry+ Err[i], pMatch[i].rx+Err[num+i]);
 		fprintf(fp3, "%6d\t%.9f\t%.9f\t%.9f\t%d\n", i, pGCP[i].lat/PI*180, pGCP[i].lon / PI * 180, pGCP[i].h,0);
 	}
+	delete[] Err; Err = NULL;
 	fcloseall();
 }
 
@@ -796,16 +803,16 @@ void WorkFlow_ZY3::CalcFwdBwdRPC(char * argv[])
 }
 
 //////////////////////////////////////////////////////////////////////////
-//¹¦ÄÜ£º¸ù¾İÏàÁÚÖ¡Ğ¡ÃæÕóÓ°Ïñ¼ÆËãÏà¶Ô×ËÌ¬
-//ÊäÈë£º¸¨ÖúÊı¾İÂ·¾¶£¬EOPÎÄ¼şÂ·¾¶
-//Êä³ö£ºĞ¡ÃæÕó»Ö¸´×ËÌ¬ºÍÕæÊµ×ËÌ¬¶Ô±È
-//×¢Òâ£º
-//×÷Õß£ºGZC
-//ÈÕÆÚ£º2017.08.15
+//åŠŸèƒ½ï¼šæ ¹æ®ç›¸é‚»å¸§å°é¢é˜µå½±åƒè®¡ç®—ç›¸å¯¹å§¿æ€
+//è¾“å…¥ï¼šè¾…åŠ©æ•°æ®è·¯å¾„ï¼ŒEOPæ–‡ä»¶è·¯å¾„
+//è¾“å‡ºï¼šå°é¢é˜µæ¢å¤å§¿æ€å’ŒçœŸå®å§¿æ€å¯¹æ¯”
+//æ³¨æ„ï¼š
+//ä½œè€…ï¼šGZC
+//æ—¥æœŸï¼š2017.08.15
 //////////////////////////////////////////////////////////////////////////
 void WorkFlow_ZY3::LittleArrayCamera(string auxpath)
 {
-	//¶ÁÈ¡ZY3Sim¸¨ÖúÊı¾İ
+	//è¯»å–ZY3Simè¾…åŠ©æ•°æ®
 	ParseZY3Aux ZY3_01;
 	vector<Orbit_Ep> allEp;
 	vector<Attitude> allAtt;
@@ -816,7 +823,7 @@ void WorkFlow_ZY3::LittleArrayCamera(string auxpath)
 	ZY3_01.ReadZY301AttTXT(sAtt, allAtt);
 	ZY3_01.ReadLittleCameraTimeTXT(sTime, allTime);
 
-	// ¹ìµÀ
+	// è½¨é“
 	GeoOrbit *orbit = new GeoOrbitEarth_ZY3();
 	StrOrbitParamInput orbitinput;
 	orbitinput.DatumName = "WGS84";
@@ -825,18 +832,18 @@ void WorkFlow_ZY3::LittleArrayCamera(string auxpath)
 	orbitinput.m_PolyOrder = 3;
 	orbit->ReadZY3EphFile(allEp, orbitinput);
 
-	// ×ËÌ¬
+	// å§¿æ€
 	GeoAttitude *attitude = new GeoAttitude_ZY3();
 	StrAttParamInput attitudeinput;
 	attitudeinput.DatumName = "WGS84";
 	attitudeinput.m_PolyOrder = 2;
 	attitude->ReadZY3AttFile(allAtt, attitudeinput, orbit, auxpath);
 
-	// Ê±¼ä
+	// æ—¶é—´
 	GeoTime *time = new GeoTime_ZY3();
 	time->ReadZY3TimeFile(allTime);
 
-	// Ïà»ú
+	// ç›¸æœº
 	GeoCamera *inner = new GeoCameraArray();
 	StrCamParamInput caminput;
 	caminput.f = 1.7;
@@ -846,9 +853,9 @@ void WorkFlow_ZY3::LittleArrayCamera(string auxpath)
 	caminput.Ynum = 1000;
 	caminput.Xstart = -500;
 	caminput.Ystart = -500;
-	inner->InitInnerFile("", caminput);//¶ÁÈ¡ÄÚ·½Î»ÔªËØ
+	inner->InitInnerFile("", caminput);//è¯»å–å†…æ–¹ä½å…ƒç´ 
 
-	 // Ä£ĞÍ
+	 // æ¨¡å‹
 	GeoModelArray model;
 	StrModelParamInput modelinput;
 	modelinput.isOrbitPoly = true;
@@ -864,7 +871,7 @@ void WorkFlow_ZY3::LittleArrayCamera(string auxpath)
 	{
 		model.InitModelArray(orbit, attitude, inner, modelinput, allTime[i].lineTimeUT);
 
-		//Æ«ÖÃ¼ÆËãÇ°²Ğ²î
+		//åç½®è®¡ç®—å‰æ®‹å·®
 		GeoCalibration m_Cali;
 		string strTif = filePath[i].substr(0, filePath[i].rfind('.')) + "_";
 		//m_Cali.calcGCPerr(&model, strTif, "_before");
@@ -926,12 +933,12 @@ void WorkFlow_ZY3::LittleArrayCamera(string auxpath)
 }
 
 //////////////////////////////////////////////////////////////////////////
-//¹¦ÄÜ£º½¯¸çµÄ·½·¨Æ¥Åä
-//ÊäÈë£º
-//Êä³ö£º
-//×¢Òâ£º
-//×÷Õß£ºGZC
-//ÈÕÆÚ£º2017.08.17
+//åŠŸèƒ½ï¼šè’‹å“¥çš„æ–¹æ³•åŒ¹é…
+//è¾“å…¥ï¼š
+//è¾“å‡ºï¼š
+//æ³¨æ„ï¼š
+//ä½œè€…ï¼šGZC
+//æ—¥æœŸï¼š2017.08.17
 //////////////////////////////////////////////////////////////////////////
 int WorkFlow_ZY3::Image_registration_rpc(string tifPath)
 {
@@ -943,7 +950,7 @@ int WorkFlow_ZY3::Image_registration_rpc(string tifPath)
 	{
 		char exe[512];
 		printf("=>Image %d and Image%d begin to register \t", i + 1, i + 2);
-		sprintf_s(exe, "%s %s %s 22", "C:\\Users\\wcsgz\\Documents\\2-CProject\\12-Öéº£ÎÀĞÇ\\x64\\Release\\Register3.3.exe",
+		sprintf_s(exe, "%s %s %s 22", "C:\\Users\\wcsgz\\Documents\\2-CProject\\12-ç æµ·å«æ˜Ÿ\\x64\\Release\\Register3.3.exe",
 			filePath[i].c_str(), filePath[i + 1].c_str());
 		system(exe);
 		Sleep(100);
@@ -953,12 +960,12 @@ int WorkFlow_ZY3::Image_registration_rpc(string tifPath)
 }
 
 //////////////////////////////////////////////////////////////////////////
-//¹¦ÄÜ£º»Æ×ÜµÄ·½·¨Æ¥Åä
-//ÊäÈë£º
-//Êä³ö£º
-//×¢Òâ£º
-//×÷Õß£ºGZC
-//ÈÕÆÚ£º2017.08.16
+//åŠŸèƒ½ï¼šé»„æ€»çš„æ–¹æ³•åŒ¹é…
+//è¾“å…¥ï¼š
+//è¾“å‡ºï¼š
+//æ³¨æ„ï¼š
+//ä½œè€…ï¼šGZC
+//æ—¥æœŸï¼š2017.08.16
 //////////////////////////////////////////////////////////////////////////
 void WorkFlow_ZY3::MatchBasedGeoModel(MatchPoint *gcp, int num, string imgL, string imgR)
 {
@@ -989,15 +996,15 @@ void WorkFlow_ZY3::MatchBasedGeoModel(MatchPoint *gcp, int num, string imgL, str
 }
 
 //////////////////////////////////////////////////////////////////////////
-//¹¦ÄÜ£º»ñÈ¡ÕæÊµ¿ØÖÆµã
-//ÊäÈë£º¹¤×÷¿Õ¼äÂ·¾¶
-//Êä³ö£ºÕæÊµ¿ØÖÆµãmatch.pts
-//×÷Õß£ºGZC
-//ÈÕÆÚ£º2017.08.25
+//åŠŸèƒ½ï¼šè·å–çœŸå®æ§åˆ¶ç‚¹
+//è¾“å…¥ï¼šå·¥ä½œç©ºé—´è·¯å¾„
+//è¾“å‡ºï¼šçœŸå®æ§åˆ¶ç‚¹match.pts
+//ä½œè€…ï¼šGZC
+//æ—¥æœŸï¼š2017.08.25
 //////////////////////////////////////////////////////////////////////////
 void WorkFlow_ZY3::CalcRealMatchPoint(string workpath)
 {
-	//¶ÁÈ¡ZY3Sim¸¨ÖúÊı¾İ
+	//è¯»å–ZY3Simè¾…åŠ©æ•°æ®
 	ParseZY3Aux ZY3_01;
 	vector<Orbit_Ep> allEp;
 	vector<Attitude> allAtt;
@@ -1008,7 +1015,7 @@ void WorkFlow_ZY3::CalcRealMatchPoint(string workpath)
 	ZY3_01.ReadZY301AttTXT(sAtt, allAtt);
 	ZY3_01.ReadLittleCameraTimeTXT(sTime, allTime);
 
-	// ¹ìµÀ
+	// è½¨é“
 	GeoOrbit *orbit = new GeoOrbitEarth_ZY3();
 	StrOrbitParamInput orbitinput;
 	orbitinput.DatumName = "WGS84";
@@ -1017,22 +1024,22 @@ void WorkFlow_ZY3::CalcRealMatchPoint(string workpath)
 	orbitinput.m_PolyOrder = 3;
 	orbit->ReadZY3EphFile(allEp, orbitinput);
 
-	// ×ËÌ¬
+	// å§¿æ€
 	GeoAttitude *attitude = new GeoAttitude_ZY3();
 	StrAttParamInput attitudeinput;
 	attitudeinput.DatumName = "WGS84";
 	attitudeinput.m_PolyOrder = 2;
 	attitude->ReadZY3RealAttFile(allAtt, attitudeinput, orbit, workpath);
 
-	// Ê±¼ä
+	// æ—¶é—´
 	GeoTime *time = new GeoTime_ZY3();
 	time->ReadZY3TimeFile(allTime);
 
-	// Ïà»ú
+	// ç›¸æœº
 	GeoCamera *inner = new GeoCameraArray();
-	inner->InitInnerFile("", CameraInput);//¶ÁÈ¡ÄÚ·½Î»ÔªËØ
+	inner->InitInnerFile("", CameraInput);//è¯»å–å†…æ–¹ä½å…ƒç´ 
 
-	// Ä£ĞÍ
+	// æ¨¡å‹
 	//GeoModel *model = new GeoModelArray[2];
 	GeoModelArray model[2];
 	StrModelParamInput modelinput;
@@ -1040,9 +1047,9 @@ void WorkFlow_ZY3::CalcRealMatchPoint(string workpath)
 	modelinput.isAttPoly = false;
 	modelinput.timeExtend = 4;
 
-	//¶ÁÈ¡DEM
+	//è¯»å–DEM
 	GeoReadImage DEM;
-	//DEM.Open("D:\\2_ImageData\\0.1\\Point1\\FWD\\2.Ó°ÏñÎÄ¼ş\\dem.img", GA_ReadOnly);
+	//DEM.Open("D:\\2_ImageData\\0.1\\Point1\\FWD\\2.å½±åƒæ–‡ä»¶\\dem.img", GA_ReadOnly);
 	DEM.Open(sDEM, GA_ReadOnly);
 	DEM.ReadBlock(0, 0, DEM.m_xRasterSize, DEM.m_yRasterSize, 0, DEM.pBuffer[0]);
 
@@ -1095,10 +1102,10 @@ void WorkFlow_ZY3::CalcRealMatchPoint(string workpath)
 			line += 10;
 		}
 
-		//Ìí¼ÓÆ¥ÅäÎó²î
+		//æ·»åŠ åŒ¹é…è¯¯å·®
 		int num = pGCP.size();
 		double *Err = new double[2*num];	
-		m_base.RandomDistribution(0, 0.3, 2*num, 0, Err);
+		m_base.RandomDistribution(0, 0.1, 2*num, 0, Err);
 		printf("=>Image %d's GCP has calculated\n", i + 1);
 		string output = filePath[i].substr(0, filePath[i].rfind('.')) + "_match.pts";
 		FILE *fp = fopen(output.c_str(), "w");
@@ -1114,16 +1121,16 @@ void WorkFlow_ZY3::CalcRealMatchPoint(string workpath)
 }
 
 //////////////////////////////////////////////////////////////////////////
-//¹¦ÄÜ£º¼ÆËã»Ö¸´µÄ×ËÌ¬
-//ÊäÈë£º¹¤×÷¿Õ¼äÂ·¾¶
-//Êä³ö£º»Ö¸´µÄ×ËÌ¬
-//×¢Òâ£ºµ÷ÓÃÍâ¼ìĞ£
-//×÷Õß£ºGZC
-//ÈÕÆÚ£º2017.08.17
+//åŠŸèƒ½ï¼šè®¡ç®—æ¢å¤çš„å§¿æ€
+//è¾“å…¥ï¼šå·¥ä½œç©ºé—´è·¯å¾„
+//è¾“å‡ºï¼šæ¢å¤çš„å§¿æ€
+//æ³¨æ„ï¼šè°ƒç”¨å¤–æ£€æ ¡
+//ä½œè€…ï¼šGZC
+//æ—¥æœŸï¼š2017.08.17
 //////////////////////////////////////////////////////////////////////////
 void WorkFlow_ZY3::CalcRealAttitude(string workpath)
 {
-	//¶ÁÈ¡ZY3Sim¸¨ÖúÊı¾İ
+	//è¯»å–ZY3Simè¾…åŠ©æ•°æ®
 	ParseZY3Aux ZY3_01;
 	vector<Orbit_Ep> allEp;
 	vector<Attitude> allAtt;
@@ -1135,7 +1142,7 @@ void WorkFlow_ZY3::CalcRealAttitude(string workpath)
 	ZY3_01.ReadZY301AttTXT(sAtt, allAtt);
 	ZY3_01.ReadLittleCameraTimeTXT(sTime, allTime);
 
-	// ¹ìµÀ
+	// è½¨é“
 	GeoOrbit *orbit = new GeoOrbitEarth_ZY3();
 	StrOrbitParamInput orbitinput;
 	orbitinput.DatumName = "WGS84";
@@ -1144,7 +1151,7 @@ void WorkFlow_ZY3::CalcRealAttitude(string workpath)
 	orbitinput.m_PolyOrder = 3;
 	orbit->ReadZY3EphFile(allEp, orbitinput);
 
-	// ×ËÌ¬
+	// å§¿æ€
 	GeoAttitude *attitude = new GeoAttitude_ZY3();
 	StrAttParamInput attitudeinput;
 	attitudeinput.DatumName = "WGS84";
@@ -1152,11 +1159,11 @@ void WorkFlow_ZY3::CalcRealAttitude(string workpath)
 	//attitude->ReadZY3RealAttFile(allAtt, attitudeinput, orbit, workpath);
 	attitude->ReadZY3AttFile(allAtt, attitudeinput, orbit, workpath);
 
-	// Ê±¼ä
+	// æ—¶é—´
 	GeoTime *time = new GeoTime_ZY3();
 	time->ReadZY3TimeFile(allTime);
 
-	// Ïà»ú
+	// ç›¸æœº
 	GeoCamera *inner = new GeoCameraArray();
 	StrCamParamInput caminput;
 	caminput.f = 1.7;
@@ -1166,9 +1173,9 @@ void WorkFlow_ZY3::CalcRealAttitude(string workpath)
 	caminput.Ynum = 1000;
 	caminput.Xstart = -500;
 	caminput.Ystart = -500;
-	inner->InitInnerFile("", caminput);//¶ÁÈ¡ÄÚ·½Î»ÔªËØ
+	inner->InitInnerFile("", caminput);//è¯»å–å†…æ–¹ä½å…ƒç´ 
 
-	// Ä£ĞÍ
+	// æ¨¡å‹
 	//GeoModel *model = new GeoModelArray[2];
 	GeoModelArray model[2];
 	StrModelParamInput modelinput;
@@ -1176,10 +1183,10 @@ void WorkFlow_ZY3::CalcRealAttitude(string workpath)
 	modelinput.isAttPoly = false;
 	modelinput.timeExtend = 4;
 
-	//¶ÁÈ¡DEM
+	//è¯»å–DEM
 	GeoReadImage DEM;
-	//DEM.Open("E:\\0.1\\Point1\\LAC\\7.Æ¥Åätest\\dem.img", GA_ReadOnly);
-	DEM.Open("C:\\Users\\wcsgz\\Documents\\5-¹¤¾ßÈí¼ş\\¼¸ºÎ¾«¶È¼ìĞ£v5.0\\È«ÇòDEM.tif", GA_ReadOnly);
+	//DEM.Open("E:\\0.1\\Point1\\LAC\\7.åŒ¹é…test\\dem.img", GA_ReadOnly);
+	DEM.Open("C:\\Users\\wcsgz\\Documents\\5-å·¥å…·è½¯ä»¶\\å‡ ä½•ç²¾åº¦æ£€æ ¡v5.0\\å…¨çƒDEM.tif", GA_ReadOnly);
 	DEM.ReadBlock(0, 0, DEM.m_xRasterSize, DEM.m_yRasterSize, 0, DEM.pBuffer[0]);
 
 	ParseZY3Aux m_File;
@@ -1188,7 +1195,7 @@ void WorkFlow_ZY3::CalcRealAttitude(string workpath)
 	vector<Attitude>attMeas, attModify, attRelative;
 	OffsetAngle Ru;	vector<OffsetAngle>RuForward, RuBackward;
 	vector<strRMS>accuracy1, accuracy2;
-	//ÕıÏò¼ÆËã×ËÌ¬
+	//æ­£å‘è®¡ç®—å§¿æ€
 	for (int i = 0; i < allTime.size() - 1; i++)
 	{
 		model[0].InitModelArray(orbit, attitude, inner, modelinput, allTime[i].lineTimeUT);
@@ -1213,10 +1220,10 @@ void WorkFlow_ZY3::CalcRealAttitude(string workpath)
 		int numGCP = 0;
 		for (int k = 0; k < num; k++)
 		{
-			//¶ÁÈ¡Æ¥Åä½á¹ûÏñËØ×ø±ê£¬×¢ÒâxÎªÑØ¹ì×ø±ê£¬yÎª´¹¹ì×ø±ê
+			//è¯»å–åŒ¹é…ç»“æœåƒç´ åæ ‡ï¼Œæ³¨æ„xä¸ºæ²¿è½¨åæ ‡ï¼Œyä¸ºå‚è½¨åæ ‡
 			fscanf(fp, "%lf\t%lf\t%lf\t%lf\n", &ly, &lx, &ry, &rx);
 			model[0].FromXY2LatLon(lx, ly, H, Lat, Lon);
-			//½áºÏDEM¼ÆËãÓ°Ïñ1Ïñµã(x1,y1)¶ÔÓ¦Îïµã×ø±ê(Lon,Lat,H);
+			//ç»“åˆDEMè®¡ç®—å½±åƒ1åƒç‚¹(x1,y1)å¯¹åº”ç‰©ç‚¹åæ ‡(Lon,Lat,H);
 			int j = 0;
 			while (1)
 			{
@@ -1239,7 +1246,7 @@ void WorkFlow_ZY3::CalcRealAttitude(string workpath)
 		}
 		fclose(fp);
 
-		//Æ«ÖÃ¼ÆËãÇ°²Ğ²î
+		//åç½®è®¡ç®—å‰æ®‹å·®
 		GeoCalibration m_Cali;
 		//m_Cali.calcGCPerr(model + 1, filePath[i], "_before", accuracy1,1);
 		//m_Cali.calcRMS(model + 1, workpath + "\\before_ru.txt", pGCP, numGCP);
@@ -1248,7 +1255,7 @@ void WorkFlow_ZY3::CalcRealAttitude(string workpath)
 		m_Cali.calcOffsetMatrix(model + 1, pGCP, numGCP, Ru);
 		RuForward.push_back(Ru);
 
-		//Æ«ÖÃ¼ÆËãºó²Ğ²î
+		//åç½®è®¡ç®—åæ®‹å·®
 		//model[1].updateOffsetmatrix(Ru);
 		//m_Cali.calcGCPerr(model + 1, filePath[i], "_after", accuracy2,1);
 		//m_Cali.calcRMS(model + 1, workpath + "\\after_ru.txt" , pGCP, numGCP);
@@ -1256,11 +1263,11 @@ void WorkFlow_ZY3::CalcRealAttitude(string workpath)
 		delete[]pGCP; pGCP = NULL;
 	}
 
-	//·´Ïò¼ÆËã×ËÌ¬
+	//åå‘è®¡ç®—å§¿æ€
 	for (int i = allTime.size() - 2; i >=0; i--)
 	{
-		model[0].InitModelArray(orbit, attitude, inner, modelinput, allTime[i].lineTimeUT);//Ğ£ÕıÖ¡
-		model[1].InitModelArray(orbit, attitude, inner, modelinput, allTime[i + 1].lineTimeUT);//»ù×¼Ö¡
+		model[0].InitModelArray(orbit, attitude, inner, modelinput, allTime[i].lineTimeUT);//æ ¡æ­£å¸§
+		model[1].InitModelArray(orbit, attitude, inner, modelinput, allTime[i + 1].lineTimeUT);//åŸºå‡†å¸§
 		if (i == allTime.size() - 2)
 		{
 			attMeas.push_back(model[1].GetQuatCam2wgs84());
@@ -1281,10 +1288,10 @@ void WorkFlow_ZY3::CalcRealAttitude(string workpath)
 		int numGCP = 0;
 		for (int k = 0; k < num; k++)
 		{
-			//¶ÁÈ¡Æ¥Åä½á¹ûÏñËØ×ø±ê£¬×¢ÒâxÎªÑØ¹ì×ø±ê£¬yÎª´¹¹ì×ø±ê
+			//è¯»å–åŒ¹é…ç»“æœåƒç´ åæ ‡ï¼Œæ³¨æ„xä¸ºæ²¿è½¨åæ ‡ï¼Œyä¸ºå‚è½¨åæ ‡
 			fscanf(fp, "%lf\t%lf\t%lf\t%lf\n", &ly, &lx, &ry, &rx);
 			model[1].FromXY2LatLon(rx, ry, H, Lat, Lon);
-			//½áºÏDEM¼ÆËãÓ°Ïñ1Ïñµã(x1,y1)¶ÔÓ¦Îïµã×ø±ê(Lon,Lat,H);
+			//ç»“åˆDEMè®¡ç®—å½±åƒ1åƒç‚¹(x1,y1)å¯¹åº”ç‰©ç‚¹åæ ‡(Lon,Lat,H);
 			int j = 0;
 			while (1)
 			{
@@ -1308,7 +1315,7 @@ void WorkFlow_ZY3::CalcRealAttitude(string workpath)
 		}
 		fclose(fp);
 
-		//Æ«ÖÃ¼ÆËãÇ°²Ğ²î
+		//åç½®è®¡ç®—å‰æ®‹å·®
 		GeoCalibration m_Cali;
 		//m_Cali.calcGCPerr(model, filePath[i], "_before", accuracy1,0);
 		//m_Cali.calcRMS(model + 1, workpath + "\\before_ru.txt", pGCP, numGCP);
@@ -1317,7 +1324,7 @@ void WorkFlow_ZY3::CalcRealAttitude(string workpath)
 		m_Cali.calcOffsetMatrix(model, pGCP, numGCP, Ru);
 		RuBackward.insert(RuBackward.begin(),Ru);
 
-		//Æ«ÖÃ¼ÆËãºó²Ğ²î
+		//åç½®è®¡ç®—åæ®‹å·®
 		//model[0].updateOffsetmatrix(Ru);
 		//m_Cali.calcGCPerr(model, filePath[i], "_after", accuracy2,0);
 		//m_Cali.calcRMS(model + 1, workpath + "\\after_ru.txt" , pGCP, numGCP);
@@ -1343,16 +1350,16 @@ void WorkFlow_ZY3::CalcRealAttitude(string workpath)
 }
 
 //////////////////////////////////////////////////////////////////////////
-//¹¦ÄÜ£º¼ÆËã»Ö¸´µÄ×ËÌ¬
-//ÊäÈë£º¹¤×÷¿Õ¼äÂ·¾¶
-//Êä³ö£º»Ö¸´µÄ×ËÌ¬
-//×¢Òâ£ºµ÷ÓÃÍâ¼ìĞ£
-//×÷Õß£ºGZC
-//ÈÕÆÚ£º2017.09.10
+//åŠŸèƒ½ï¼šè®¡ç®—æ¢å¤çš„å§¿æ€
+//è¾“å…¥ï¼šå·¥ä½œç©ºé—´è·¯å¾„
+//è¾“å‡ºï¼šæ¢å¤çš„å§¿æ€
+//æ³¨æ„ï¼šè°ƒç”¨å¤–æ£€æ ¡
+//ä½œè€…ï¼šGZC
+//æ—¥æœŸï¼š2017.09.10
 //////////////////////////////////////////////////////////////////////////
 void WorkFlow_ZY3::CalcModifyAttitude(string workpath)
 {
-	//¶ÁÈ¡ZY3Sim¸¨ÖúÊı¾İ
+	//è¯»å–ZY3Simè¾…åŠ©æ•°æ®
 	ParseZY3Aux ZY3_01;
 	vector<Orbit_Ep> allEp;
 	vector<Attitude> allAtt;
@@ -1364,7 +1371,7 @@ void WorkFlow_ZY3::CalcModifyAttitude(string workpath)
 	ZY3_01.ReadZY301AttTXT(sAtt, allAtt);
 	ZY3_01.ReadLittleCameraTimeTXT(sTime, allTime);
 
-	// ¹ìµÀ
+	// è½¨é“
 	GeoOrbit *orbit = new GeoOrbitEarth_ZY3();
 	StrOrbitParamInput orbitinput;
 	orbitinput.DatumName = "WGS84";
@@ -1373,7 +1380,7 @@ void WorkFlow_ZY3::CalcModifyAttitude(string workpath)
 	orbitinput.m_PolyOrder = 3;
 	orbit->ReadZY3EphFile(allEp, orbitinput);
 
-	// ×ËÌ¬
+	// å§¿æ€
 	GeoAttitude *attitude = new GeoAttitude_ZY3();
 	StrAttParamInput attitudeinput;
 	attitudeinput.DatumName = "WGS84";
@@ -1381,15 +1388,15 @@ void WorkFlow_ZY3::CalcModifyAttitude(string workpath)
 	//attitude->ReadZY3RealAttFile(allAtt, attitudeinput, orbit, workpath);
 	attitude->ReadZY3AttFile(allAtt, attitudeinput, orbit, workpath);
 
-	// Ê±¼ä
+	// æ—¶é—´
 	GeoTime *time = new GeoTime_ZY3();
 	time->ReadZY3TimeFile(allTime);
 
-	// Ïà»ú
+	// ç›¸æœº
 	GeoCamera *inner = new GeoCameraArray();
-	inner->InitInnerFile("", CameraInput);//¶ÁÈ¡ÄÚ·½Î»ÔªËØ
+	inner->InitInnerFile("", CameraInput);//è¯»å–å†…æ–¹ä½å…ƒç´ 
 
-	 // Ä£ĞÍ
+	 // æ¨¡å‹
 	//GeoModel *model = new GeoModelArray[2];
 	GeoModelArray model[2];
 	StrModelParamInput modelinput;
@@ -1397,9 +1404,9 @@ void WorkFlow_ZY3::CalcModifyAttitude(string workpath)
 	modelinput.isAttPoly = false;
 	modelinput.timeExtend = 4;
 
-	//¶ÁÈ¡DEM
+	//è¯»å–DEM
 	GeoReadImage DEM;
-	//DEM.Open("E:\\0.1\\Point1\\LAC\\7.Æ¥Åätest\\dem.img", GA_ReadOnly);
+	//DEM.Open("E:\\0.1\\Point1\\LAC\\7.åŒ¹é…test\\dem.img", GA_ReadOnly);
 	DEM.Open(sDEM, GA_ReadOnly);
 	DEM.ReadBlock(0, 0, DEM.m_xRasterSize, DEM.m_yRasterSize, 0, DEM.pBuffer[0]);
 
@@ -1423,10 +1430,10 @@ void WorkFlow_ZY3::CalcModifyAttitude(string workpath)
 		int numGCP = 0;
 		for (int k = 0; k < num; k++)
 		{
-			//¶ÁÈ¡Æ¥Åä½á¹ûÏñËØ×ø±ê£¬×¢ÒâxÎªÑØ¹ì×ø±ê£¬yÎª´¹¹ì×ø±ê
+			//è¯»å–åŒ¹é…ç»“æœåƒç´ åæ ‡ï¼Œæ³¨æ„xä¸ºæ²¿è½¨åæ ‡ï¼Œyä¸ºå‚è½¨åæ ‡
 			fscanf(fp, "%lf\t%lf\t%lf\t%lf\n", &ly, &lx, &ry, &rx);
 			model[0].FromXY2LatLon(lx, ly, H, Lat, Lon);
-			//½áºÏDEM¼ÆËãÓ°Ïñ1Ïñµã(x1,y1)¶ÔÓ¦Îïµã×ø±ê(Lon,Lat,H);
+			//ç»“åˆDEMè®¡ç®—å½±åƒ1åƒç‚¹(x1,y1)å¯¹åº”ç‰©ç‚¹åæ ‡(Lon,Lat,H);
 			int j = 0;
 			while (1)
 			{
@@ -1454,19 +1461,19 @@ void WorkFlow_ZY3::CalcModifyAttitude(string workpath)
 		m_Cali.calcOffsetMatrix(model + 1, pGCP, numGCP, Ru);
 		delete[]pGCP; pGCP = NULL;
 	}	
-	//Êä³öĞŞÕıºóËÄÔªÊı
+	//è¾“å‡ºä¿®æ­£åå››å…ƒæ•°
 	OutputQuat(workpath, attModify);
 
 	DEM.Destroy();
 }
 
 //////////////////////////////////////////////////////////////////////////
-//¹¦ÄÜ£ºÈÚºÏÇ°ÏòºÍºóÏòÆ«ÖÃ¾ØÕóRu
-//ÊäÈë£ºÇ°ÏòRu¼ÆËãÖµRuForward£¬ºóÏòRu¼ÆËãÖµRuBackward
-//Êä³ö£ºRuÖĞ¼äÖµRuForward
-//×¢Òâ£º
-//×÷Õß£ºGZC
-//ÈÕÆÚ£º2017.08.25
+//åŠŸèƒ½ï¼šèåˆå‰å‘å’Œåå‘åç½®çŸ©é˜µRu
+//è¾“å…¥ï¼šå‰å‘Ruè®¡ç®—å€¼RuForwardï¼Œåå‘Ruè®¡ç®—å€¼RuBackward
+//è¾“å‡ºï¼šRuä¸­é—´å€¼RuForward
+//æ³¨æ„ï¼š
+//ä½œè€…ï¼šGZC
+//æ—¥æœŸï¼š2017.08.25
 //////////////////////////////////////////////////////////////////////////
 void WorkFlow_ZY3::RuFusion(vector<OffsetAngle>&RuForward, vector<OffsetAngle>RuBackward)
 {
@@ -1486,12 +1493,12 @@ void WorkFlow_ZY3::RuFusion(vector<OffsetAngle>&RuForward, vector<OffsetAngle>Ru
 	RuForward.assign(Ru.begin(), Ru.end());
 }
 //////////////////////////////////////////////////////////////////////////
-//¹¦ÄÜ£º±È½Ï»Ö¸´µÄ×ËÌ¬
-//ÊäÈë£º²âÁ¿×ËÌ¬£¬ĞŞÕı×ËÌ¬£¬ÕæÊµ×ËÌ¬
-//Êä³ö£º±È½Ï½á¹ûtxt
-//×¢Òâ£º
-//×÷Õß£ºGZC
-//ÈÕÆÚ£º2017.08.20
+//åŠŸèƒ½ï¼šæ¯”è¾ƒæ¢å¤çš„å§¿æ€
+//è¾“å…¥ï¼šæµ‹é‡å§¿æ€ï¼Œä¿®æ­£å§¿æ€ï¼ŒçœŸå®å§¿æ€
+//è¾“å‡ºï¼šæ¯”è¾ƒç»“æœtxt
+//æ³¨æ„ï¼š
+//ä½œè€…ï¼šGZC
+//æ—¥æœŸï¼š2017.08.20
 //////////////////////////////////////////////////////////////////////////
 void WorkFlow_ZY3::CompareMeasModifyAndReal(vector<Attitude>Meas, vector<Attitude>Modify, string realAttPath)
 {
@@ -1536,12 +1543,12 @@ void WorkFlow_ZY3::CompareMeasModifyAndReal(vector<Attitude>Meas, vector<Attitud
 }
 
 //////////////////////////////////////////////////////////////////////////
-//¹¦ÄÜ£ºÊä³ö¸ù¾İ¿ØÖÆµã¼ÆËãµÄ²Ğ²î
-//ÊäÈë£º¾«¶Èvector<RMS>accuracy
-//Êä³ö£º½á¹û±ä»¯
-//×¢Òâ£º
-//×÷Õß£ºGZC
-//ÈÕÆÚ£º2017.08.23
+//åŠŸèƒ½ï¼šè¾“å‡ºæ ¹æ®æ§åˆ¶ç‚¹è®¡ç®—çš„æ®‹å·®
+//è¾“å…¥ï¼šç²¾åº¦vector<RMS>accuracy
+//è¾“å‡ºï¼šç»“æœå˜åŒ–
+//æ³¨æ„ï¼š
+//ä½œè€…ï¼šGZC
+//æ—¥æœŸï¼š2017.08.23
 //////////////////////////////////////////////////////////////////////////
 void WorkFlow_ZY3::OutputRMS(string outFile, vector<strRMS>accuracy1, vector<strRMS>accuracy2)
 {
@@ -1581,16 +1588,16 @@ void WorkFlow_ZY3::OutputQuat(string path, vector<Attitude> att)
 }
 
 //////////////////////////////////////////////////////////////////////////
-//¹¦ÄÜ£º¸ù¾İÆ¥Åä¼ÆËã½ÇËÙ¶È£¬È»ºó½áºÏ²âÁ¿×ËÌ¬×ö¿¨¶ûÂüÂË²¨
-//ÊäÈë£º¹¤×÷¿Õ¼äÄ¿Â¼
-//Êä³ö£º¿ØÖÆµã¾«¶È±È½Ï
-//×¢Òâ£º
-//×÷Õß£ºGZC
-//ÈÕÆÚ£º2017.08.30
+//åŠŸèƒ½ï¼šæ ¹æ®åŒ¹é…è®¡ç®—è§’é€Ÿåº¦ï¼Œç„¶åç»“åˆæµ‹é‡å§¿æ€åšå¡å°”æ›¼æ»¤æ³¢
+//è¾“å…¥ï¼šå·¥ä½œç©ºé—´ç›®å½•
+//è¾“å‡ºï¼šæ§åˆ¶ç‚¹ç²¾åº¦æ¯”è¾ƒ
+//æ³¨æ„ï¼š
+//ä½œè€…ï¼šGZC
+//æ—¥æœŸï¼š2017.08.30
 //////////////////////////////////////////////////////////////////////////
 void WorkFlow_ZY3::CalcOmegaKalman(string workpath)
 {
-	//¶ÁÈ¡ZY3Sim¸¨ÖúÊı¾İ
+	//è¯»å–ZY3Simè¾…åŠ©æ•°æ®
 	ParseZY3Aux ZY3_01;
 	vector<Orbit_Ep> allEp;
 	vector<Attitude> allAtt;
@@ -1602,7 +1609,7 @@ void WorkFlow_ZY3::CalcOmegaKalman(string workpath)
 	ZY3_01.ReadZY301AttTXT(sAtt, allAtt);
 	ZY3_01.ReadLittleCameraTimeTXT(sTime, allTime);
 
-	// ¹ìµÀ
+	// è½¨é“
 	GeoOrbit *orbit = new GeoOrbitEarth_ZY3();
 	StrOrbitParamInput orbitinput;
 	orbitinput.DatumName = "WGS84";
@@ -1611,7 +1618,7 @@ void WorkFlow_ZY3::CalcOmegaKalman(string workpath)
 	orbitinput.m_PolyOrder = 3;
 	orbit->ReadZY3EphFile(allEp, orbitinput);
 
-	// ×ËÌ¬
+	// å§¿æ€
 	GeoAttitude *attitude = new GeoAttitude_ZY3();
 	StrAttParamInput attitudeinput;
 	attitudeinput.DatumName = "WGS84";
@@ -1619,7 +1626,7 @@ void WorkFlow_ZY3::CalcOmegaKalman(string workpath)
 	//attitude->ReadZY3RealAttFile(allAtt, attitudeinput, orbit, workpath);
 	attitude->ReadZY3AttFile(allAtt, attitudeinput, orbit, workpath);
 
-	//¶ÁÈ¡EOP
+	//è¯»å–EOP
 	int num;
 	FILE *fp = fopen((workpath + "\\WGS84ToJ2000_Error.txt").c_str(), "r");
 	fscanf(fp, "%d\n", &num);
@@ -1631,11 +1638,11 @@ void WorkFlow_ZY3::CalcOmegaKalman(string workpath)
 			&strEOP[i].R[5], &strEOP[i].R[6], &strEOP[i].R[7], &strEOP[i].R[8]);// WGS84ToJ2000
 	}
 
-	// Ê±¼ä
+	// æ—¶é—´
 	GeoTime *time = new GeoTime_ZY3();
 	time->ReadZY3TimeFile(allTime);
 
-	// Ïà»ú
+	// ç›¸æœº
 	GeoCamera *inner = new GeoCameraArray();
 	StrCamParamInput caminput;
 	caminput.f = 1.7;
@@ -1645,9 +1652,9 @@ void WorkFlow_ZY3::CalcOmegaKalman(string workpath)
 	caminput.Ynum = 1000;
 	caminput.Xstart = -500;
 	caminput.Ystart = -500;
-	inner->InitInnerFile("", caminput);//¶ÁÈ¡ÄÚ·½Î»ÔªËØ
+	inner->InitInnerFile("", caminput);//è¯»å–å†…æ–¹ä½å…ƒç´ 
 
-	// Ä£ĞÍ
+	// æ¨¡å‹
 	//GeoModel *model = new GeoModelArray[2];
 	GeoModelArray model[2];
 	StrModelParamInput modelinput;
@@ -1655,10 +1662,10 @@ void WorkFlow_ZY3::CalcOmegaKalman(string workpath)
 	modelinput.isAttPoly = false;
 	modelinput.timeExtend = 4;
 
-	//¶ÁÈ¡DEM
+	//è¯»å–DEM
 	GeoReadImage DEM;
-	//DEM.Open("E:\\0.1\\Point1\\LAC\\7.Æ¥Åätest\\dem.img", GA_ReadOnly);
-	DEM.Open("C:\\Users\\wcsgz\\Documents\\5-¹¤¾ßÈí¼ş\\¼¸ºÎ¾«¶È¼ìĞ£v5.0\\È«ÇòDEM.tif", GA_ReadOnly);
+	//DEM.Open("E:\\0.1\\Point1\\LAC\\7.åŒ¹é…test\\dem.img", GA_ReadOnly);
+	DEM.Open("C:\\Users\\wcsgz\\Documents\\5-å·¥å…·è½¯ä»¶\\å‡ ä½•ç²¾åº¦æ£€æ ¡v5.0\\å…¨çƒDEM.tif", GA_ReadOnly);
 	DEM.ReadBlock(0, 0, DEM.m_xRasterSize, DEM.m_yRasterSize, 0, DEM.pBuffer[0]);
 
 	ParseZY3Aux m_File;
@@ -1669,7 +1676,7 @@ void WorkFlow_ZY3::CalcOmegaKalman(string workpath)
 	vector<strRMS>accuracy1, accuracy2;
 	vector<Gyro>omega;
 
-	//ÕıÏò¼ÆËã×ËÌ¬
+	//æ­£å‘è®¡ç®—å§¿æ€
 	for (int i = 0; i < allTime.size() - 1; i++)
 	{
 		model[0].InitModelArray(orbit, attitude, inner, modelinput, allTime[i].lineTimeUT);
@@ -1684,10 +1691,10 @@ void WorkFlow_ZY3::CalcOmegaKalman(string workpath)
 		int numGCP = 0;
 		for (int k = 0; k < num; k++)
 		{
-			//¶ÁÈ¡Æ¥Åä½á¹ûÏñËØ×ø±ê£¬×¢ÒâxÎªÑØ¹ì×ø±ê£¬yÎª´¹¹ì×ø±ê
+			//è¯»å–åŒ¹é…ç»“æœåƒç´ åæ ‡ï¼Œæ³¨æ„xä¸ºæ²¿è½¨åæ ‡ï¼Œyä¸ºå‚è½¨åæ ‡
 			fscanf(fp, "%lf\t%lf\t%lf\t%lf\n", &ly, &lx, &ry, &rx);
 			model[0].FromXY2LatLon(lx, ly, H, Lat, Lon);
-			//½áºÏDEM¼ÆËãÓ°Ïñ1Ïñµã(x1,y1)¶ÔÓ¦Îïµã×ø±ê(Lon,Lat,H);
+			//ç»“åˆDEMè®¡ç®—å½±åƒ1åƒç‚¹(x1,y1)å¯¹åº”ç‰©ç‚¹åæ ‡(Lon,Lat,H);
 			int j = 0;
 			while (1)
 			{
@@ -1710,7 +1717,7 @@ void WorkFlow_ZY3::CalcOmegaKalman(string workpath)
 		}
 		fclose(fp);
 
-		//Æ«ÖÃ¼ÆËãÇ°²Ğ²î
+		//åç½®è®¡ç®—å‰æ®‹å·®
 		GeoCalibration m_Cali;
 		m_Cali.calcGCPerr(model + 1, filePath[i], "_before", accuracy1, 1);
 
@@ -1743,16 +1750,16 @@ void WorkFlow_ZY3::CalcOmegaKalman(string workpath)
 }
 
 //////////////////////////////////////////////////////////////////////////
-//¹¦ÄÜ£ºÍ¨¹ıÏ¡Êè¾ØÕóÇó½â×ËÌ¬
-//ÊäÈë£º¹¤×÷¿Õ¼äÂ·¾¶
-//Êä³ö£º»Ö¸´µÄ×ËÌ¬
-//×¢Òâ£ºµ÷ÓÃÏ¡Êè¾ØÕó¹«Ê½
-//×÷Õß£ºGZC
-//ÈÕÆÚ£º2017.09.04
+//åŠŸèƒ½ï¼šé€šè¿‡ç¨€ç–çŸ©é˜µæ±‚è§£å§¿æ€
+//è¾“å…¥ï¼šå·¥ä½œç©ºé—´è·¯å¾„
+//è¾“å‡ºï¼šæ¢å¤çš„å§¿æ€
+//æ³¨æ„ï¼šè°ƒç”¨ç¨€ç–çŸ©é˜µå…¬å¼
+//ä½œè€…ï¼šGZC
+//æ—¥æœŸï¼š2017.09.04
 //////////////////////////////////////////////////////////////////////////
 void WorkFlow_ZY3::CalcRealAttitude_sparse(string workpath)
 {
-	//¶ÁÈ¡ZY3Sim¸¨ÖúÊı¾İ
+	//è¯»å–ZY3Simè¾…åŠ©æ•°æ®
 	ParseZY3Aux ZY3_01;
 	vector<Orbit_Ep> allEp;
 	vector<Attitude> allAtt;
@@ -1764,7 +1771,7 @@ void WorkFlow_ZY3::CalcRealAttitude_sparse(string workpath)
 	ZY3_01.ReadZY301AttTXT(sAtt, allAtt);
 	ZY3_01.ReadLittleCameraTimeTXT(sTime, allTime);
 
-	// ¹ìµÀ
+	// è½¨é“
 	GeoOrbit *orbit = new GeoOrbitEarth_ZY3();
 	StrOrbitParamInput orbitinput;
 	orbitinput.DatumName = "WGS84";
@@ -1773,7 +1780,7 @@ void WorkFlow_ZY3::CalcRealAttitude_sparse(string workpath)
 	orbitinput.m_PolyOrder = 3;
 	orbit->ReadZY3EphFile(allEp, orbitinput);
 
-	// ×ËÌ¬
+	// å§¿æ€
 	GeoAttitude *attitude = new GeoAttitude_ZY3();
 	StrAttParamInput attitudeinput;
 	attitudeinput.DatumName = "WGS84";
@@ -1781,11 +1788,11 @@ void WorkFlow_ZY3::CalcRealAttitude_sparse(string workpath)
 	//attitude->ReadZY3RealAttFile(allAtt, attitudeinput, orbit, workpath);
 	attitude->ReadZY3AttFile(allAtt, attitudeinput, orbit, workpath);
 
-	// Ê±¼ä
+	// æ—¶é—´
 	GeoTime *time = new GeoTime_ZY3();
 	time->ReadZY3TimeFile(allTime);
 
-	// Ïà»ú
+	// ç›¸æœº
 	GeoCamera *inner = new GeoCameraArray();
 	StrCamParamInput caminput;
 	caminput.f = 1.7;
@@ -1795,9 +1802,9 @@ void WorkFlow_ZY3::CalcRealAttitude_sparse(string workpath)
 	caminput.Ynum = 1000;
 	caminput.Xstart = -500;
 	caminput.Ystart = -500;
-	inner->InitInnerFile("", caminput);//¶ÁÈ¡ÄÚ·½Î»ÔªËØ
+	inner->InitInnerFile("", caminput);//è¯»å–å†…æ–¹ä½å…ƒç´ 
 
-	// Ä£ĞÍ
+	// æ¨¡å‹
 	//GeoModel *model = new GeoModelArray[2];
 	GeoModelArray *model = new GeoModelArray[allTime.size()];
 	//GeoModelArray model[2];
@@ -1805,12 +1812,12 @@ void WorkFlow_ZY3::CalcRealAttitude_sparse(string workpath)
 	modelinput.isOrbitPoly = false;
 	modelinput.isAttPoly = false;
 	modelinput.timeExtend = 4;
-	string strDEM = "C:\\Users\\wcsgz\\Documents\\5-¹¤¾ßÈí¼ş\\¼¸ºÎ¾«¶È¼ìĞ£v5.0\\È«ÇòDEM.tif";
+	string strDEM = "C:\\Users\\wcsgz\\Documents\\5-å·¥å…·è½¯ä»¶\\å‡ ä½•ç²¾åº¦æ£€æ ¡v5.0\\å…¨çƒDEM.tif";
 	
 
-	//¶ÁÈ¡DEM
+	//è¯»å–DEM
 	GeoReadImage DEM;
-	DEM.Open("C:\\Users\\wcsgz\\Documents\\5-¹¤¾ßÈí¼ş\\¼¸ºÎ¾«¶È¼ìĞ£v5.0\\È«ÇòDEM.tif", GA_ReadOnly);
+	DEM.Open("C:\\Users\\wcsgz\\Documents\\5-å·¥å…·è½¯ä»¶\\å‡ ä½•ç²¾åº¦æ£€æ ¡v5.0\\å…¨çƒDEM.tif", GA_ReadOnly);
 	DEM.ReadBlock(0, 0, DEM.m_xRasterSize, DEM.m_yRasterSize, 0, DEM.pBuffer[0]);
 
 	ParseZY3Aux m_File;
@@ -1819,7 +1826,7 @@ void WorkFlow_ZY3::CalcRealAttitude_sparse(string workpath)
 	OffsetAngle Ru;	vector<OffsetAngle>RuForward, RuBackward;
 	vector<strRMS>accuracy1, accuracy2;
 
-	int nMatch = 0;//¼ÆËãËùÓĞÆ¥ÅäµãµÄÊıÁ¿
+	int nMatch = 0;//è®¡ç®—æ‰€æœ‰åŒ¹é…ç‚¹çš„æ•°é‡
 	for (int i = 0; i < allTime.size() - 1; i++)
 	{
 		FILE *fp = fopen(filePath[i].c_str(), "r");
@@ -1845,7 +1852,7 @@ void WorkFlow_ZY3::CalcRealAttitude_sparse(string workpath)
 		int numGCP = 0;
 		for (int k = 0; k < num; k++)
 		{
-			//¶ÁÈ¡Æ¥Åä½á¹ûÏñËØ×ø±ê£¬×¢ÒâxÎªÑØ¹ì×ø±ê£¬yÎª´¹¹ì×ø±ê
+			//è¯»å–åŒ¹é…ç»“æœåƒç´ åæ ‡ï¼Œæ³¨æ„xä¸ºæ²¿è½¨åæ ‡ï¼Œyä¸ºå‚è½¨åæ ‡
 			fscanf(fp, "%lf\t%lf\t%lf\t%lf\n", &ly, &lx, &ry, &rx);
 			MatchPoint pts;
 			pts.lx = lx, pts.ly = ly, pts.rx = rx, pts.ry = ry;
@@ -1859,7 +1866,7 @@ void WorkFlow_ZY3::CalcRealAttitude_sparse(string workpath)
 			pMatchs[nMatch].nIndex[1] = i+1;
 			/*H = model[i].CalcHeihtFromDEM(lx, ly, Lat, Lon);*/
 			model[i].FromXY2LatLon(lx, ly, H, Lat, Lon);
-			//½áºÏDEM¼ÆËãÓ°Ïñ1Ïñµã(x1,y1)¶ÔÓ¦Îïµã×ø±ê(Lon,Lat,H);
+			//ç»“åˆDEMè®¡ç®—å½±åƒ1åƒç‚¹(x1,y1)å¯¹åº”ç‰©ç‚¹åæ ‡(Lon,Lat,H);
 			int j = 0;
 			while (1)
 			{
@@ -1883,7 +1890,7 @@ void WorkFlow_ZY3::CalcRealAttitude_sparse(string workpath)
 		}
 		fclose(fp);
 
-		//Æ«ÖÃ¼ÆËãÇ°²Ğ²î
+		//åç½®è®¡ç®—å‰æ®‹å·®
 		GeoCalibration m_Cali;
 		//m_Cali.calcGCPerr(model + 1, filePath[i], "_before", accuracy1, 1);
 
@@ -1914,12 +1921,12 @@ void WorkFlow_ZY3::CalcRealAttitude_sparse(string workpath)
 }
 
 //////////////////////////////////////////////////////////////////////////
-//¹¦ÄÜ£ºÏ¡Êè¾ØÕóÇó½â
-//ÊäÈë£º¹¤×÷¿Õ¼äÂ·¾¶
-//Êä³ö£º
-//×¢Òâ£º
-//×÷Õß£ºJYH
-//ÈÕÆÚ£º2017.09.04
+//åŠŸèƒ½ï¼šç¨€ç–çŸ©é˜µæ±‚è§£
+//è¾“å…¥ï¼šå·¥ä½œç©ºé—´è·¯å¾„
+//è¾“å‡ºï¼š
+//æ³¨æ„ï¼š
+//ä½œè€…ï¼šJYH
+//æ—¥æœŸï¼š2017.09.04
 //////////////////////////////////////////////////////////////////////////
 bool WorkFlow_ZY3::autoGeoCalibration_sparse(GeoModelArray *pGeoModel, int num, 
 	conjugatePoints* pMatch, int nMatch, int xOrder, int yOrder, double *&pRes, string sRes)
@@ -1929,12 +1936,12 @@ bool WorkFlow_ZY3::autoGeoCalibration_sparse(GeoModelArray *pGeoModel, int num,
 		printf("=>need at least two images!\n");
 		return false;
 	}
-	//¶ÁÈ¡DEM
+	//è¯»å–DEM
 	GeoReadImage DEM;
-	DEM.Open("C:\\Users\\wcsgz\\Documents\\5-¹¤¾ßÈí¼ş\\¼¸ºÎ¾«¶È¼ìĞ£v5.0\\È«ÇòDEM.tif", GA_ReadOnly);
+	DEM.Open("C:\\Users\\wcsgz\\Documents\\5-å·¥å…·è½¯ä»¶\\å‡ ä½•ç²¾åº¦æ£€æ ¡v5.0\\å…¨çƒDEM.tif", GA_ReadOnly);
 	DEM.ReadBlock(0, 0, DEM.m_xRasterSize, DEM.m_yRasterSize, 0, DEM.pBuffer[0]);
 
-	double a = 6378137, b = 6356752.314;//ÍÖÇò²ÎÊı
+	double a = 6378137, b = 6356752.314;//æ¤­çƒå‚æ•°
 
 	int alongOrder = xOrder;
 	int acrossOrder = yOrder;
@@ -1958,13 +1965,13 @@ bool WorkFlow_ZY3::autoGeoCalibration_sparse(GeoModelArray *pGeoModel, int num,
 	pUnknown[nHalfUnknown1] = camy0;
 	pUnknown[nHalfUnknown1 + 1] = (camy1 - camy0);///(wi-1);
 
-	//»ñÈ¡³õÖµ£¬±£´æ¸ß³Ì£¬ºóĞø²»ÔÙ¸ü¸Ä¸ß³Ì;
+	//è·å–åˆå€¼ï¼Œä¿å­˜é«˜ç¨‹ï¼Œåç»­ä¸å†æ›´æ”¹é«˜ç¨‹;
 	double lat1, lon1, h1, lat2, lon2, h2;
 	double *pH = new double[nMatch];
 	for (int i = 0; i < nMatch; i++)
 	{
 		pGeoModel[pMatch[i].nIndex[0]].FromXY2LatLon(pMatch[i].xl, pMatch[i].yl, h1, lat1, lon1);
-		//½áºÏDEM¼ÆËãÓ°Ïñ1Ïñµã(x1,y1)¶ÔÓ¦Îïµã×ø±ê(Lon,Lat,H);
+		//ç»“åˆDEMè®¡ç®—å½±åƒ1åƒç‚¹(x1,y1)å¯¹åº”ç‰©ç‚¹åæ ‡(Lon,Lat,H);
 		int j = 0;
 		while (1)
 		{
@@ -1984,7 +1991,7 @@ bool WorkFlow_ZY3::autoGeoCalibration_sparse(GeoModelArray *pGeoModel, int num,
 			h1 = 0;
 		h2 = h1;
 		pGeoModel[pMatch[i].nIndex[1]].FromXY2LatLon(pMatch[i].xr, pMatch[i].yr, h2, lat2, lon2);
-		//½áºÏDEM¼ÆËãÓ°Ïñ1Ïñµã(x1,y1)¶ÔÓ¦Îïµã×ø±ê(Lon,Lat,H);
+		//ç»“åˆDEMè®¡ç®—å½±åƒ1åƒç‚¹(x1,y1)å¯¹åº”ç‰©ç‚¹åæ ‡(Lon,Lat,H);
 		j = 0;
 		while (1)
 		{
@@ -2019,9 +2026,9 @@ bool WorkFlow_ZY3::autoGeoCalibration_sparse(GeoModelArray *pGeoModel, int num,
 	}
 
 	typedef Triplet<double> T;
-	std::vector<T> tripletList;//Ï¡Êè¾ØÕóµÄÔªËØ  
+	std::vector<T> tripletList;//ç¨€ç–çŸ©é˜µçš„å…ƒç´   
 	VectorXd eigL(4 * nMatch);
-	double R[9], XYZs[3]; //´æ´¢×ËÌ¬¾ØÕóºÍÎÀĞÇÎ»ÖÃ;
+	double R[9], XYZs[3]; //å­˜å‚¨å§¿æ€çŸ©é˜µå’Œå«æ˜Ÿä½ç½®;
 
 	int nIter = 0;
 
@@ -2159,8 +2166,8 @@ bool WorkFlow_ZY3::autoGeoCalibration_sparse(GeoModelArray *pGeoModel, int num,
 
 		}
 
-		SparseMatrixType eigA(nMatch * 4, nUnknown);//¾ØÕóµÄ¿í¸ß  
-		eigA.setFromTriplets(tripletList.begin(), tripletList.end());//´ÓTripletÖĞ¹¹½¨Ï¡Êè¾ØÕó  
+		SparseMatrixType eigA(nMatch * 4, nUnknown);//çŸ©é˜µçš„å®½é«˜  
+		eigA.setFromTriplets(tripletList.begin(), tripletList.end());//ä»Tripletä¸­æ„å»ºç¨€ç–çŸ©é˜µ  
 		SparseMatrixType eigA_T = SparseMatrixType(eigA.transpose());
 		SparseMatrixType eigA_T_P_A = eigA_T*eigA;
 
@@ -2220,7 +2227,7 @@ bool WorkFlow_ZY3::autoGeoCalibration_sparse(GeoModelArray *pGeoModel, int num,
 	pRes = new double[nUnknown1];
 	memcpy(pRes, pUnknown, sizeof(double)*nUnknown1);
 
-	////start£ºÇó½âÄÚ·½Î»Ö®ºó
+	////startï¼šæ±‚è§£å†…æ–¹ä½ä¹‹å
 
 	//DistortionParams params;
 	//params.xOrder = xOrder;
@@ -2278,7 +2285,7 @@ bool WorkFlow_ZY3::autoGeoCalibration_sparse(GeoModelArray *pGeoModel, int num,
 	//delete[]pH, pH = NULL;
 	//delete[]pUnknown, pUnknown = NULL;
 
-	////end£ºÇó½âÄÚ·½Î»Ö®ºó
+	////endï¼šæ±‚è§£å†…æ–¹ä½ä¹‹å
 
 	return true;
 }
