@@ -347,8 +347,8 @@ void GeoCalibration::calcGCPerr(GeoModelArray* pModel, string strImg,string out,
 	char strgcp[512];
 	sprintf(strgcp, "%s_%03d%s",tmp2.c_str(), tmp3, ".ctl");
 	FILE* fp = fopen(strgcp, "r");
-	string strRes = strImg.substr(0, strImg.rfind('_')) + out + "_rms.txt";
-	FILE* fpres = fopen(strRes.c_str(), "w");
+	//string strRes = strImg.substr(0, strImg.rfind('_')) + out + "_rms.txt";
+	//FILE* fpres = fopen(strRes.c_str(), "w");
 	int numGCP;
 	fscanf(fp, "%d\n", &numGCP);
 	double maxx, maxy, minx, miny, rmsx, rmsy, plane;
@@ -372,19 +372,19 @@ void GeoCalibration::calcGCPerr(GeoModelArray* pModel, string strImg,string out,
 		rmsx += ex*ex / numGCP;
 		rmsy += ey*ey / numGCP;
 
-		fprintf(fpres, "%04d\t%lf\t%lf\t0.\t0.\t%lf\t%lf\n", i, lx, ly, ex, ey);
+		//fprintf(fpres, "%04d\t%lf\t%lf\t0.\t0.\t%lf\t%lf\n", i, lx, ly, ex, ey);
 	}
 	plane = sqrt(rmsx + rmsy);
 	rmsx = sqrt(rmsx);
 	rmsy = sqrt(rmsy);
-	fprintf(fpres, "x: %lf\t%lf\t%lf\n", minx, maxx, rmsx);
-	fprintf(fpres, "y: %lf\t%lf\t%lf\n", miny, maxy, rmsy);
-	fprintf(fpres, "plane: %lf", plane);
+	//fprintf(fpres, "x: %lf\t%lf\t%lf\n", minx, maxx, rmsx);
+	//fprintf(fpres, "y: %lf\t%lf\t%lf\n", miny, maxy, rmsy);
+	//fprintf(fpres, "plane: %lf", plane);
 	strRMS tmpRms;
 	tmpRms.rmsall = plane; tmpRms.rmsx = rmsx; tmpRms.rmsy = rmsy;
 	acc.push_back(tmpRms);
 	fclose(fp);
-	fclose(fpres);
+	//fclose(fpres);
 }
 
 // 立体定位精度分析接口
