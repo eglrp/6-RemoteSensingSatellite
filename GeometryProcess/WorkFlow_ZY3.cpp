@@ -736,8 +736,9 @@ void WorkFlow_ZY3::OutputMatchAndGCP(string filePath, vector<MatchPoint>pMatch, 
 {
 	//添加随机误差
 	int num = pMatch.size();
-	double *Err = new double[2 * num];
-	m_base.RandomDistribution(0, 0.1, 2 * num, 0, Err);
+	double *Err1 = new double[num];	double *Err2 = new double[num];
+	m_base.RandomDistribution(0, 0, num, 0, Err1);
+	m_base.RandomDistribution(0, 0, num, 0, Err2);
 
 	string output = filePath.substr(0, filePath.rfind('.')) + "_match.pts";
 	string output2 = filePath.substr(0, filePath.rfind('.')) + "_GCP.txt";
@@ -747,10 +748,10 @@ void WorkFlow_ZY3::OutputMatchAndGCP(string filePath, vector<MatchPoint>pMatch, 
 	fprintf(fp2, "; %d\n", pGCP.size());
 	for (int i = 0; i < pMatch.size(); i++)
 	{
-		fprintf(fp, "%.9f\t%.9f\t%.9f\t%.9f\n", pMatch[i].ly, pMatch[i].lx, pMatch[i].ry + Err[i], pMatch[i].rx + Err[i+num]);
+		fprintf(fp, "%.9f\t%.9f\t%.9f\t%.9f\n", pMatch[i].ly, pMatch[i].lx, pMatch[i].ry + Err1[i], pMatch[i].rx + Err2[i]);
 		fprintf(fp2, "%f\t%f\t%.9f\t%.9f\t%.9f\n", pGCP[i].x, pGCP[i].y, pGCP[i].lat, pGCP[i].lon, pGCP[i].h);
 	}
-	delete[] Err; Err = NULL;
+	delete[] Err1,Err2; Err1=Err2 = NULL;
 	fclose(fp); fclose(fp2);
 }
 
@@ -1104,17 +1105,18 @@ void WorkFlow_ZY3::CalcRealMatchPoint(string workpath)
 
 		//添加匹配误差
 		int num = pGCP.size();
-		double *Err = new double[2*num];	
-		m_base.RandomDistribution(0, 0.1, 2*num, 0, Err);
+		double *Err1 = new double[num];	double *Err2 = new double[ num];
+		m_base.RandomDistribution(0, 0.3, num, 0, Err1);
+		m_base.RandomDistribution(0, 0.3, num, 0, Err2);
 		printf("=>Image %d's GCP has calculated\n", i + 1);
 		string output = filePath[i].substr(0, filePath[i].rfind('.')) + "_match.pts";
 		FILE *fp = fopen(output.c_str(), "w");
 		fprintf(fp, "; %d\n", pGCP.size());
 		for (int i = 0; i < pGCP.size(); i++)
 		{
-			fprintf(fp, "%f\t%f\t%f\t%f\n", pGCP[i].ly, pGCP[i].lx, pGCP[i].ry+ Err[i], pGCP[i].rx+ Err[num+i]);
+			fprintf(fp, "%f\t%f\t%f\t%f\n", pGCP[i].ly, pGCP[i].lx, pGCP[i].ry+ Err1[i], pGCP[i].rx+ Err2[i]);
 		}
-		delete[] Err; Err = NULL;
+		delete[] Err1,Err2; Err1=Err2 = NULL;
 		fclose(fp);
 	}
 	DEM.Destroy();

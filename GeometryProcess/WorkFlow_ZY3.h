@@ -1,4 +1,4 @@
-#ifndef _WORKFLOW_ZY3
+ï»¿#ifndef _WORKFLOW_ZY3
 #define	_WORKFLOW_ZY3
 
 #include "WorkFlow.h"
@@ -6,10 +6,10 @@
 #include "GeoAttitude_ZY3.h"
 #include "AttDeter.h"
 #include "GeoTime_ZY3.h"
-#include "GeoCameraLine.h"		// ÏßÕóÏà»úÀà
-#include "GeoCameraArray.h"		// ÃæÕóÏà»úÀà
-#include "GeoModelLine.h"		// ÏßÕóÏà»ú³ÉÏñÄ£ĞÍÀà
-#include "GeoModelArray.h"		// ÃæÕóÏà»ú³ÉÏñÀà
+#include "GeoCameraLine.h"		// çº¿é˜µç›¸æœºç±»
+#include "GeoCameraArray.h"		// é¢é˜µç›¸æœºç±»
+#include "GeoModelLine.h"		// çº¿é˜µç›¸æœºæˆåƒæ¨¡å‹ç±»
+#include "GeoModelArray.h"		// é¢é˜µç›¸æœºæˆåƒç±»
 #include "GeoModelRFM.h"		//
 #include "ParseZY3Aux.h"
 #include "GeoCalibration.h"
@@ -28,70 +28,70 @@ public:
 	
 	void GetEOP(string eoppath);
 	void GetDEM(string dempath);
-	// ÑÏÃÜÄ£ĞÍ¹¹½¨
+	// ä¸¥å¯†æ¨¡å‹æ„å»º
 	void GenerateRigorousModel(string auxpath, string eoppath);
-	//¼ìĞ£Ä£ĞÍ¹¹½¨
+	//æ£€æ ¡æ¨¡å‹æ„å»º
 	void CalibrationModel(string auxpath, string eoppath);
 	void CalibrationModel2(string auxpath, string eoppath);
-	//¾«¶ÈÑéÖ¤
+	//ç²¾åº¦éªŒè¯
 	void AccuracyVerify(string auxpath);
-	//¶ÁÈ¡¿ØÖÆµã
+	//è¯»å–æ§åˆ¶ç‚¹
 	void GetGCP(string auxpath, vector<StrGCP> &ZY3_GCP);
 
 	//////////////////////////////////////////////////////////////////////////
-	//Ğ¡ÃæÕóÏà¹Øº¯Êı
+	//å°é¢é˜µç›¸å…³å‡½æ•°
 	//////////////////////////////////////////////////////////////////////////
-	//ÉèÖÃÃæÕó²ÎÊı
+	//è®¾ç½®é¢é˜µå‚æ•°
 	void SetCamInput(StrCamParamInput caminput);
-	//Ä£ĞÍ½¨Á¢ÑéÖ¤
+	//æ¨¡å‹å»ºç«‹éªŒè¯
 	void ModelVerify();
-	//ÏßÕóÏà»úÄ£ĞÍ
+	//çº¿é˜µç›¸æœºæ¨¡å‹
 	void NADCamera(string auxpath);
-	//»ñµÃÇ°ºóÊÓÕæÊµÄ£ĞÍ
+	//è·å¾—å‰åè§†çœŸå®æ¨¡å‹
 	GeoModelLine FwdBwdModel(string workpath,double omg, bool isReal);
 	GeoModelLine FwdBwdModelVerify(string workpath, double omg, bool isReal);
-	//µÃµ½ÍÆÉ¨Ïà»úÕæÊµ¿ØÖÆµã
+	//å¾—åˆ°æ¨æ‰«ç›¸æœºçœŸå®æ§åˆ¶ç‚¹
 	void CalcFwdBwdRealMatchPoint(char* argv[]);	
-	//Ç°ºóÊÓÏà»úÇ°·½½»»á
+	//å‰åè§†ç›¸æœºå‰æ–¹äº¤ä¼š
 	void CalcFwdBwdIntersection(char* argv[]);
-	//½«Ç°ºóÊÓÂ·¾¶ÏÂËÄÔªÊı¸Ä¹ıÀ´
+	//å°†å‰åè§†è·¯å¾„ä¸‹å››å…ƒæ•°æ”¹è¿‡æ¥
 	void ChangeAttPath(char* argv[]);
-	//µ÷ÓÃÁ¢ÌåÆ½²î
+	//è°ƒç”¨ç«‹ä½“å¹³å·®
 	void Calc3DAccuracyByAdjustment(char* argv[]);
-	//Êä³öÆ¥ÅäµãºÍ¿ØÖÆµã
+	//è¾“å‡ºåŒ¹é…ç‚¹å’Œæ§åˆ¶ç‚¹
 	void OutputMatchAndGCP(string filePath, vector<MatchPoint>pMatch, vector<StrGCP>pGCP);
 	void OutputPxyAndGCP(string filePath, vector<MatchPoint>pMatch, vector<StrGCP>pGCP);
-	//Éú²úÇ°ºóÊÓµÄrpcÎÄ¼ş
+	//ç”Ÿäº§å‰åè§†çš„rpcæ–‡ä»¶
 	void CalcFwdBwdRPC(char* argv[]);
 
-	//Ğ¡ÃæÕóÕóÏà»úÄ£ĞÍ
+	//å°é¢é˜µé˜µç›¸æœºæ¨¡å‹
 	void LittleArrayCamera(string auxpath);
-	//»ùÓÚRPCÆ¥Åä
+	//åŸºäºRPCåŒ¹é…
 	int Image_registration_rpc(string tifPath);
-	//Æ¥Åä¹ı³Ì
+	//åŒ¹é…è¿‡ç¨‹
 	void MatchBasedGeoModel(MatchPoint *gcp, int num, string imgL, string imgR);
-	//¼ÆËãÕæÊµÆ¥Åä¿ØÖÆµã
+	//è®¡ç®—çœŸå®åŒ¹é…æ§åˆ¶ç‚¹
 	void CalcRealMatchPoint(string workpath);
-	//¼ÆËã»Ö¸´µÄ×ËÌ¬£¨¼ÆËã²¢±È½Ï£©
+	//è®¡ç®—æ¢å¤çš„å§¿æ€ï¼ˆè®¡ç®—å¹¶æ¯”è¾ƒï¼‰
 	void CalcRealAttitude(string workpath);
-	//¼ÆËã»Ö¸´µÄ×ËÌ¬£¨½ö¼ÆËã£©
+	//è®¡ç®—æ¢å¤çš„å§¿æ€ï¼ˆä»…è®¡ç®—ï¼‰
 	void CalcModifyAttitude(string workpath);
-	//ÈÚºÏÁ½´ÎRU
+	//èåˆä¸¤æ¬¡RU
 	void RuFusion(vector<OffsetAngle>&RuForward, vector<OffsetAngle>RuBackward);
-	//¸ù¾İÄ£ĞÍ¼ÆËã²Ğ²î
+	//æ ¹æ®æ¨¡å‹è®¡ç®—æ®‹å·®
 	void CalcRMS(string out,StrGCP *pGCP,int num);
-	//¶Ô±È
+	//å¯¹æ¯”
 	void CompareMeasModifyAndReal(vector<Attitude>Meas, vector<Attitude>Modify, string realAttPath);
-	//¶Ô±ÈRMS
+	//å¯¹æ¯”RMS
 	void OutputRMS(string outFile, vector<strRMS>accuracy1, vector<strRMS>accuracy2);
-	//Êä³öËÄÔªÊı½á¹û
+	//è¾“å‡ºå››å…ƒæ•°ç»“æœ
 	void OutputQuat(string path,vector<Attitude>att);
 
-	//¸ù¾İÆ¥Åä¼ÆËã½ÇËÙ¶È£¬È»ºó½áºÏÕæÊµ×ËÌ¬×ö¿¨¶ûÂüÂË²¨
+	//æ ¹æ®åŒ¹é…è®¡ç®—è§’é€Ÿåº¦ï¼Œç„¶åç»“åˆçœŸå®å§¿æ€åšå¡å°”æ›¼æ»¤æ³¢
 	void CalcOmegaKalman(string workpath);
-	//¸ù¾İÏ¡Êè¾ØÕóÔ¼Êø×ËÌ¬
+	//æ ¹æ®ç¨€ç–çŸ©é˜µçº¦æŸå§¿æ€
 	void CalcRealAttitude_sparse(string workpath);
-	//Ï¡Êè¾ØÕóÇó½â
+	//ç¨€ç–çŸ©é˜µæ±‚è§£
 	bool autoGeoCalibration_sparse(GeoModelArray *pGeoModel, int num, 
 		conjugatePoints* pMatch,int nMatch, int xOrder, int yOrder, double *&pRes, string sRes);
 private:

@@ -1,4 +1,4 @@
-#include "GeoBase.h"
+ï»¿#include "GeoBase.h"
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
@@ -13,21 +13,21 @@ using namespace std;
 #endif
 
 //////////////////////////////////////////////////////////////////////////
-// ¹¹Ôì/Îö¹¹º¯Êı
+// æ„é€ /ææ„å‡½æ•°
 //////////////////////////////////////////////////////////////////////////
 GeoBase::GeoBase(void)	{}
 GeoBase::~GeoBase(void)	{}
 
 //////////////////////////////////////////////////////////////////////////
-// Í¨ÓÃº¯Êı
+// é€šç”¨å‡½æ•°
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////
-// ¹¦ÄÜ£º´ÓÒ»¸öÎÄ¼ş¼ĞÖĞ°´ÕÕÍ¨Åä·ûÈ¥ËÑË÷ËùÓĞÂú×ãÌõ¼şµÄÎÄ¼ş(µ¥²ãÎÄ¼ş)
-// ÊäÈë:
-//		string dirPath:			ËÑË÷µÄÎÄ¼ş¼ĞÂ·¾¶
-//		vector<string> &outPath:Âú×ãÌõ¼şµÄÎÄ¼şÁĞ±í
-//		string dirCode£º		Í¨Åä·û,Èç"*.txt"
-// ·µ»ØÖµ£º
+// åŠŸèƒ½ï¼šä»ä¸€ä¸ªæ–‡ä»¶å¤¹ä¸­æŒ‰ç…§é€šé…ç¬¦å»æœç´¢æ‰€æœ‰æ»¡è¶³æ¡ä»¶çš„æ–‡ä»¶(å•å±‚æ–‡ä»¶)
+// è¾“å…¥:
+//		string dirPath:			æœç´¢çš„æ–‡ä»¶å¤¹è·¯å¾„
+//		vector<string> &outPath:æ»¡è¶³æ¡ä»¶çš„æ–‡ä»¶åˆ—è¡¨
+//		string dirCodeï¼š		é€šé…ç¬¦,å¦‚"*.txt"
+// è¿”å›å€¼ï¼š
 //		void
 //////////////////////////////////////
 void GeoBase::DiretorySearch(string dirPath, vector<string> &outPath, string dirCode)
@@ -110,18 +110,18 @@ void GeoBase::DiretorySearch(string dirPath, vector<string> &outPath, string dir
 
 
 //////////////////////////////////////
-// ¹¦ÄÜ£º´ÓÒ»¸öÎÄ¼ş¼ĞÖĞ°´ÕÕÍ¨Åä·ûÈ¥ËÑË÷ËùÓĞÂú×ãÌõ¼şµÄÎÄ¼ş(¶à²ãÎÄ¼ş)
-// ÊäÈë:
-//		string dirPath:			ËÑË÷µÄÎÄ¼ş¼ĞÂ·¾¶
-//		vector<string> &outPath:Âú×ãÌõ¼şµÄÎÄ¼şÁĞ±í
-//		string dirCode£º		Í¨Åä·û,Èç"*.txt"
-// ·µ»ØÖµ£º
+// åŠŸèƒ½ï¼šä»ä¸€ä¸ªæ–‡ä»¶å¤¹ä¸­æŒ‰ç…§é€šé…ç¬¦å»æœç´¢æ‰€æœ‰æ»¡è¶³æ¡ä»¶çš„æ–‡ä»¶(å¤šå±‚æ–‡ä»¶)
+// è¾“å…¥:
+//		string dirPath:			æœç´¢çš„æ–‡ä»¶å¤¹è·¯å¾„
+//		vector<string> &outPath:æ»¡è¶³æ¡ä»¶çš„æ–‡ä»¶åˆ—è¡¨
+//		string dirCodeï¼š		é€šé…ç¬¦,å¦‚"*.txt"
+// è¿”å›å€¼ï¼š
 //		void
 //////////////////////////////////////
 void GeoBase::DiretorySearchAll(string dirPath, vector<string> &outPath, string dirCode)
 {
 	int i;
-	// µÚÒ»²ã
+	// ç¬¬ä¸€å±‚
 	struct _finddata_t filefind;
 	char temp[2]="\\";
 	char curr[1024],curr2[1024];
@@ -146,12 +146,12 @@ void GeoBase::DiretorySearchAll(string dirPath, vector<string> &outPath, string 
 		}
 		_findclose(handle);
 	}
-	// ×ÓÄ¿Â¼
+	// å­ç›®å½•
 	strcpy(curr, dirPath.c_str());
 	strcat(curr, temp);
 	strcpy(curr2, curr);
 	strcat(curr, "*.*");
-	// ÅĞ¶ÏÊÇ·ñÓĞ×ÓÄ¿Â¼
+	// åˆ¤æ–­æ˜¯å¦æœ‰å­ç›®å½•
 	if((handle=_findfirst(curr, &filefind))!=-1)
 	{
 		do  
@@ -160,7 +160,7 @@ void GeoBase::DiretorySearchAll(string dirPath, vector<string> &outPath, string 
 			{
 				if(strcmp(filefind.name,"..")!=0&&strcmp(filefind.name,".")!=0)
 				{
-					// µİ¹éµ÷ÓÃ
+					// é€’å½’è°ƒç”¨
 					DiretorySearchAll(dirPath+"\\"+filefind.name, outPath, dirCode);
 				}
 			}
@@ -171,14 +171,14 @@ void GeoBase::DiretorySearchAll(string dirPath, vector<string> &outPath, string 
 
 
 //////////////////////////////////////////////////////////
-// ´ÓÒ»¸öÎÄ¼ş¼ĞÖĞËÑË÷ËùÓĞ×ÓÎÄ¼ş¼Ğ(µ¥²ã)
+// ä»ä¸€ä¸ªæ–‡ä»¶å¤¹ä¸­æœç´¢æ‰€æœ‰å­æ–‡ä»¶å¤¹(å•å±‚)
 //////////////////////////////////////////////////////////
 void GeoBase::DiretorySearchFolder(string dirPath, vector<string> &folder)
 {
 	folder.clear();
-	//ÎÄ¼ş¾ä±ú 
+	//æ–‡ä»¶å¥æŸ„ 
 	long  hFile  =  0; 
-	//ÎÄ¼şĞÅÏ¢ 
+	//æ–‡ä»¶ä¿¡æ¯ 
 	struct _finddata_t fileinfo; 
 	string p; 
 	if((hFile = _findfirst(p.assign(dirPath).append("\\*").c_str(),&fileinfo)) != -1) 
@@ -200,13 +200,13 @@ void GeoBase::DiretorySearchFolder(string dirPath, vector<string> &folder)
 
 
 //////////////////////////////////////////////////////////
-// ¹¦ÄÜ£º¸ü¸ÄÇ°×ººó×ºÃû(È«²¿)
-// ÊäÈë:
-//		string outFolder£º		Êä³öÎÄ¼ş¼ĞÃû³Æ,Èç¹ûÎª"",ÔòÏàÍ¬ÎÄ¼ş¼Ğ
-//		string ext£º			¸ü¸ÄµÄºó×ºÃû³Æ
-//		vector<string> &list1£º	´ı¸ü¸ÄµÄÎÄ¼şÁĞ±í
-//		vector<string> &list2£º	ÒÑ¸ü¸ÄµÄÎÄ¼şÁĞ±í
-// ·µ»ØÖµ£º
+// åŠŸèƒ½ï¼šæ›´æ”¹å‰ç¼€åç¼€å(å…¨éƒ¨)
+// è¾“å…¥:
+//		string outFolderï¼š		è¾“å‡ºæ–‡ä»¶å¤¹åç§°,å¦‚æœä¸º"",åˆ™ç›¸åŒæ–‡ä»¶å¤¹
+//		string extï¼š			æ›´æ”¹çš„åç¼€åç§°
+//		vector<string> &list1ï¼š	å¾…æ›´æ”¹çš„æ–‡ä»¶åˆ—è¡¨
+//		vector<string> &list2ï¼š	å·²æ›´æ”¹çš„æ–‡ä»¶åˆ—è¡¨
+// è¿”å›å€¼ï¼š
 //		void
 //////////////////////////////////////////////////////////
 void GeoBase::ChangeAndSaveExt(string outFolder, string ext, vector<string> &list1, vector<string> &list2)
@@ -228,11 +228,11 @@ void GeoBase::ChangeAndSaveExt(string outFolder, string ext, vector<string> &lis
 }
 
 //////////////////////////////////////////////////////////
-// ¹¦ÄÜ£º½ØÈ¡µÃµ½Â·¾¶Ãû³Æ
-// ÊäÈë:
-//		vector<string> &list1£º	´ı¸ü¸ÄµÄÎÄ¼şÁĞ±í
-//		vector<string> &list2£º	ÒÑ¸ü¸ÄµÄÎÄ¼şÁĞ±í
-// ·µ»ØÖµ£º
+// åŠŸèƒ½ï¼šæˆªå–å¾—åˆ°è·¯å¾„åç§°
+// è¾“å…¥:
+//		vector<string> &list1ï¼š	å¾…æ›´æ”¹çš„æ–‡ä»¶åˆ—è¡¨
+//		vector<string> &list2ï¼š	å·²æ›´æ”¹çš„æ–‡ä»¶åˆ—è¡¨
+// è¿”å›å€¼ï¼š
 //		void
 ////////////////////////////////////////////////////////// 
 void GeoBase::GetDiretory(vector<string> &list1, vector<string> &list2)
@@ -247,12 +247,12 @@ void GeoBase::GetDiretory(vector<string> &list1, vector<string> &list2)
 
 
 //////////////////////////////////////////////////////////
-// ¹¦ÄÜ£º¸ü¸ÄÇ°×ººó×ºÃû(µ¥¸ö)
-// ÊäÈë:
-//		string dirPath:			ËÑË÷µÄÎÄ¼ş¼ĞÂ·¾¶
-//		vector<string> &outPath:Âú×ãÌõ¼şµÄÎÄ¼şÁĞ±í
-//		string dirCode£º		Í¨Åä·û,Èç"*.txt"
-// ·µ»ØÖµ£º
+// åŠŸèƒ½ï¼šæ›´æ”¹å‰ç¼€åç¼€å(å•ä¸ª)
+// è¾“å…¥:
+//		string dirPath:			æœç´¢çš„æ–‡ä»¶å¤¹è·¯å¾„
+//		vector<string> &outPath:æ»¡è¶³æ¡ä»¶çš„æ–‡ä»¶åˆ—è¡¨
+//		string dirCodeï¼š		é€šé…ç¬¦,å¦‚"*.txt"
+// è¿”å›å€¼ï¼š
 //		void
 //////////////////////////////////////////////////////////
 void GeoBase::ChangeAndSaveExt(string outFolder, string ext, string &list1, string &list2)
@@ -270,21 +270,21 @@ void GeoBase::ChangeAndSaveExt(string outFolder, string ext, string &list1, stri
 
 
 //////////////////////////////////////////////////////////////////////////
-// Ê±¼ä×ª»¯º¯Êı
+// æ—¶é—´è½¬åŒ–å‡½æ•°
 //////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////
-// ¹¦ÄÜ£º½«¸ñÀï¸ßÀûÀúÓëUTÊ±×ª»¯ÎªÓÃ»§¹æ¶¨µÄÀÛ¼ÆÃë
-// ÊäÈë:
-//		double refMJD£º		²Î¿¼ÀúÔªµÄÔ¼»¯ÈåÂÔÈÕ
-//		int year:			´ı×ª»¯ÀúÔªµÄÄê
-//		int month£º			´ı×ª»¯ÀúÔªµÄÔÂ
-//		int day£º			´ı×ª»¯ÀúÔªµÄÈÕ
-//		int hour£º			´ı×ª»¯ÀúÔªµÄÊ±
-//		int minute£º		´ı×ª»¯ÀúÔªµÄ·Ö
-//		double second£º		´ı×ª»¯ÀúÔªµÄÃë
-// Êä³ö£º
-//		double &refsecond£º	µ±Ç°ÀúÔª¾àÀë²Î¿¼ÀúÔªµÄÀÛ¼ÆÃë
-// ·µ»ØÖµ£º
+// åŠŸèƒ½ï¼šå°†æ ¼é‡Œé«˜åˆ©å†ä¸UTæ—¶è½¬åŒ–ä¸ºç”¨æˆ·è§„å®šçš„ç´¯è®¡ç§’
+// è¾“å…¥:
+//		double refMJDï¼š		å‚è€ƒå†å…ƒçš„çº¦åŒ–å„’ç•¥æ—¥
+//		int year:			å¾…è½¬åŒ–å†å…ƒçš„å¹´
+//		int monthï¼š			å¾…è½¬åŒ–å†å…ƒçš„æœˆ
+//		int dayï¼š			å¾…è½¬åŒ–å†å…ƒçš„æ—¥
+//		int hourï¼š			å¾…è½¬åŒ–å†å…ƒçš„æ—¶
+//		int minuteï¼š		å¾…è½¬åŒ–å†å…ƒçš„åˆ†
+//		double secondï¼š		å¾…è½¬åŒ–å†å…ƒçš„ç§’
+// è¾“å‡ºï¼š
+//		double &refsecondï¼š	å½“å‰å†å…ƒè·ç¦»å‚è€ƒå†å…ƒçš„ç´¯è®¡ç§’
+// è¿”å›å€¼ï¼š
 //     void:			
 ////////////////////////////////////////////////////
 void GeoBase::FromYMDtoSecond(double refMJD, int year, int month, int day, int hour, int minute, double second, double& refsecond)
@@ -296,18 +296,18 @@ void GeoBase::FromYMDtoSecond(double refMJD, int year, int month, int day, int h
 
 
 ////////////////////////////////////////////////////
-// ¹¦ÄÜ£º½«ÓÃ»§¹æ¶¨µÄÀÛ¼ÆÃë×ª»¯Îª¸ñÀï¸ßÀûÀúºÍUTÊ±
-// ÊäÈë:
-//		double refMJD£º		²Î¿¼ÀúÔªµÄÔ¼»¯ÈåÂÔÈÕ
-//		double refsecond£º	µ±Ç°ÀúÔª¾àÀë²Î¿¼ÀúÔªµÄÀÛ¼ÆÃë
-// Êä³ö£º
-//		int &year:			´ı×ª»¯ÀúÔªµÄÄê
-//		int &month£º		´ı×ª»¯ÀúÔªµÄÔÂ
-//		int &day£º			´ı×ª»¯ÀúÔªµÄÈÕ
-//		int &hour£º			´ı×ª»¯ÀúÔªµÄÊ±
-//		int &minute£º		´ı×ª»¯ÀúÔªµÄ·Ö
-//		double &second£º	´ı×ª»¯ÀúÔªµÄÃë
-// ·µ»ØÖµ£º
+// åŠŸèƒ½ï¼šå°†ç”¨æˆ·è§„å®šçš„ç´¯è®¡ç§’è½¬åŒ–ä¸ºæ ¼é‡Œé«˜åˆ©å†å’ŒUTæ—¶
+// è¾“å…¥:
+//		double refMJDï¼š		å‚è€ƒå†å…ƒçš„çº¦åŒ–å„’ç•¥æ—¥
+//		double refsecondï¼š	å½“å‰å†å…ƒè·ç¦»å‚è€ƒå†å…ƒçš„ç´¯è®¡ç§’
+// è¾“å‡ºï¼š
+//		int &year:			å¾…è½¬åŒ–å†å…ƒçš„å¹´
+//		int &monthï¼š		å¾…è½¬åŒ–å†å…ƒçš„æœˆ
+//		int &dayï¼š			å¾…è½¬åŒ–å†å…ƒçš„æ—¥
+//		int &hourï¼š			å¾…è½¬åŒ–å†å…ƒçš„æ—¶
+//		int &minuteï¼š		å¾…è½¬åŒ–å†å…ƒçš„åˆ†
+//		double &secondï¼š	å¾…è½¬åŒ–å†å…ƒçš„ç§’
+// è¿”å›å€¼ï¼š
 //     void:			
 ////////////////////////////////////////////////////
 void GeoBase::FromSecondtoYMD(double refMJD, double refsecond, int& year, int& month, int& day, int& hour, int& minute, double& second)
@@ -325,17 +325,17 @@ void GeoBase::FromSecondtoYMD(double refMJD, double refsecond, int& year, int& m
 
 
 //////////////////////////////////////////////////////////////////////////
-// ×ø±ê×ª»¯º¯Êı
+// åæ ‡è½¬åŒ–å‡½æ•°
 //////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
-// ¹¦ÄÜ£º»ñµÃ²Î¿¼ÍÖÇòÏµÊı
-// ÊäÈë:
-//     string datumname£º	ÍÖÇò»ù×¼Ãû³Æ
-// Êä³ö£º
-//	   StrDATUM &datum:		Êä³öµÄÍÖÇò»ù×¼
-// ·µ»ØÖµ£º
-//     int:	   0			³É¹¦
-//			   -1			Ê§°Ü
+// åŠŸèƒ½ï¼šè·å¾—å‚è€ƒæ¤­çƒç³»æ•°
+// è¾“å…¥:
+//     string datumnameï¼š	æ¤­çƒåŸºå‡†åç§°
+// è¾“å‡ºï¼š
+//	   StrDATUM &datum:		è¾“å‡ºçš„æ¤­çƒåŸºå‡†
+// è¿”å›å€¼ï¼š
+//     int:	   0			æˆåŠŸ
+//			   -1			å¤±è´¥
 ////////////////////////////////////////////////////////////////
 int GeoBase::GetRefEllipsoid(string datumname, StrDATUM &datum)
 {
@@ -360,25 +360,25 @@ int GeoBase::GetRefEllipsoid(string datumname, StrDATUM &datum)
 
 
 ////////////////////////////////////////////////////////////////
-// ¹¦ÄÜ£º´óµØ×ø±ê×ªÖ±½Ç×ø±ê
-// ÊäÈë:
-//		StrDATUM datum£º	²Î¿¼ÍÖÇò²ÎÊı
-//		double B£º			Î³¶È(µ¥Î»»¡¶È)
-//		double L£º			¾­¶È(µ¥Î»»¡¶È)
-//		double H£º			¸ß³Ì(µ¥Î»ÎªÃ×)
-// Êä³ö£º
-//		double &X£º			Ö±½Ç×ø±êX(µ¥Î»ÎªÃ×)
-//		double &Y£º			Ö±½Ç×ø±êY(µ¥Î»ÎªÃ×)
-//		double &Z£º			Ö±½Ç×ø±êZ(µ¥Î»ÎªÃ×)
-// ·µ»ØÖµ£º
+// åŠŸèƒ½ï¼šå¤§åœ°åæ ‡è½¬ç›´è§’åæ ‡
+// è¾“å…¥:
+//		StrDATUM datumï¼š	å‚è€ƒæ¤­çƒå‚æ•°
+//		double Bï¼š			çº¬åº¦(å•ä½å¼§åº¦)
+//		double Lï¼š			ç»åº¦(å•ä½å¼§åº¦)
+//		double Hï¼š			é«˜ç¨‹(å•ä½ä¸ºç±³)
+// è¾“å‡ºï¼š
+//		double &Xï¼š			ç›´è§’åæ ‡X(å•ä½ä¸ºç±³)
+//		double &Yï¼š			ç›´è§’åæ ‡Y(å•ä½ä¸ºç±³)
+//		double &Zï¼š			ç›´è§’åæ ‡Z(å•ä½ä¸ºç±³)
+// è¿”å›å€¼ï¼š
 //		void
 ////////////////////////////////////////////////////////////////
 void GeoBase::Geograph2Rect(StrDATUM datum, double B, double L, double H, double &X, double &Y, double &Z)
 {
-	double W = sqrt(1-datum.e2*pow(sin(B),2));	// ¸¨Öúº¯Êı
-	if(W<=0) return;							// ÌØÊâÇé¿ö¿¼ÂÇ,ÒÔÈÃ³ÌĞòÕıÈ·ÔËĞĞ
-	double N = datum.a/W;						// Ã®ÓÏÈ¦°ë¾¶
-	double r = (N+H)*cos(B);					// ¿¼ÂÇ¸ß³ÌºóÍ¶Ó°µ½³àµÀÃæ
+	double W = sqrt(1-datum.e2*pow(sin(B),2));	// è¾…åŠ©å‡½æ•°
+	if(W<=0) return;							// ç‰¹æ®Šæƒ…å†µè€ƒè™‘,ä»¥è®©ç¨‹åºæ­£ç¡®è¿è¡Œ
+	double N = datum.a/W;						// å¯é…‰åœˆåŠå¾„
+	double r = (N+H)*cos(B);					// è€ƒè™‘é«˜ç¨‹åæŠ•å½±åˆ°èµ¤é“é¢
 	X = r*cos(L);
 	Y = r*sin(L);
 	Z = (N*(1-datum.e2) + H)*sin(B);
@@ -386,43 +386,43 @@ void GeoBase::Geograph2Rect(StrDATUM datum, double B, double L, double H, double
 
 
 ////////////////////////////////////////////////////////////////
-// ¹¦ÄÜ£ºÖ±½Ç×ø±ê×ª´óµØ×ø±ê(´Ë·½·¨¶ÔÓÚµØÇòÖÊĞÄ¸½½üÇé¿ö²»ÊÊÓÃ)
-// ÊäÈë:
-//		StrDATUM datum£º	²Î¿¼ÍÖÇò²ÎÊı
-//		double &X£º			Ö±½Ç×ø±êX(µ¥Î»ÎªÃ×)
-//		double &Y£º			Ö±½Ç×ø±êY(µ¥Î»ÎªÃ×)
-//		double &Z£º			Ö±½Ç×ø±êZ(µ¥Î»ÎªÃ×)
-// Êä³ö£º
-//		double B£º			Î³¶È(µ¥Î»»¡¶È)
-//		double L£º			¾­¶È(µ¥Î»»¡¶È)
-//		double H£º			¸ß³Ì(µ¥Î»ÎªÃ×)
-// ·µ»ØÖµ£º
+// åŠŸèƒ½ï¼šç›´è§’åæ ‡è½¬å¤§åœ°åæ ‡(æ­¤æ–¹æ³•å¯¹äºåœ°çƒè´¨å¿ƒé™„è¿‘æƒ…å†µä¸é€‚ç”¨)
+// è¾“å…¥:
+//		StrDATUM datumï¼š	å‚è€ƒæ¤­çƒå‚æ•°
+//		double &Xï¼š			ç›´è§’åæ ‡X(å•ä½ä¸ºç±³)
+//		double &Yï¼š			ç›´è§’åæ ‡Y(å•ä½ä¸ºç±³)
+//		double &Zï¼š			ç›´è§’åæ ‡Z(å•ä½ä¸ºç±³)
+// è¾“å‡ºï¼š
+//		double Bï¼š			çº¬åº¦(å•ä½å¼§åº¦)
+//		double Lï¼š			ç»åº¦(å•ä½å¼§åº¦)
+//		double Hï¼š			é«˜ç¨‹(å•ä½ä¸ºç±³)
+// è¿”å›å€¼ï¼š
 //		void
 ////////////////////////////////////////////////////////////////
 void GeoBase::Rect2Geograph(StrDATUM datum, double X, double Y, double Z,double &B, double &L, double &H)
 {
-	// ¶ÔÓÚÇòµÄÌØÊâ´¦Àí
+	// å¯¹äºçƒçš„ç‰¹æ®Šå¤„ç†
 	if(datum.f==0)
 	{
-		// ¶ÔÓÚÍÖÇòÇé¿öµÄ´¦Àí
-		double XY = sqrt(X*X + Y*Y);				// XYÍ¶Ó°ÃæÉÏµÄ³¤¶È
-		// ÏÈÇó³ö¾­¶È
+		// å¯¹äºæ¤­çƒæƒ…å†µçš„å¤„ç†
+		double XY = sqrt(X*X + Y*Y);				// XYæŠ•å½±é¢ä¸Šçš„é•¿åº¦
+		// å…ˆæ±‚å‡ºç»åº¦
 		L = atan2(Y, X);
-		// ÔÙÇó³öÎ³¶È
+		// å†æ±‚å‡ºçº¬åº¦
 		B = atan2(Z, XY);
-		// ÔÙÇó³ö¸ß³Ì
+		// å†æ±‚å‡ºé«˜ç¨‹
 		H = sqrt(XY*XY+Z*Z)-datum.a;
 		return;
 	}
-	// ¶ÔÓÚÍÖÇòÇé¿öµÄ´¦Àí
-	double XY = sqrt(X*X + Y*Y);				// XYÍ¶Ó°ÃæÉÏµÄ³¤¶È
-	// ÏÈÇó³ö¾­¶È
+	// å¯¹äºæ¤­çƒæƒ…å†µçš„å¤„ç†
+	double XY = sqrt(X*X + Y*Y);				// XYæŠ•å½±é¢ä¸Šçš„é•¿åº¦
+	// å…ˆæ±‚å‡ºç»åº¦
 	L = atan2(Y, X);
 	////////////////////////////////////////
-	// ½Ó×ÅÇóÎ³¶È
+	// æ¥ç€æ±‚çº¬åº¦
 	////////////////////////////////////////
 	double z1, z2, dz, B0, B1, B2, delta;
-	B0 = atan2(Z, XY);							// µØĞÄÎ³¶È
+	B0 = atan2(Z, XY);							// åœ°å¿ƒçº¬åº¦
 	delta = 0.0001;	
 	int num = 0;
 	do 
@@ -435,7 +435,7 @@ void GeoBase::Rect2Geograph(StrDATUM datum, double X, double Y, double Z,double 
 	}while(fabs(Z-z1)>fabs(dz));
 	B = atan(tan(B0)*datum.a2_b2);
 	////////////////////////////////////////
-	// ×îºóÇó¸ß³Ì
+	// æœ€åæ±‚é«˜ç¨‹
 	////////////////////////////////////////
 	double re = datum.b/sqrt(1.0-datum.e2*pow(cos(B0),2));	
 	H = sqrt(pow(Z-re*sin(B0), 2) + pow(XY-re*cos(B0), 2));	
@@ -446,33 +446,33 @@ void GeoBase::Rect2Geograph(StrDATUM datum, double X, double Y, double Z,double 
 
 
 //////////////////////////////////////////////////////////////////////////
-// ÄÚ²åº¯Êı
+// å†…æ’å‡½æ•°
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////
-// ¹ìµÀÀ­¸ñÀÊÈÕÄÚ²å
-// ¹¦ÄÜ£º¹ìµÀÀ­¸ñÀÊÈÕÄÚ²å
-// ÊäÈë:
-//		StrOrbitPoint *Eph£º´æ´¢¹ìµÀµãµÄ½á¹¹ÌåÊı×éÖ¸Õë
-//		long EphNum£º		¹ìµÀµã¸öÊı
-//		double UT£º			ÄÚ²å¹ìµÀµãËù¶ÔÓ¦µÄµÄÀÛ¼ÆÃë
-//		int order£º			À­¸ñÀÊÈÕÄÚ²å´ÎÊı,Ä¬ÈÏÊÇ7´Î
-// Êä³ö£º
-//		StrOrbitPoint &m_point£ºÄÚ²åµÃµ½µÄ¹ìµÀµã
-// ·µ»ØÖµ£º
+// è½¨é“æ‹‰æ ¼æœ—æ—¥å†…æ’
+// åŠŸèƒ½ï¼šè½¨é“æ‹‰æ ¼æœ—æ—¥å†…æ’
+// è¾“å…¥:
+//		StrOrbitPoint *Ephï¼šå­˜å‚¨è½¨é“ç‚¹çš„ç»“æ„ä½“æ•°ç»„æŒ‡é’ˆ
+//		long EphNumï¼š		è½¨é“ç‚¹ä¸ªæ•°
+//		double UTï¼š			å†…æ’è½¨é“ç‚¹æ‰€å¯¹åº”çš„çš„ç´¯è®¡ç§’
+//		int orderï¼š			æ‹‰æ ¼æœ—æ—¥å†…æ’æ¬¡æ•°,é»˜è®¤æ˜¯7æ¬¡
+// è¾“å‡ºï¼š
+//		StrOrbitPoint &m_pointï¼šå†…æ’å¾—åˆ°çš„è½¨é“ç‚¹
+// è¿”å›å€¼ï¼š
 //		void
 ///////////////////////////////////////
 void GeoBase::LagrangianInterpolation(StrOrbitPoint *Eph, long EphNum, double UT, StrOrbitPoint &m_point, int order)
 {
 	memset(&m_point, 0, sizeof(StrOrbitPoint));
 	m_point.UT = UT;
-	// ËÑË÷ÄÚ²åÓÃµÄÆğÊ¼ºÍ½áÊøµã(¶Ô·Ö²éÕÒ)
+	// æœç´¢å†…æ’ç”¨çš„èµ·å§‹å’Œç»“æŸç‚¹(å¯¹åˆ†æŸ¥æ‰¾)
 	double up=1, down=1;
 	long posstart, posend, pos;
 	posstart=0, posend=EphNum-1, pos=0;
 	while(posstart<posend)  
     {  
 		pos = (posstart+posend)/2;
-		if(pos==posstart) break;	// ¼ÇµÃ¼ÓÉÏÕâ¾äÅĞ¶Ï,·ñÔò»áÏİÈëËÀÑ­»·
+		if(pos==posstart) break;	// è®°å¾—åŠ ä¸Šè¿™å¥åˆ¤æ–­,å¦åˆ™ä¼šé™·å…¥æ­»å¾ªç¯
 		if((Eph[pos].UT<=UT)&&(UT<Eph[pos+1].UT))
 			break;  
         if (Eph[pos].UT <= UT)  
@@ -485,7 +485,7 @@ void GeoBase::LagrangianInterpolation(StrOrbitPoint *Eph, long EphNum, double UT
 	if(pos+order/2>=EphNum-1)	posend = EphNum-1;
 	else						posend = pos+order/2;
     int i,j;
-	// ¿ªÊ¼½øĞĞÄÚ²å
+	// å¼€å§‹è¿›è¡Œå†…æ’
 	for(j=posstart;j<=posend;j++)
 	{
         up=1,down=1;
@@ -498,27 +498,27 @@ void GeoBase::LagrangianInterpolation(StrOrbitPoint *Eph, long EphNum, double UT
 
 
 //////////////////////////////////////
-// ¹¦ÄÜ£º×ËÌ¬ËÄÔªÊıÄÚ²å
-// ÊäÈë:
-//		StrAttPoint *Att£º	´æ´¢×ËÌ¬µãµÄ½á¹¹ÌåÊı×éÖ¸Õë
-//		long AttNum£º		×ËÌ¬µã¸öÊı
-//		double UT£º			ÄÚ²å×ËÌ¬µãµÄËù¶ÔÓ¦µÄÀÛ¼ÆÃë
-// Êä³ö£º
-//		StrAttPoint &m_att£ºÄÚ²åµÃµ½µÄ×ËÌ¬µã
-// ·µ»ØÖµ£º
+// åŠŸèƒ½ï¼šå§¿æ€å››å…ƒæ•°å†…æ’
+// è¾“å…¥:
+//		StrAttPoint *Attï¼š	å­˜å‚¨å§¿æ€ç‚¹çš„ç»“æ„ä½“æ•°ç»„æŒ‡é’ˆ
+//		long AttNumï¼š		å§¿æ€ç‚¹ä¸ªæ•°
+//		double UTï¼š			å†…æ’å§¿æ€ç‚¹çš„æ‰€å¯¹åº”çš„ç´¯è®¡ç§’
+// è¾“å‡ºï¼š
+//		StrAttPoint &m_attï¼šå†…æ’å¾—åˆ°çš„å§¿æ€ç‚¹
+// è¿”å›å€¼ï¼š
 //		void
 ///////////////////////////////////////
 void GeoBase::QuatInterpolation(StrAttPoint *Att, long AttNum, double UT, StrAttPoint &m_att)
 {
-	if(AttNum<2)	{	printf("QuatInterpolation Error£ºAttNum is less than 2, can't interpolation!\n");	return;	}
-	// Ñ°ÕÒÁÙ½üµÄÁ½¸öµã(¶Ô·Ö²éÕÒ)
+	if(AttNum<2)	{	printf("QuatInterpolation Errorï¼šAttNum is less than 2, can't interpolation!\n");	return;	}
+	// å¯»æ‰¾ä¸´è¿‘çš„ä¸¤ä¸ªç‚¹(å¯¹åˆ†æŸ¥æ‰¾)
 	StrAttPoint attleft, attright, att;
 	long posstart, posend, pos;
 	posstart=0, posend=AttNum-1, pos=0;
 	while(posstart<posend)  
     {  
 		pos = (posstart+posend)/2;
-		if(pos==posstart) break;	// ¼ÇµÃ¼ÓÉÏÕâ¾äÅĞ¶Ï,·ñÔò»áÏİÈëËÀÑ­»·
+		if(pos==posstart) break;	// è®°å¾—åŠ ä¸Šè¿™å¥åˆ¤æ–­,å¦åˆ™ä¼šé™·å…¥æ­»å¾ªç¯
 		if((Att[pos].UT<=UT)&&(Att[pos+1].UT>UT))
 			break;
         if (Att[pos].UT <= UT)  
@@ -530,11 +530,11 @@ void GeoBase::QuatInterpolation(StrAttPoint *Att, long AttNum, double UT, StrAtt
 	if(pos >= AttNum-1)		pos = AttNum-2;
 	attleft = Att[pos];		attright = Att[pos+1];
 	
-	// ½øĞĞÄÚ²å
+	// è¿›è¡Œå†…æ’
 	double sp,sq;
 	double t = (UT - attleft.UT)/(attright.UT - attleft.UT);
 	double cosa = attleft.q[0]*attright.q[0] + attleft.q[1]*attright.q[1] + attleft.q[2]*attright.q[2] + attleft.q[3]*attright.q[3];
-	// Õâ¸ö´íÎóĞèÒª×¢ÒâÁË,·ÀÖ¹ÁÚ½üÁ½¸öÖµ»¥Îª·´ºÅµÄÇé¿ö,ĞèÒªÈ·±£length>0
+	// è¿™ä¸ªé”™è¯¯éœ€è¦æ³¨æ„äº†,é˜²æ­¢é‚»è¿‘ä¸¤ä¸ªå€¼äº’ä¸ºåå·çš„æƒ…å†µ,éœ€è¦ç¡®ä¿length>0
 	if(cosa<0)			
 	{	
 		cosa = -cosa;	
@@ -570,7 +570,7 @@ void GeoBase::QuatInterpolation(vector<Attitude>Att, double UT, Attitude &m_att)
 	delete[] AttCopy; AttCopy = NULL;
 }
 
-//ËÄÔªÊıË³ĞòÎª0123£¬ÆäÖĞ0Îª±êÁ¿
+//å››å…ƒæ•°é¡ºåºä¸º0123ï¼Œå…¶ä¸­0ä¸ºæ ‡é‡
 void GeoBase::quatMult(double * q1, double * q2, double * q3)
 {
 	q3[1] = q1[0] * q2[1] - q1[3] * q2[2] + q1[2] * q2[3] + q1[1] * q2[0];
@@ -581,18 +581,18 @@ void GeoBase::quatMult(double * q1, double * q2, double * q3)
 
 
 ////////////////////////////////////////////////////////
-// Ğı×ª¾ØÕóÓëËÄÔªÊıµÄÏà»¥±ä»»
+// æ—‹è½¬çŸ©é˜µä¸å››å…ƒæ•°çš„ç›¸äº’å˜æ¢
 ////////////////////////////////////////////////////////
 //////////////////////////////////////
-// ¹¦ÄÜ£º´ÓĞı×ª¾ØÕó»ñµÃËÄÔªÊı
-// ÊäÈë:
-//		double *R£º		Ğı×ª¾ØÕó3*3£¬ĞĞÓÅÏÈ
-// Êä³ö£º
-//		double &q1:		ËÄÔªÊıq1
-//		double &q2:		ËÄÔªÊıq2
-//		double &q3:		ËÄÔªÊıq3
-//		double &q4:		ËÄÔªÊıq4
-// ·µ»ØÖµ£º
+// åŠŸèƒ½ï¼šä»æ—‹è½¬çŸ©é˜µè·å¾—å››å…ƒæ•°
+// è¾“å…¥:
+//		double *Rï¼š		æ—‹è½¬çŸ©é˜µ3*3ï¼Œè¡Œä¼˜å…ˆ
+// è¾“å‡ºï¼š
+//		double &q1:		å››å…ƒæ•°q1
+//		double &q2:		å››å…ƒæ•°q2
+//		double &q3:		å››å…ƒæ•°q3
+//		double &q4:		å››å…ƒæ•°q4
+// è¿”å›å€¼ï¼š
 //		void
 ///////////////////////////////////////
 void GeoBase::Matrix2Quat(double *R, double &q1, double &q2, double &q3, double &q4)
@@ -600,10 +600,10 @@ void GeoBase::Matrix2Quat(double *R, double &q1, double &q2, double &q3, double 
  	int i, j;	double tq[4];
     tq[0] = 1 + R[0] + R[4] + R[8];	tq[1] = 1 + R[0] - R[4] - R[8];
     tq[2] = 1 - R[0] + R[4] - R[8];	tq[3] = 1 - R[0] - R[4] + R[8];
-	// Ñ°ÕÒ×î´óÖµ
+	// å¯»æ‰¾æœ€å¤§å€¼
     j = 0;
     for(i=1;i<4;i++) j = (tq[i]>tq[j])? i : j;
-	// ¼ì²é¶Ô½ÇÏß
+	// æ£€æŸ¥å¯¹è§’çº¿
 	switch(j)
 	{
 	case 0:{ q4 = tq[0];	q1 = R[5] - R[7]; q2 = R[6] - R[2];	q3 = R[1] - R[3];	break;	}
@@ -617,34 +617,34 @@ void GeoBase::Matrix2Quat(double *R, double &q1, double &q2, double &q3, double 
 
 
 //////////////////////////////////////
-// ¹¦ÄÜ£º´ÓËÄÔªÊı»ñµÃĞı×ª¾ØÕó
-// ÊäÈë:
-//		double &q1:		ËÄÔªÊıq1
-//		double &q2:		ËÄÔªÊıq2
-//		double &q3:		ËÄÔªÊıq3
-//		double &q4:		ËÄÔªÊıq4
-// Êä³ö£º
-//		double *R£º		Ğı×ª¾ØÕó3*3£¬ĞĞÓÅÏÈ	
-// ·µ»ØÖµ£º
+// åŠŸèƒ½ï¼šä»å››å…ƒæ•°è·å¾—æ—‹è½¬çŸ©é˜µ
+// è¾“å…¥:
+//		double &q1:		å››å…ƒæ•°q1
+//		double &q2:		å››å…ƒæ•°q2
+//		double &q3:		å››å…ƒæ•°q3
+//		double &q4:		å››å…ƒæ•°q4
+// è¾“å‡ºï¼š
+//		double *Rï¼š		æ—‹è½¬çŸ©é˜µ3*3ï¼Œè¡Œä¼˜å…ˆ	
+// è¿”å›å€¼ï¼š
 //		void
 ///////////////////////////////////////
 void GeoBase::Quat2Matrix(double q1, double q2, double q3, double q4, double *R)
 {
-	// ÇóÈ¡Å·Ê½¿Õ¼ä³¤¶È
+	// æ±‚å–æ¬§å¼ç©ºé—´é•¿åº¦
 	double length2 = pow(q1,2) + pow(q2,2) + pow(q3,2) + pow(q4,2);
-	// ·Çµ¥Î»ËÄÔªÊı
+	// éå•ä½å››å…ƒæ•°
 	if(fabs(length2-1.0) >= DBL_MIN*10)
 	{
 		if (fabs(length2) <= DBL_MIN*2)
 		{
-			printf("Quat2Matrix Error!\n");	// ÊäÈë²»ÊÇµ¥Î»ËÄÔªÊı,²¢ÇÒÅ·Ê½¾àÀëÌ«¶Ì
+			printf("Quat2Matrix Error!\n");	// è¾“å…¥ä¸æ˜¯å•ä½å››å…ƒæ•°,å¹¶ä¸”æ¬§å¼è·ç¦»å¤ªçŸ­
 			memset(R, 0, sizeof(double)*9);
 			return;
 		}
 		double length = sqrt(length2);
 		q1 /= length;  q2 /= length;  q3 /= length;  q4 /= length;
 	}
-	// ¼ÆËãĞı×ª¾ØÕó
+	// è®¡ç®—æ—‹è½¬çŸ©é˜µ
 	R[0] = 1.0-2.0*(q2*q2+q3*q3);	R[1] = 2.0 * (q1*q2 + q3*q4);	R[2] = 2.0 * (q1*q3 -q2*q4);
 	R[3] = 2.0 * (q1*q2 -q3*q4);	R[4] = 1.0-2.0*(q1*q1 + q3*q3);	R[5] = 2.0 * (q2*q3 + q1*q4);
 	R[6] = 2.0 * (q1*q3 + q2*q4);	R[7] = 2.0 * (q2*q3 - q1*q4);	R[8] = 1.0-2.0*(q1*q1 + q2*q2);
@@ -652,83 +652,83 @@ void GeoBase::Quat2Matrix(double q1, double q2, double q3, double q4, double *R)
 
 
 ////////////////////////////////////////////////////////
-// Ğı×ª¾ØÕóÓëÅ·À­½ÇµÄÏà»¥±ä»»
+// æ—‹è½¬çŸ©é˜µä¸æ¬§æ‹‰è§’çš„ç›¸äº’å˜æ¢
 ////////////////////////////////////////////////////////
 //////////////////////////////////////
-// ¹¦ÄÜ£º´ÓĞı×ª¾ØÕó»ñµÃÅ·À­½Ç
-// ÊäÈë:
-//		double *R£º		Ğı×ª¾ØÕó3*3£¬ĞĞÓÅÏÈ	
-//		int ratateOrder:Å·À­½Ç×ªĞò
-// Êä³ö£º
-//		double &eulor1:	Å·À­½Ç1
-//		double &eulor2:	Å·À­½Ç2
-//		double &eulor3:	Å·À­½Ç3
-// ·µ»ØÖµ£º
+// åŠŸèƒ½ï¼šä»æ—‹è½¬çŸ©é˜µè·å¾—æ¬§æ‹‰è§’
+// è¾“å…¥:
+//		double *Rï¼š		æ—‹è½¬çŸ©é˜µ3*3ï¼Œè¡Œä¼˜å…ˆ	
+//		int ratateOrder:æ¬§æ‹‰è§’è½¬åº
+// è¾“å‡ºï¼š
+//		double &eulor1:	æ¬§æ‹‰è§’1
+//		double &eulor2:	æ¬§æ‹‰è§’2
+//		double &eulor3:	æ¬§æ‹‰è§’3
+// è¿”å›å€¼ï¼š
 //		void
 ///////////////////////////////////////
 void GeoBase::Matrix2Eulor(double *R, int rotateOrder, double &eulor1, double &eulor2, double &eulor3)
 {
 	switch(rotateOrder)
 	{
-		// µÚÒ»Àà:µÚÒ»´ÎºÍµÚÈı´Î×ª¶¯ÊÇÈÆÍ¬Àà×ø±êÖá½øĞĞµÄ,µÚ¶ş´Î×ª¶¯ÊÇÈÆÁíÁ½ÖáÖĞµÄÒ»Àà½øĞĞµÄ
+		// ç¬¬ä¸€ç±»:ç¬¬ä¸€æ¬¡å’Œç¬¬ä¸‰æ¬¡è½¬åŠ¨æ˜¯ç»•åŒç±»åæ ‡è½´è¿›è¡Œçš„,ç¬¬äºŒæ¬¡è½¬åŠ¨æ˜¯ç»•å¦ä¸¤è½´ä¸­çš„ä¸€ç±»è¿›è¡Œçš„
 	case 121:  // 1
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò0µ½pi£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ0åˆ°piï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			eulor2 = acos(R[0]);					double temp = sin(eulor2);
 			eulor1 = atan2(R[1]*temp, -R[2]*temp);	eulor3 = atan2(R[3]*temp, R[6]*temp);	break;
 		}
 	case 131:	// 2
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò0µ½pi£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ0åˆ°piï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			eulor2 = acos(R[0]);					double temp = sin(eulor2);
 			eulor1 = atan2(R[2]*temp, R[1]*temp);	eulor3 = atan2(R[6]*temp, -R[3]*temp);	break;
 		}
 	case 212:	// 3
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò0µ½pi£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ0åˆ°piï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			eulor2 = acos(R[4]);					double temp = sin(eulor2);
 			eulor1 = atan2(R[3]*temp, R[5]*temp);	eulor3 = atan2(R[1]*temp, -R[7]*temp);	break;
 		}
 	case 232:	// 4
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò0µ½pi£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ0åˆ°piï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			eulor2 = acos(R[4]);					double temp = sin(eulor2);
 			eulor1 = atan2(R[5]*temp, -R[3]*temp);	eulor3 = atan2(R[7]*temp, R[1]*temp);	break;
 		}
 	case 313:	// 5
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò0µ½pi£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ0åˆ°piï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			eulor2 = acos(R[8]);					double temp = sin(eulor2);
 			eulor1 = atan2(R[6]*temp, -R[7]*temp);	eulor3 = atan2(R[2]*temp, R[5]*temp);	break;
 		}
 	case 323:	// 6
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò0µ½pi£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ0åˆ°piï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			eulor2 = acos(R[8]);					double temp = sin(eulor2);
 			eulor1 = atan2(R[7]*temp, R[6]*temp);	eulor3 = atan2(R[5]*temp, -R[2]*temp);	break;
 		}
-		// µÚ¶şÀà:Ã¿´Î×ª¶¯ÊÇÈÆ²»Í¬Àà±ğµÄ×ø±êÖá½øĞĞµÄ
+		// ç¬¬äºŒç±»:æ¯æ¬¡è½¬åŠ¨æ˜¯ç»•ä¸åŒç±»åˆ«çš„åæ ‡è½´è¿›è¡Œçš„
 	case 123:	// 7
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò-pi/2µ½pi/2£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ-pi/2åˆ°pi/2ï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			eulor2 = asin(R[6]);					double temp = cos(eulor2);
 			eulor1 = atan2(-R[7]*temp, R[8]*temp);	eulor3 = atan2(-R[3]*temp, R[0]*temp);	break;
 		}
 	case 132:	// 8
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò-pi/2µ½pi/2£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ-pi/2åˆ°pi/2ï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			eulor2 = asin(-R[3]);					double temp = cos(eulor2);
 			eulor1 = atan2(R[5]*temp, R[4]*temp);	eulor3 = atan2(R[6]*temp, R[0]*temp);	break;
 		}
 	case 213:	// 9
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò-pi/2µ½pi/2£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ-pi/2åˆ°pi/2ï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			eulor2 = asin(-R[7]);					double temp = cos(eulor2);
 			eulor1 = atan2(R[6]*temp, R[8]*temp);	eulor3 = atan2(R[1]*temp, R[4]*temp);	break;
 		}
 	case 231:	// 10
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò-pi/2µ½pi/2£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ-pi/2åˆ°pi/2ï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			eulor2 = asin(R[1]);					double temp = cos(eulor2);
 			eulor1 = atan2(-R[2]*temp, R[0]*temp);	eulor3 = atan2(-R[7]*temp, R[4]*temp);	break;
 		}
 	case 312:	// 11
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò-pi/2µ½pi/2£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ-pi/2åˆ°pi/2ï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			eulor2 = asin(R[5]);					double temp = cos(eulor2);
 			eulor1 = atan2(-R[3]*temp, R[4]*temp);	eulor3 = atan2(-R[2]*temp, R[8]*temp);	break;
 		}
 	case 321:	// 12
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò-pi/2µ½pi/2£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ-pi/2åˆ°pi/2ï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			eulor2 = asin(-R[2]);					double temp = cos(eulor2);
 			eulor1 = atan2(R[1]*temp, R[0]*temp);	eulor3 = atan2(R[5]*temp, R[8]*temp);	break;
 		}
@@ -737,15 +737,15 @@ void GeoBase::Matrix2Eulor(double *R, int rotateOrder, double &eulor1, double &e
 
 
 //////////////////////////////////////
-// ¹¦ÄÜ£º´ÓÅ·À­½Ç»ñµÃĞı×ª¾ØÕó
-// ÊäÈë:
-//		double &eulor1:	Å·À­½Ç1
-//		double &eulor2:	Å·À­½Ç2
-//		double &eulor3:	Å·À­½Ç3
-// Êä³ö£º
-//		double *R£º		Ğı×ª¾ØÕó3*3£¬ĞĞÓÅÏÈ	
-//		int ratateOrder:Å·À­½Ç×ªĞò	
-// ·µ»ØÖµ£º
+// åŠŸèƒ½ï¼šä»æ¬§æ‹‰è§’è·å¾—æ—‹è½¬çŸ©é˜µ
+// è¾“å…¥:
+//		double &eulor1:	æ¬§æ‹‰è§’1
+//		double &eulor2:	æ¬§æ‹‰è§’2
+//		double &eulor3:	æ¬§æ‹‰è§’3
+// è¾“å‡ºï¼š
+//		double *Rï¼š		æ—‹è½¬çŸ©é˜µ3*3ï¼Œè¡Œä¼˜å…ˆ	
+//		int ratateOrder:æ¬§æ‹‰è§’è½¬åº	
+// è¿”å›å€¼ï¼š
 //		void
 ///////////////////////////////////////
 void GeoBase::Eulor2Matrix(double eulor1, double eulor2, double eulor3, int rotateOrder, double *R)
@@ -753,88 +753,88 @@ void GeoBase::Eulor2Matrix(double eulor1, double eulor2, double eulor3, int rota
 	double R1[9], R2[9], R3[9], Rtemp[9];
 	switch(rotateOrder)
 	{
-		// µÚÒ»Àà:µÚÒ»´ÎºÍµÚÈı´Î×ª¶¯ÊÇÈÆÍ¬Àà×ø±êÖá½øĞĞµÄ,µÚ¶ş´Î×ª¶¯ÊÇÈÆÁíÁ½ÖáÖĞµÄÒ»Àà½øĞĞµÄ
+		// ç¬¬ä¸€ç±»:ç¬¬ä¸€æ¬¡å’Œç¬¬ä¸‰æ¬¡è½¬åŠ¨æ˜¯ç»•åŒç±»åæ ‡è½´è¿›è¡Œçš„,ç¬¬äºŒæ¬¡è½¬åŠ¨æ˜¯ç»•å¦ä¸¤è½´ä¸­çš„ä¸€ç±»è¿›è¡Œçš„
 	case 121:	// 1
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò0µ½pi£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ0åˆ°piï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			RotationX(eulor1, R1);	RotationY(eulor2, R2);	RotationX(eulor3, R3);
 			Multi(R2, R1, Rtemp, 3, 3, 3);	Multi(R3, Rtemp, R, 3, 3, 3);	break;
 		}
 	case 131:	// 2
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò0µ½pi£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ0åˆ°piï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			RotationX(eulor1, R1);	RotationZ(eulor2, R2);	RotationX(eulor3, R3);
 			Multi(R2, R1, Rtemp, 3, 3, 3);	Multi(R3, Rtemp, R, 3, 3, 3);	break;
 		}
 	case 212:	// 3
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò0µ½pi£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ0åˆ°piï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			RotationY(eulor1, R1);	RotationX(eulor2, R2);	RotationY(eulor3, R3);
 			Multi(R2, R1, Rtemp, 3, 3, 3);	Multi(R3, Rtemp, R, 3, 3, 3);	break;
 		}
 	case 232:	// 4
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò0µ½pi£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ0åˆ°piï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			RotationY(eulor1, R1);	RotationZ(eulor2, R2);	RotationY(eulor3, R3);
 			Multi(R2, R1, Rtemp, 3, 3, 3);	Multi(R3, Rtemp, R, 3, 3, 3);	break;
 		}
 	case 313:	// 5
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò0µ½pi£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ0åˆ°piï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			RotationZ(eulor1, R1);	RotationX(eulor2, R2);	RotationZ(eulor3, R3);
 			Multi(R2, R1, Rtemp, 3, 3, 3);	Multi(R3, Rtemp, R, 3, 3, 3);	break;
 		}
 	case 323:	// 6
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò0µ½pi£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ0åˆ°piï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			RotationZ(eulor1, R1);	RotationY(eulor2, R2);	RotationZ(eulor3, R3);
 			Multi(R2, R1, Rtemp, 3, 3, 3);	Multi(R3, Rtemp, R, 3, 3, 3);	break;
 		}
-		// µÚ¶şÀà:Ã¿´Î×ª¶¯ÊÇÈÆ²»Í¬Àà±ğµÄ×ø±êÖá½øĞĞµÄ
+		// ç¬¬äºŒç±»:æ¯æ¬¡è½¬åŠ¨æ˜¯ç»•ä¸åŒç±»åˆ«çš„åæ ‡è½´è¿›è¡Œçš„
 	case 123:	// 7
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò-pi/2µ½pi/2£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ-pi/2åˆ°pi/2ï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			RotationX(eulor1, R1);	RotationY(eulor2, R2);	RotationZ(eulor3, R3);
 			Multi(R2, R1, Rtemp, 3, 3, 3);	Multi(R3, Rtemp, R, 3, 3, 3);	break;
 		}
 	case 132:	// 8
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò-pi/2µ½pi/2£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ-pi/2åˆ°pi/2ï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			RotationX(eulor1, R1);	RotationZ(eulor2, R2);	RotationY(eulor3, R3);
 			Multi(R2, R1, Rtemp, 3, 3, 3);	Multi(R3, Rtemp, R, 3, 3, 3);	break;
 		}
 	case 213:	// 9
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò-pi/2µ½pi/2£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ-pi/2åˆ°pi/2ï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			RotationY(eulor1, R1);	RotationX(eulor2, R2);	RotationZ(eulor3, R3);
 			Multi(R2, R1, Rtemp, 3, 3, 3);	Multi(R3, Rtemp, R, 3, 3, 3);	break;
 		}
 	case 231:	// 10
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò-pi/2µ½pi/2£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ-pi/2åˆ°pi/2ï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			RotationY(eulor1, R1);	RotationZ(eulor2, R2);	RotationX(eulor3, R3);
 			Multi(R2, R1, Rtemp, 3, 3, 3);	Multi(R3, Rtemp, R, 3, 3, 3);	break;
 		}
 	case 312:	// 11
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò-pi/2µ½pi/2£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ-pi/2åˆ°pi/2ï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			RotationZ(eulor1, R1);	RotationX(eulor2, R2);	RotationY(eulor3, R3);
 			Multi(R2, R1, Rtemp, 3, 3, 3);	Multi(R3, Rtemp, R, 3, 3, 3);	break;
 		}
 	case 321:	// 12
-		{	// eulor1ÖµÓò-piµ½pi£¬eulor2ÖµÓò-pi/2µ½pi/2£¬eulor3ÖµÓò-piµ½pi
+		{	// eulor1å€¼åŸŸ-piåˆ°piï¼Œeulor2å€¼åŸŸ-pi/2åˆ°pi/2ï¼Œeulor3å€¼åŸŸ-piåˆ°pi
 			RotationZ(eulor1, R1);	RotationY(eulor2, R2);	RotationX(eulor3, R3);
 			Multi(R2, R1, Rtemp, 3, 3, 3);	Multi(R3, Rtemp, R, 3, 3, 3);	break;
 		}
 	default:
 		{
-			printf("Eulor2Matrix Error!\n");	break;	// Ã»ÓĞ´ËÖÖ×ªĞò´æÔÚ!
+			printf("Eulor2Matrix Error!\n");	break;	// æ²¡æœ‰æ­¤ç§è½¬åºå­˜åœ¨!
 		}
 	}
 }
 
 //////////////////////////////////////////////////////////////////////////
-// ÈÆÖáµÄĞı×ª
+// ç»•è½´çš„æ—‹è½¬
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////
-// ¹¦ÄÜ£ºÈÆXÖá×ª½ÇangleµÄĞı×ª¾ØÕó
+// åŠŸèƒ½ï¼šç»•Xè½´è½¬è§’angleçš„æ—‹è½¬çŸ©é˜µ
 // [ 1          0         0     ]
 // [ 0    cos(angle)  sin(angle)]
 // [ 0   -sin(angle)  cos(angle)]
-// ÊäÈë:
-//		double angle:	×ª¹ıµÄ½Ç(»¡¶È)
-// Êä³ö£º
-//		double *R£º		Ğı×ª¾ØÕó3*3£¬ĞĞÓÅÏÈ	
-// ·µ»ØÖµ£º
+// è¾“å…¥:
+//		double angle:	è½¬è¿‡çš„è§’(å¼§åº¦)
+// è¾“å‡ºï¼š
+//		double *Rï¼š		æ—‹è½¬çŸ©é˜µ3*3ï¼Œè¡Œä¼˜å…ˆ	
+// è¿”å›å€¼ï¼š
 //		void
 //////////////////////////////////////
 void GeoBase::RotationX(double angle, double *R)
@@ -848,15 +848,15 @@ void GeoBase::RotationX(double angle, double *R)
 
 
 //////////////////////////////////////
-// ¹¦ÄÜ£ºÈÆYÖá×ª½ÇangleµÄĞı×ª¾ØÕó
+// åŠŸèƒ½ï¼šç»•Yè½´è½¬è§’angleçš„æ—‹è½¬çŸ©é˜µ
 // [cos(angle)  0    -sin(angle)]
 // [     0      1         0     ]
 // [sin(angle)  0     cos(angle)]
-// ÊäÈë:
-//		double angle:	×ª¹ıµÄ½Ç(»¡¶È)
-// Êä³ö£º
-//		double *R£º		Ğı×ª¾ØÕó3*3£¬ĞĞÓÅÏÈ	
-// ·µ»ØÖµ£º
+// è¾“å…¥:
+//		double angle:	è½¬è¿‡çš„è§’(å¼§åº¦)
+// è¾“å‡ºï¼š
+//		double *Rï¼š		æ—‹è½¬çŸ©é˜µ3*3ï¼Œè¡Œä¼˜å…ˆ	
+// è¿”å›å€¼ï¼š
 //		void
 //////////////////////////////////////
 void GeoBase::RotationY(double angle, double *R)
@@ -870,15 +870,15 @@ void GeoBase::RotationY(double angle, double *R)
 
 
 //////////////////////////////////////
-// ¹¦ÄÜ£ºÈÆZÖá×ª½ÇangleµÄĞı×ª¾ØÕó
+// åŠŸèƒ½ï¼šç»•Zè½´è½¬è§’angleçš„æ—‹è½¬çŸ©é˜µ
 // [ cos(angle)  sin(angle)  0]
 // [-sin(angle)  cos(angle)  0]
 // [     0            0      1]
-// ÊäÈë:
-//		double angle:	×ª¹ıµÄ½Ç(»¡¶È)
-// Êä³ö£º
-//		double *R£º		Ğı×ª¾ØÕó3*3£¬ĞĞÓÅÏÈ	
-// ·µ»ØÖµ£º
+// è¾“å…¥:
+//		double angle:	è½¬è¿‡çš„è§’(å¼§åº¦)
+// è¾“å‡ºï¼š
+//		double *Rï¼š		æ—‹è½¬çŸ©é˜µ3*3ï¼Œè¡Œä¼˜å…ˆ	
+// è¿”å›å€¼ï¼š
 //		void
 //////////////////////////////////////
 void GeoBase::RotationZ(double angle, double *R)
@@ -906,9 +906,9 @@ void GeoBase::rot(double phi, double omg, double kap, double * R)
 
 
 ////////////////////////////////////////////////////////////////////////////////////
-// ¾ØÕóµÄÈô¸ÉÔËËã
+// çŸ©é˜µçš„è‹¥å¹²è¿ç®—
 ////////////////////////////////////////////////////////////////////////////////////
-// Çó¾ØÕó×ªÖÃ£¬ĞÎ²ÎmÎªĞĞ£¬nÎªÁĞ,A×ªÖÃºó´æÎªB 
+// æ±‚çŸ©é˜µè½¬ç½®ï¼Œå½¢å‚mä¸ºè¡Œï¼Œnä¸ºåˆ—,Aè½¬ç½®åå­˜ä¸ºB 
 void GeoBase::Transpose(double *A,double *B, int m,int n)
 {
     for (int i=0;i<n;i++)
@@ -916,7 +916,7 @@ void GeoBase::Transpose(double *A,double *B, int m,int n)
            B[i*m+j]=A[j*n+i];
 }
 
-// Çó¾ØÕó×ªÖÃ£¬ĞÎ²ÎmÎªĞĞ£¬nÎªÁĞ,A×ªÖÃºó´æÎªA 
+// æ±‚çŸ©é˜µè½¬ç½®ï¼Œå½¢å‚mä¸ºè¡Œï¼Œnä¸ºåˆ—,Aè½¬ç½®åå­˜ä¸ºA 
 void GeoBase::Transpose(double *A, int m, int n)
 {
 	long size = m*n;
@@ -928,7 +928,7 @@ void GeoBase::Transpose(double *A, int m, int n)
 	if(B!=NULL) { delete []B; B=NULL; };
 }
 
-// Çó¾ØÕóÏà³Ë,A¾ØÕóÎª[m,p],B¾ØÕóÎª[p,n],CÎª[m,n] 
+// æ±‚çŸ©é˜µç›¸ä¹˜,AçŸ©é˜µä¸º[m,p],BçŸ©é˜µä¸º[p,n],Cä¸º[m,n] 
 void GeoBase::Multi(double *A,double *B,double *C ,int m,int p,int n)
 {
      for (int i=0;i<m;i++)
@@ -941,7 +941,7 @@ void GeoBase::Multi(double *A,double *B,double *C ,int m,int p,int n)
         }
 }
 
-// Çó¾ØÕóºÍ³£ÊıÏà³Ë,A¾ØÕóÎª[m,n] 
+// æ±‚çŸ©é˜µå’Œå¸¸æ•°ç›¸ä¹˜,AçŸ©é˜µä¸º[m,n] 
 void GeoBase::Multi(double *A, int m, int n, double p)
 {
 	for(int i=0; i<m; i++)
@@ -954,7 +954,7 @@ void GeoBase::Multi(double *A, int m, int n, double p)
 }
 
 
-// Çó¾ØÕóÏà¼Ó,A¾ØÕóÎª[m,n],B¾ØÕóÎª[m,n],½«B¾ØÕóÖµ¼Óµ½A¾ØÕóÉÏ
+// æ±‚çŸ©é˜µç›¸åŠ ,AçŸ©é˜µä¸º[m,n],BçŸ©é˜µä¸º[m,n],å°†BçŸ©é˜µå€¼åŠ åˆ°AçŸ©é˜µä¸Š
 void GeoBase::Add(double *A,double *B, int m,int n)
 {
 	for(int i=0; i<m; i++)
@@ -967,7 +967,7 @@ void GeoBase::Add(double *A,double *B, int m,int n)
 }
 
 
-// Çó¾ØÕóÏà¼Ó,A¾ØÕóÎª[m,n],B¾ØÕóÎª[m,n],C¾ØÕóÎª[m,n],½«AB¾ØÕóÖµ¼Óµ½C¾ØÕóÉÏ
+// æ±‚çŸ©é˜µç›¸åŠ ,AçŸ©é˜µä¸º[m,n],BçŸ©é˜µä¸º[m,n],CçŸ©é˜µä¸º[m,n],å°†ABçŸ©é˜µå€¼åŠ åˆ°CçŸ©é˜µä¸Š
 void GeoBase::Add(double *A,double *B, double *C, int m,int n)
 {
 	for(int i=0; i<m; i++)
@@ -980,7 +980,7 @@ void GeoBase::Add(double *A,double *B, double *C, int m,int n)
 }
 
 
-// Çó¾ØÕóÏà¼Ó,A¾ØÕóÎª[m,n],B¾ØÕóÎª[l, k],½«B¾ØÕóÖµ¼Óµ½A¾ØÕóÉÏ,Æä¼ÓµÄ×óÉÏ½ÇÎª(p, q)
+// æ±‚çŸ©é˜µç›¸åŠ ,AçŸ©é˜µä¸º[m,n],BçŸ©é˜µä¸º[l, k],å°†BçŸ©é˜µå€¼åŠ åˆ°AçŸ©é˜µä¸Š,å…¶åŠ çš„å·¦ä¸Šè§’ä¸º(p, q)
 void GeoBase::Add(double *A,double *B, int m,int n, int l, int k, int p, int q)
 {
 	for(int i=0; i<l; i++)
@@ -993,7 +993,7 @@ void GeoBase::Add(double *A,double *B, int m,int n, int l, int k, int p, int q)
 }
 
 
-// Çó¾ØÕóÏà¼Ó,A¾ØÕóÎª[m,n],B¾ØÕóÎª[m,n],½«B¾ØÕóÖµ¼Óµ½A¾ØÕóÉÏ
+// æ±‚çŸ©é˜µç›¸åŠ ,AçŸ©é˜µä¸º[m,n],BçŸ©é˜µä¸º[m,n],å°†BçŸ©é˜µå€¼åŠ åˆ°AçŸ©é˜µä¸Š
 void GeoBase::Minus(double *A,double *B, int m,int n)
 {
 	for(int i=0; i<m; i++)
@@ -1006,7 +1006,7 @@ void GeoBase::Minus(double *A,double *B, int m,int n)
 }
 
 
-// Çó¾ØÕóÏà¼Ó,A¾ØÕóÎª[m,n],B¾ØÕóÎª[m,n],C¾ØÕóÎª[m,n],½«AB¾ØÕóÖµ¼Óµ½C¾ØÕóÉÏ
+// æ±‚çŸ©é˜µç›¸åŠ ,AçŸ©é˜µä¸º[m,n],BçŸ©é˜µä¸º[m,n],CçŸ©é˜µä¸º[m,n],å°†ABçŸ©é˜µå€¼åŠ åˆ°CçŸ©é˜µä¸Š
 void GeoBase::Minus(double *A,double *B, double *C, int m,int n)
 {
 	for(int i=0; i<m; i++)
@@ -1019,7 +1019,7 @@ void GeoBase::Minus(double *A,double *B, double *C, int m,int n)
 }
 
 
-// Çó¾ØÕóÏà¼Ó,A¾ØÕóÎª[m,n],B¾ØÕóÎª[l, k],½«B¾ØÕóÖµ¼Óµ½A¾ØÕóÉÏ,Æä¼ÓµÄ×óÉÏ½ÇÎª(p, q)
+// æ±‚çŸ©é˜µç›¸åŠ ,AçŸ©é˜µä¸º[m,n],BçŸ©é˜µä¸º[l, k],å°†BçŸ©é˜µå€¼åŠ åˆ°AçŸ©é˜µä¸Š,å…¶åŠ çš„å·¦ä¸Šè§’ä¸º(p, q)
 void GeoBase::Minus(double *A,double *B, int m,int n, int l, int k, int p, int q)
 {
 	for(int i=0; i<l; i++)
@@ -1032,7 +1032,7 @@ void GeoBase::Minus(double *A,double *B, int m,int n, int l, int k, int p, int q
 }
 
 
-// ¾ØÕó·´ºÅ,A¾ØÕóÎª[m,n],B¾ØÕóÎª[m,n]
+// çŸ©é˜µåå·,AçŸ©é˜µä¸º[m,n],BçŸ©é˜µä¸º[m,n]
 void GeoBase::RevSig(double *A,double *B, int m,int n)
 {
 	for(int i=0; i<m; i++)
@@ -1045,7 +1045,7 @@ void GeoBase::RevSig(double *A,double *B, int m,int n)
 }
 
 
-// Çó¾ØÕóĞĞÁĞÊ½
+// æ±‚çŸ©é˜µè¡Œåˆ—å¼
 double GeoBase::Det(double *A,int m)
 {
     int i=0,ii=0,j=0,jj=0,k=0,t=0,tt=1;
@@ -1098,7 +1098,7 @@ double GeoBase::Det(double *A,int m)
     return det;
 }
 
-// ÇóAµÄÄæ¾ØÕóC 
+// æ±‚Açš„é€†çŸ©é˜µC 
 void GeoBase::Inv(double *A, double *C, int m)
 {
      int i,j,x0,y0;
@@ -1134,7 +1134,7 @@ void GeoBase::Inv(double *A, double *C, int m)
 }
 
 
-// ¶ÔÏòÁ¿½øĞĞ¹éÒ»»¯
+// å¯¹å‘é‡è¿›è¡Œå½’ä¸€åŒ–
 void GeoBase::NormVector(double *R, int num)
 {
 	double retVal = 0.0;
@@ -1146,7 +1146,7 @@ void GeoBase::NormVector(double *R, int num)
 }
 
 
-// ÇóÈ¡ÏòÁ¿µÄÄ£
+// æ±‚å–å‘é‡çš„æ¨¡
 double GeoBase::Norm(double *R, int num)
 {
 	double retVal = 0.0;
@@ -1156,7 +1156,7 @@ double GeoBase::Norm(double *R, int num)
 }
 
 
-// Á½¸öÏòÁ¿µã³Ë
+// ä¸¤ä¸ªå‘é‡ç‚¹ä¹˜
 double GeoBase::Dot(double *A, double *B, int num)
 {
 	double retVal = 0.0;
@@ -1166,7 +1166,7 @@ double GeoBase::Dot(double *A, double *B, int num)
 }
 
 
-// Èı½×ÏòÁ¿²æ³Ë
+// ä¸‰é˜¶å‘é‡å‰ä¹˜
 void GeoBase::CrossMult(double *u, double *v, double *w)
 {
 	w[0] = u[1]*v[2] - u[2]*v[1];
@@ -1183,7 +1183,7 @@ bool GeoBase::isExitlter(double * pData, double val, int num)
 	return true;
 }
 
-// ·¨»¯
+// æ³•åŒ–
 void GeoBase::pNormal(double *a, int n, double b, double *aa, double *ab, double p)
 {
 	int i,j;
@@ -1195,7 +1195,7 @@ void GeoBase::pNormal(double *a, int n, double b, double *aa, double *ab, double
 	}
 }
 
-// ¸ßË¹Çó½â
+// é«˜æ–¯æ±‚è§£
 int GeoBase::Gauss(double *ATA,double *ATL,int n)
 {
 	double *ATAinv = new double[n*n];
@@ -1208,7 +1208,7 @@ int GeoBase::Gauss(double *ATA,double *ATL,int n)
 	return 1;
 }
 
-// 3*3µÄ¸ßË¹Çó½â
+// 3*3çš„é«˜æ–¯æ±‚è§£
 bool GeoBase::solve33(double *A, double *al)
 {
 	double calresult[3];
@@ -1235,7 +1235,7 @@ bool GeoBase::solve33(double *A, double *al)
 }
 
 
-//ÍõĞÂÖŞµÈ£¬Æ×ĞŞÕıµü´ú·¨¼°ÆäÔÚ²âÁ¿Êı¾İ´¦ÀíÖĞµÄÓ¦ÓÃ
+//ç‹æ–°æ´²ç­‰ï¼Œè°±ä¿®æ­£è¿­ä»£æ³•åŠå…¶åœ¨æµ‹é‡æ•°æ®å¤„ç†ä¸­çš„åº”ç”¨
 void GeoBase::GaussExt(double *ATA, double *ATL, double *x, int n)
 {
 	double *ATAinv = new double[n*n];
@@ -1271,14 +1271,14 @@ void GeoBase::GaussExt(double *ATA, double *ATL, double *x, int n)
 
 
 //////////////////////////////////////
-// ¶àÏîÊ½ÄâºÏµÄ¸÷Àà²Ù×÷
+// å¤šé¡¹å¼æ‹Ÿåˆçš„å„ç±»æ“ä½œ
 ///////////////////////////////////////
 
 ///////////////////////////////////////
-// ¶àÏîÊ½ÄâºÏ
-//	ÔÚÕâÀï,Ò»°ãxÎªÊ±¼ä,yÎªÆä¶ÔÓ¦µÄº¯Êı
-//	nÎª¹Û²âÖµ¸öÊı,orderÊÇ¶àÏîÊ½ÄâºÏµÄ½×Êı
-//  pÎªÊä³öµÄ¶àÏîÊ½ÏµÊı
+// å¤šé¡¹å¼æ‹Ÿåˆ
+//	åœ¨è¿™é‡Œ,ä¸€èˆ¬xä¸ºæ—¶é—´,yä¸ºå…¶å¯¹åº”çš„å‡½æ•°
+//	nä¸ºè§‚æµ‹å€¼ä¸ªæ•°,orderæ˜¯å¤šé¡¹å¼æ‹Ÿåˆçš„é˜¶æ•°
+//  pä¸ºè¾“å‡ºçš„å¤šé¡¹å¼ç³»æ•°
 ///////////////////////////////////////
 void GeoBase::PolynominalFitting(double *x, double *y, int n, int order, double *p)
 {
@@ -1306,7 +1306,7 @@ void GeoBase::PolynominalFitting(double *x, double *y, int n, int order, double 
 }
 
 ///////////////////////////////////////
-// ¶àÏîÊ½ÄâºÏ¼°Æä¾«¶È
+// å¤šé¡¹å¼æ‹ŸåˆåŠå…¶ç²¾åº¦
 ///////////////////////////////////////
 void GeoBase::PolynominalFittingError(double *x,double *y,int n,int order,double *error,double *p)
 {
@@ -1332,7 +1332,7 @@ void GeoBase::PolynominalFittingError(double *x,double *y,int n,int order,double
 
 
 ///////////////////////////////////////
-// ¶àÏîÊ½ÄâºÏÇóÖµ
+// å¤šé¡¹å¼æ‹Ÿåˆæ±‚å€¼
 ///////////////////////////////////////
 void GeoBase::PolyValue(double *p, double *pDelta, double UT, double *value)
 {
@@ -1353,7 +1353,7 @@ void GeoBase::PolyValue(double *p, double *pDelta, double UT, double *value)
 
 
 ///////////////////////////////////////
-// ÇóÈ¡¹éÒ»»¯ÏµÊı
+// æ±‚å–å½’ä¸€åŒ–ç³»æ•°
 ///////////////////////////////////////
 void GeoBase::Compute_avAnddx(double *a,int num,double &av,double &dx)
 {
@@ -1372,7 +1372,7 @@ void GeoBase::Compute_avAnddx(double *a,int num,double &av,double &dx)
 
 
 ///////////////////////////////////////
-// ½øĞĞ¹éÒ»»¯
+// è¿›è¡Œå½’ä¸€åŒ–
 ///////////////////////////////////////
 void GeoBase::Normaliza_avAnddx(double *a, int num, double av, double dx)
 {
@@ -1383,7 +1383,7 @@ void GeoBase::Normaliza_avAnddx(double *a, int num, double av, double dx)
 }
 
 ///////////////////////////////////////
-// ½øĞĞ·´¹éÒ»»¯
+// è¿›è¡Œåå½’ä¸€åŒ–
 ///////////////////////////////////////
 void GeoBase::DNormaliza_avAnddx(double *a, int num, double av, double dx)
 {
@@ -1394,7 +1394,7 @@ void GeoBase::DNormaliza_avAnddx(double *a, int num, double av, double dx)
 }
 
 ///////////////////////////////////////
-// ¼ÆËã¾ø¶ÔÖµÆ½¾ùÖµ
+// è®¡ç®—ç»å¯¹å€¼å¹³å‡å€¼
 ///////////////////////////////////////
 double GeoBase::FabsAndAve(double *a, int num)
 {
@@ -1408,7 +1408,7 @@ double GeoBase::FabsAndAve(double *a, int num)
 
 
 
-// ²úÉúÒ»¸ö·ûºÏÕıÌ¬·Ö²¼µÄËæ»úÊı
+// äº§ç”Ÿä¸€ä¸ªç¬¦åˆæ­£æ€åˆ†å¸ƒçš„éšæœºæ•°
 double GeoBase::GaussRand(double mean, double sigma)
 {    
 	static double v1, v2, s;   
@@ -1431,11 +1431,11 @@ double GeoBase::GaussRand(double mean, double sigma)
 		x = v2 * sqrt(-2 * log(s) / s);  
 	}    
 	phase = 1 - phase;   
-	return (x*sigma+mean);    // ×¢ÒâÒª¼ÓÀ¨ºÅ,·ñÔò·µ»ØÖµ¾ÍÊÇsigmaÁË
+	return (x*sigma+mean);    // æ³¨æ„è¦åŠ æ‹¬å·,å¦åˆ™è¿”å›å€¼å°±æ˜¯sigmaäº†
 }
 
 
-// ²úÉúÒ»¸ö·ûºÏÕıÌ¬·Ö²¼µÄËæ»úÊı
+// äº§ç”Ÿä¸€ä¸ªç¬¦åˆæ­£æ€åˆ†å¸ƒçš„éšæœºæ•°
 double GeoBase::GaussRand2(double mean, double sigma)
 {    
 	double v1, v2, s;   
@@ -1458,12 +1458,12 @@ double GeoBase::GaussRand2(double mean, double sigma)
 		x = v2 * sqrt(-2 * log(s) / s);  
 	}    
 	phase = 1 - phase;   
-	return (x*sigma+mean);    // ×¢ÒâÒª¼ÓÀ¨ºÅ,·ñÔò·µ»ØÖµ¾ÍÊÇsigmaÁË
+	return (x*sigma+mean);    // æ³¨æ„è¦åŠ æ‹¬å·,å¦åˆ™è¿”å›å€¼å°±æ˜¯sigmaäº†
 }
 
 #include <time.h>
 ////////////////////////////////////////////////////////
-// Éú³ÉËæ»úÎó²î
+// ç”Ÿæˆéšæœºè¯¯å·®
 ////////////////////////////////////////////////////////
 void GeoBase::RandomDistribution(double mean, double sigma, int n, long randCount, double *a)
 {
@@ -1478,28 +1478,31 @@ void GeoBase::RandomDistribution(double mean, double sigma, int n, long randCoun
 	double maxtemp = mean+2*sigma;
 	if(randCount == 0)
 	{
-		// ×¢ÒâÒªÊ¹ÓÃtime(NULL),¶ø²»ÊÇGetTickcount
-		// GetTickcountº¯Êı£ºËü·µ»Ø´Ó²Ù×÷ÏµÍ³Æô¶¯µ½µ±Ç°Ëù¾­¹ıµÄºÁÃëÊı£¬
-		// ³£³£ÓÃÀ´ÅĞ¶ÏÄ³¸ö·½·¨Ö´ĞĞµÄÊ±¼ä£¬Æäº¯ÊıÔ­ĞÍÊÇDWORD GetTickCount(void)£¬
-		// ·µ»ØÖµÒÔ32Î»µÄË«×ÖÀàĞÍDWORD´æ´¢£¬Òò´Ë¿ÉÒÔ´æ´¢µÄ×î´óÖµÊÇ2^32 msÔ¼Îª49.71Ìì£¬
-		// Òò´ËÈôÏµÍ³ÔËĞĞÊ±¼ä³¬¹ı49.71ÌìÊ±£¬Õâ¸öÊı¾Í»á¹é0£¬MSDNÖĞÒ²Ã÷È·µÄÌáµ½ÁË:
+		// æ³¨æ„è¦ä½¿ç”¨time(NULL),è€Œä¸æ˜¯GetTickcount
+		// GetTickcountå‡½æ•°ï¼šå®ƒè¿”å›ä»æ“ä½œç³»ç»Ÿå¯åŠ¨åˆ°å½“å‰æ‰€ç»è¿‡çš„æ¯«ç§’æ•°ï¼Œ
+		// å¸¸å¸¸ç”¨æ¥åˆ¤æ–­æŸä¸ªæ–¹æ³•æ‰§è¡Œçš„æ—¶é—´ï¼Œå…¶å‡½æ•°åŸå‹æ˜¯DWORD GetTickCount(void)ï¼Œ
+		// è¿”å›å€¼ä»¥32ä½çš„åŒå­—ç±»å‹DWORDå­˜å‚¨ï¼Œå› æ­¤å¯ä»¥å­˜å‚¨çš„æœ€å¤§å€¼æ˜¯2^32 msçº¦ä¸º49.71å¤©ï¼Œ
+		// å› æ­¤è‹¥ç³»ç»Ÿè¿è¡Œæ—¶é—´è¶…è¿‡49.71å¤©æ—¶ï¼Œè¿™ä¸ªæ•°å°±ä¼šå½’0ï¼ŒMSDNä¸­ä¹Ÿæ˜ç¡®çš„æåˆ°äº†:
 		// "Retrieves the number of milliseconds that have elapsed since the 
-		// system was started, up to 49.7 days."¡£Òò´Ë£¬Èç¹ûÊÇ±àĞ´·şÎñÆ÷¶Ë³ÌĞò£¬
-		// ´Ë´¦Ò»¶¨ÒªÍò·Ö×¢Òâ£¬±ÜÃâÒıÆğÒâÍâµÄ×´¿ö¡£
+		// system was started, up to 49.7 days."ã€‚å› æ­¤ï¼Œå¦‚æœæ˜¯ç¼–å†™æœåŠ¡å™¨ç«¯ç¨‹åºï¼Œ
+		// æ­¤å¤„ä¸€å®šè¦ä¸‡åˆ†æ³¨æ„ï¼Œé¿å…å¼•èµ·æ„å¤–çš„çŠ¶å†µã€‚
 		srand(time(NULL)+timetemp);  
-		// ²úÉúËæ»úÊı
+		// äº§ç”Ÿéšæœºæ•°
 		for (int i=0; i<ntemp; i++)	
 		{
 			tempa[i] = GaussRand(mean, sigma);
 			if((tempa[i]<mintemp)||(tempa[i]>maxtemp))
 				i--;
 		}
-		timetemp = (unsigned int)fabs(tempa[0]);
+		if (fabs(a[0]) > 1)
+		{			timetemp = (unsigned int)fabs(a[0]);		}
+		else		
+		{			timetemp = (unsigned int)1. / fabs(a[0]);		}
 	}
 	else
 	{
 		srand(randCount);
-		// ²úÉúËæ»úÊı
+		// äº§ç”Ÿéšæœºæ•°
 		for (int i=0; i<ntemp; i++)	
 		{
 			tempa[i] = GaussRand2(mean, sigma);
@@ -1510,7 +1513,7 @@ void GeoBase::RandomDistribution(double mean, double sigma, int n, long randCoun
 	
 	if(n>1)
 	{
-/*		// ÈÃÆä±ä»¯²»Í»Ø£
+/*		// è®©å…¶å˜åŒ–ä¸çªå…€
 		double diffvalue, diffvaluetemp, temptemp;
 		for(int i=1; i<n; i++)
 		{
@@ -1528,20 +1531,20 @@ void GeoBase::RandomDistribution(double mean, double sigma, int n, long randCoun
 			}
 		}*/
 
-		// ÇóÈ¡Æ½¾ùÖµ
+		// æ±‚å–å¹³å‡å€¼
 		double meantemp=0;
 		for (int i=0; i<n; i++)
 		{	
 			meantemp+=tempa[i];	
 		}
 		meantemp/=n;
-		// ¶ÔÆ½¾ùÖµ½øĞĞĞŞÕı
+		// å¯¹å¹³å‡å€¼è¿›è¡Œä¿®æ­£
 		double div = meantemp - mean;
 		for (int i=0; i<n; i++)	
 		{
 			a[i] = tempa[i] - div;
 		}
-		// ÊÍ·ÅÄÚ´æ
+		// é‡Šæ”¾å†…å­˜
 		if(tempa!=NULL)	delete []tempa;	tempa=NULL;
 	}
 	return;
@@ -1550,30 +1553,30 @@ void GeoBase::RandomDistribution(double mean, double sigma, int n, long randCoun
 
 
 /////////////////////////////////////////////////
-// ´Ó¹ìµÀÁù¸ùÊı×ª»¯µ½¹ìµÀÎ»ÖÃºÍËÙ¶È
-// ÊäÈë£º
-//		double a£º				¹ìµÀ¸ß¶È
-//		double e£º				¹ìµÀÆ«ĞÄÂÊ
-//		double i£º				¹ìµÀÇã½Ç
-//		double omega£º			½üµØµã·ù½Ç
-//		double AscNode£º		Éı½»µã³à¾­
-//		double f£º				Õæ½üµã½Ç/Æ«½üµã½Ç
-//		double istrueAnomaly:	Õæ½üµã½Ç/Æ«½üµã½Ç±ê¼Ç
-// Êä³ö£º
-//		double *X£º				¹ìµÀÎ»ÖÃºÍËÙ¶È
+// ä»è½¨é“å…­æ ¹æ•°è½¬åŒ–åˆ°è½¨é“ä½ç½®å’Œé€Ÿåº¦
+// è¾“å…¥ï¼š
+//		double aï¼š				è½¨é“é«˜åº¦
+//		double eï¼š				è½¨é“åå¿ƒç‡
+//		double iï¼š				è½¨é“å€¾è§’
+//		double omegaï¼š			è¿‘åœ°ç‚¹å¹…è§’
+//		double AscNodeï¼š		å‡äº¤ç‚¹èµ¤ç»
+//		double fï¼š				çœŸè¿‘ç‚¹è§’/åè¿‘ç‚¹è§’
+//		double istrueAnomaly:	çœŸè¿‘ç‚¹è§’/åè¿‘ç‚¹è§’æ ‡è®°
+// è¾“å‡ºï¼š
+//		double *Xï¼š				è½¨é“ä½ç½®å’Œé€Ÿåº¦
 /////////////////////////////////////////////////
 void GeoBase::OrbitEle2PosAndVel(double a, double e, double i, double omega, double AscNode, double f, double *X, bool istrueAnomaly)
 {
-	// ÇóÈ¡Æ«½üµã½Ç
+	// æ±‚å–åè¿‘ç‚¹è§’
 	double E;
 	if(istrueAnomaly)
 		E = 2*atan(sqrt((1-e)/(1+e))*tan(f/2));  
 	else
 		E = f;
-	// ÇóÈ¡ÖØÁ¦³¡½×Êı
+	// æ±‚å–é‡åŠ›åœºé˜¶æ•°
 	double n = sqrt(GM/pow(a, 3));
 	double e2 = e*e;
-	// ¼ÆËãÔÚ¹ìµÀ×ø±êÏµÏÂµÄÎ»ÖÃºÍËÙ¶È
+	// è®¡ç®—åœ¨è½¨é“åæ ‡ç³»ä¸‹çš„ä½ç½®å’Œé€Ÿåº¦
 	double Rorbit[3], Vorbit[3], RJ2000[3], VJ2000[3];
 	Rorbit[0] = a*(cos(E)-e);
 	Rorbit[1] = a*(sin(E)*sqrt(1-e2));
@@ -1582,7 +1585,7 @@ void GeoBase::OrbitEle2PosAndVel(double a, double e, double i, double omega, dou
 	Vorbit[0] = -sin(E)*temp;
 	Vorbit[1] = sqrt(1-e2)*cos(E)*temp;
 	Vorbit[2] = 0;
-	// ½«¹ìµÀ×ø±êÏµÏÂµÄÎ»ÖÃºÍËÙ¶È×ª»¯µ½µØĞÄ¹ßĞÔÏµÏÂ
+	// å°†è½¨é“åæ ‡ç³»ä¸‹çš„ä½ç½®å’Œé€Ÿåº¦è½¬åŒ–åˆ°åœ°å¿ƒæƒ¯æ€§ç³»ä¸‹
 	double Rtemp1[9];
 	Eulor2Matrix(-omega, -i, -AscNode, 313, Rtemp1);
 	Multi(Rtemp1, Rorbit, RJ2000, 3, 3, 1);
@@ -1594,17 +1597,17 @@ void GeoBase::OrbitEle2PosAndVel(double a, double e, double i, double omega, dou
 
 
 /////////////////////////////////////////////////
-// ´Ó¹ìµÀÎ»ÖÃºÍËÙ¶È×ª»¯µ½¹ìµÀÁù¸ùÊı£¨×¢Òâ£ºÔİÊ±Ã»¿¼ÂÇÔ²¹ìµÀ¡¢³àµÀ¹ìµÀµÄÇé¿ö£©
-// ÊäÈë£º
-//		double *X£º				¹ìµÀÎ»ÖÃºÍËÙ¶È
-//		double istrueAnomaly:	Õæ½üµã½Ç/Æ«½üµã½Ç±ê¼Ç
-// Êä³ö£º
-//		double &a£º				¹ìµÀ¸ß¶È
-//		double &e£º				¹ìµÀÆ«ĞÄÂÊ
-//		double &i£º				¹ìµÀÇã½Ç
-//		double &omega£º			½üµØµã·ù½Ç
-//		double &AscNode£º		Éı½»µã³à¾­
-//		double &f£º				Õæ½üµã½Ç
+// ä»è½¨é“ä½ç½®å’Œé€Ÿåº¦è½¬åŒ–åˆ°è½¨é“å…­æ ¹æ•°ï¼ˆæ³¨æ„ï¼šæš‚æ—¶æ²¡è€ƒè™‘åœ†è½¨é“ã€èµ¤é“è½¨é“çš„æƒ…å†µï¼‰
+// è¾“å…¥ï¼š
+//		double *Xï¼š				è½¨é“ä½ç½®å’Œé€Ÿåº¦
+//		double istrueAnomaly:	çœŸè¿‘ç‚¹è§’/åè¿‘ç‚¹è§’æ ‡è®°
+// è¾“å‡ºï¼š
+//		double &aï¼š				è½¨é“é«˜åº¦
+//		double &eï¼š				è½¨é“åå¿ƒç‡
+//		double &iï¼š				è½¨é“å€¾è§’
+//		double &omegaï¼š			è¿‘åœ°ç‚¹å¹…è§’
+//		double &AscNodeï¼š		å‡äº¤ç‚¹èµ¤ç»
+//		double &fï¼š				çœŸè¿‘ç‚¹è§’
 // TestData
 //		para[0] = 7008305.566631538800000;
 //		para[1] = 0.001375159581061;
@@ -1622,26 +1625,26 @@ void GeoBase::PosAndVel2OrbitEle(double *X, double &a, double &e, double &i, dou
 	double X0[6];
 	for(int j=0; j<6; j++)
 		X0[j] = X[j]/1000;
-	double eps = 1.e-10;								// ½Ó½üÔ²µÄãĞÖµ
-	double r = Norm(&(X0[0]), 3);						// Î»ÖÃÊ¸Á¿´óĞ¡
-	double v = Norm(&(X0[3]), 3);						// ËÙ¶ÈÊ¸Á¿´óĞ¡
-	double vr = Dot(&(X0[0]), &(X0[3]), 3)/r;			// ¾¶ÏòËÙ¶È·ÖÁ¿
+	double eps = 1.e-10;								// æ¥è¿‘åœ†çš„é˜ˆå€¼
+	double r = Norm(&(X0[0]), 3);						// ä½ç½®çŸ¢é‡å¤§å°
+	double v = Norm(&(X0[3]), 3);						// é€Ÿåº¦çŸ¢é‡å¤§å°
+	double vr = Dot(&(X0[0]), &(X0[3]), 3)/r;			// å¾„å‘é€Ÿåº¦åˆ†é‡
 	double H[3];
-	CrossMult(&(X0[0]), &(X0[3]), H);					// ½Ç¶¯Á¿Ê¸Á¿
-	double h = Norm(H, 3);								// ½Ç¶¯Á¿´óĞ¡
-	i = acos(H[2]/h);									// ¹ìµÀÇã½Ç´óĞ¡
+	CrossMult(&(X0[0]), &(X0[3]), H);					// è§’åŠ¨é‡çŸ¢é‡
+	double h = Norm(H, 3);								// è§’åŠ¨é‡å¤§å°
+	i = acos(H[2]/h);									// è½¨é“å€¾è§’å¤§å°
 	double N0[3], N[3];
 	N0[0] = N0[1] = 0.0;		N0[2] = 1.0;
-	CrossMult(N0, H, N);								// Éı½»µã³à¾­Ê¸Á¿
+	CrossMult(N0, H, N);								// å‡äº¤ç‚¹èµ¤ç»çŸ¢é‡
 	double n = Norm(N, 3);
-	// ¼ÆËãÉı½»µã³à¾­
+	// è®¡ç®—å‡äº¤ç‚¹èµ¤ç»
 	AscNode = 0.0;
 	if(n!=0)
 	{
 		AscNode = acos(N[0]/n);
 		if(N[1]<0)	AscNode = 2*PI - AscNode;
 	}
-	// ¼ÆËãÆ«ĞÄÂÊ
+	// è®¡ç®—åå¿ƒç‡
 	double E[3], temp1, temp2;
 	temp1 = v*v/GM0-1/r;
 	temp2 = r*vr/GM0;
@@ -1649,14 +1652,14 @@ void GeoBase::PosAndVel2OrbitEle(double *X, double &a, double &e, double &i, dou
 	E[1] = temp1*X0[1] - temp2*X0[4];
 	E[2] = temp1*X0[2] - temp2*X0[5];
 	e = Norm(E, 3);
-	// ¼ÆËã½üµØµã½Ç¾à
+	// è®¡ç®—è¿‘åœ°ç‚¹è§’è·
 	omega = 0.0;
 	if((n!=0)&&(e>eps))
 	{
 		omega = acos(Dot(N, E, 3)/n/e);
 		if(E[2]<0)	omega = 2*PI - omega;
 	}
-	// ¼ÆËãÕæ½üµã½Ç
+	// è®¡ç®—çœŸè¿‘ç‚¹è§’
 	double cp[3];
 	if(e>eps)
 	{
@@ -1671,9 +1674,9 @@ void GeoBase::PosAndVel2OrbitEle(double *X, double &a, double &e, double &i, dou
 		else
 			f = 2*PI - acos(Dot(N, X0, 3)/n/r);
 	}
-	// ¼ÆËã³¤°ëÖá
+	// è®¡ç®—é•¿åŠè½´
 	a = h/GM0*(h/(1-e*e))*1000;  
-	// Êä³öÆ«½üµã½Ç
+	// è¾“å‡ºåè¿‘ç‚¹è§’
 	if(!istrueAnomaly)
 	{
 		double E0 = 2*atan(sqrt((1-e)/(1+e))*tan(f/2));
@@ -1687,11 +1690,11 @@ void GeoBase::PosAndVel2OrbitEle(double *X, double &a, double &e, double &i, dou
 
 
 /////////////////////////////////////////////////
-// Æ«½üµã½ÇºÍÆ½½üµã½Ç×ª»¯
+// åè¿‘ç‚¹è§’å’Œå¹³è¿‘ç‚¹è§’è½¬åŒ–
 /////////////////////////////////////////////////
 void GeoBase::TransMandE(double &M, double &E, double e, bool isM2E)
 {
-	// ´ÓÆ½½üµã½Çµ½Æ«½üµã½Ç
+	// ä»å¹³è¿‘ç‚¹è§’åˆ°åè¿‘ç‚¹è§’
 	if(isM2E)
 	{
 		double dE;
@@ -1705,7 +1708,7 @@ void GeoBase::TransMandE(double &M, double &E, double e, bool isM2E)
 			if((fabs(dE)<10e-14)||count>100) break;
 		}
 	}
-	// ´ÓÆ«½üµã½Çµ½Æ½½üµã½Ç
+	// ä»åè¿‘ç‚¹è§’åˆ°å¹³è¿‘ç‚¹è§’
 	else
 		M = E - e*sin(E);
 }
@@ -1713,13 +1716,13 @@ void GeoBase::TransMandE(double &M, double &E, double e, bool isM2E)
 
 
 /////////////////////////////////////////////////
-// ÓĞÀíº¯ÊıÄ£ĞÍµÄ´ÎÊıÑéÖ¤
+// æœ‰ç†å‡½æ•°æ¨¡å‹çš„æ¬¡æ•°éªŒè¯
 /////////////////////////////////////////////////
 void GeoBase::RFMdegreeTest1(int degree, string outfile)
 {
 	int step = 200;
 	///////////////////////////////////////////
-	// ¸ù¾İ´ÎÊıÀ´ÉèÖÃÕıÏÒº¯Êı
+	// æ ¹æ®æ¬¡æ•°æ¥è®¾ç½®æ­£å¼¦å‡½æ•°
 	///////////////////////////////////////////
 	double *x = new double[step];
 	double *y = new double[step];
@@ -1731,9 +1734,9 @@ void GeoBase::RFMdegreeTest1(int degree, string outfile)
 	}
 
 	///////////////////////////////////////////
-	// ¸ù¾İÕıÏÒº¯Êı»ñµÃ¶àÏîÊ½ÏµÊı
+	// æ ¹æ®æ­£å¼¦å‡½æ•°è·å¾—å¤šé¡¹å¼ç³»æ•°
 	///////////////////////////////////////////
-	int num = degree+1;			// ÏµÊı¸öÊı
+	int num = degree+1;			// ç³»æ•°ä¸ªæ•°
 	double *X = new double[num];
 	double *A = new double[num];
 	double L;
@@ -1758,7 +1761,7 @@ void GeoBase::RFMdegreeTest1(int degree, string outfile)
 	memcpy(X, ATL, sizeof(double)*num);
 
 	///////////////////////////////////////////
-	// ¸ù¾İ¶àÏîÊ½ÏµÊı»ñÈ¡²ÉÑùµã
+	// æ ¹æ®å¤šé¡¹å¼ç³»æ•°è·å–é‡‡æ ·ç‚¹
 	///////////////////////////////////////////
 	for(int i=0; i<step; i++)
 	{
@@ -1772,7 +1775,7 @@ void GeoBase::RFMdegreeTest1(int degree, string outfile)
 	}
 
 	///////////////////////////////////////////
-	// ¸ù¾İ²ÉÑùµã»ñÈ¡ÓĞÀíº¯ÊıÊ½
+	// æ ¹æ®é‡‡æ ·ç‚¹è·å–æœ‰ç†å‡½æ•°å¼
 	///////////////////////////////////////////
 	double para[7];
 	if(X!=NULL)		delete []X;		X = NULL;
@@ -1788,7 +1791,7 @@ void GeoBase::RFMdegreeTest1(int degree, string outfile)
 	memset(X, 0, sizeof(double)*7);
 	memset(para, 0, sizeof(double)*7);
 	////////////////////
-	// Çó½âÒ»½×ĞÎÊ½µÄ
+	// æ±‚è§£ä¸€é˜¶å½¢å¼çš„
 	////////////////////
 	for(int i=0; i<step; i++)
 	{
@@ -1804,7 +1807,7 @@ void GeoBase::RFMdegreeTest1(int degree, string outfile)
 	para[6] = ATL[2];
 	
 	///////////////////////////////////////////
-	// ¸ù¾İÓĞÀíº¯Êı½á¹û»ñÈ¡¶ÔÓ¦µãÊıÖµ
+	// æ ¹æ®æœ‰ç†å‡½æ•°ç»“æœè·å–å¯¹åº”ç‚¹æ•°å€¼
 	///////////////////////////////////////////
 	for(int i=0; i<step; i++)
 	{
@@ -1813,7 +1816,7 @@ void GeoBase::RFMdegreeTest1(int degree, string outfile)
 	}
 
 	///////////////////////////////////////////
-	// Êä³ö½á¹û
+	// è¾“å‡ºç»“æœ
 	///////////////////////////////////////////
 	FILE *fp = fopen(outfile.c_str(), "w");
 	for(int i=0; i<step; i++)
@@ -1840,7 +1843,7 @@ void GeoBase::RFMdegreeTest1(int degree, string outfile)
 	fclose(fp);		fp = NULL;
 
 	///////////////////////////////////////////
-	// ÊÍ·ÅÄÚ´æ
+	// é‡Šæ”¾å†…å­˜
 	///////////////////////////////////////////
 	if(X!=NULL)		delete []X;		X = NULL;
 	if(A!=NULL)		delete []A;		A = NULL;
@@ -1853,13 +1856,13 @@ void GeoBase::RFMdegreeTest1(int degree, string outfile)
 
 
 /////////////////////////////////////////////////
-// ÓĞÀíº¯ÊıÄ£ĞÍµÄ´ÎÊıÑéÖ¤
+// æœ‰ç†å‡½æ•°æ¨¡å‹çš„æ¬¡æ•°éªŒè¯
 /////////////////////////////////////////////////
 void GeoBase::RFMdegreeTest(int degree, string outfile)
 {
 	int step = 200;
 	///////////////////////////////////////////
-	// ¸ù¾İ´ÎÊıÀ´ÉèÖÃÕıÏÒº¯Êı
+	// æ ¹æ®æ¬¡æ•°æ¥è®¾ç½®æ­£å¼¦å‡½æ•°
 	///////////////////////////////////////////
 	double *x = new double[step];
 	double *y = new double[step];
@@ -1871,9 +1874,9 @@ void GeoBase::RFMdegreeTest(int degree, string outfile)
 	}
 
 	///////////////////////////////////////////
-	// ¸ù¾İÕıÏÒº¯Êı»ñµÃ¶àÏîÊ½ÏµÊı
+	// æ ¹æ®æ­£å¼¦å‡½æ•°è·å¾—å¤šé¡¹å¼ç³»æ•°
 	///////////////////////////////////////////
-	int num = degree+1;			// ÏµÊı¸öÊı
+	int num = degree+1;			// ç³»æ•°ä¸ªæ•°
 	double *X = new double[num];
 	double *A = new double[num];
 	double L;
@@ -1898,7 +1901,7 @@ void GeoBase::RFMdegreeTest(int degree, string outfile)
 	memcpy(X, ATL, sizeof(double)*num);
 
 	///////////////////////////////////////////
-	// ¸ù¾İ¶àÏîÊ½ÏµÊı»ñÈ¡²ÉÑùµã
+	// æ ¹æ®å¤šé¡¹å¼ç³»æ•°è·å–é‡‡æ ·ç‚¹
 	///////////////////////////////////////////
 	for(int i=0; i<step; i++)
 	{
@@ -1912,7 +1915,7 @@ void GeoBase::RFMdegreeTest(int degree, string outfile)
 	}
 
 	///////////////////////////////////////////
-	// ¸ù¾İ²ÉÑùµã»ñÈ¡ÓĞÀíº¯ÊıÊ½
+	// æ ¹æ®é‡‡æ ·ç‚¹è·å–æœ‰ç†å‡½æ•°å¼
 	///////////////////////////////////////////
 	double para[7];
 	if(X!=NULL)		delete []X;		X = NULL;
@@ -1928,7 +1931,7 @@ void GeoBase::RFMdegreeTest(int degree, string outfile)
 	memset(X, 0, sizeof(double)*7);
 	memset(para, 0, sizeof(double)*7);
 	////////////////////
-	// Çó½âÒ»½×ĞÎÊ½µÄ
+	// æ±‚è§£ä¸€é˜¶å½¢å¼çš„
 	////////////////////
 	for(int i=0; i<step; i++)
 	{
@@ -1944,7 +1947,7 @@ void GeoBase::RFMdegreeTest(int degree, string outfile)
 	para[6] = ATL[2];
 	
 	///////////////////////////////////////////
-	// ¸ù¾İÓĞÀíº¯Êı½á¹û»ñÈ¡¶ÔÓ¦µãÊıÖµ
+	// æ ¹æ®æœ‰ç†å‡½æ•°ç»“æœè·å–å¯¹åº”ç‚¹æ•°å€¼
 	///////////////////////////////////////////
 	for(int i=0; i<step; i++)
 	{
@@ -1953,7 +1956,7 @@ void GeoBase::RFMdegreeTest(int degree, string outfile)
 	}
 
 	///////////////////////////////////////////
-	// Êä³ö½á¹û
+	// è¾“å‡ºç»“æœ
 	///////////////////////////////////////////
 	FILE *fp = fopen(outfile.c_str(), "w");
 	for(int i=0; i<step; i++)
@@ -1980,7 +1983,7 @@ void GeoBase::RFMdegreeTest(int degree, string outfile)
 	fclose(fp);		fp = NULL;
 
 	///////////////////////////////////////////
-	// ÊÍ·ÅÄÚ´æ
+	// é‡Šæ”¾å†…å­˜
 	///////////////////////////////////////////
 	if(X!=NULL)		delete []X;		X = NULL;
 	if(A!=NULL)		delete []A;		A = NULL;
@@ -1993,22 +1996,22 @@ void GeoBase::RFMdegreeTest(int degree, string outfile)
 
 
 //////////////////////////////////////////////////////////////////////////
-// L0ºÍL1·¶ÊıµÄÈô¸ÉÇó½â
+// L0å’ŒL1èŒƒæ•°çš„è‹¥å¹²æ±‚è§£
 //////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////
-// ÇóÈ¡Ò»¸ö¾ØÕóµÄ·¶Êı
-// ÊäÈë:
-//		double *A£ºÊäÈëµÄ¾ØÕó
-//		int m:     ĞĞÊı/ÁĞÊı
-//		int index: ·¶ÊıÀàĞÍ¡£0ÎªÎŞÇî·¶Êı£¬1Îª1·¶Êı£¬2Îª2·¶Êı£¬3ÎªF·¶Êı£¬Ä¬ÈÏÎª1
-// ·µ»ØÖµ:
-//		double:	   ·¶Êı
+// æ±‚å–ä¸€ä¸ªçŸ©é˜µçš„èŒƒæ•°
+// è¾“å…¥:
+//		double *Aï¼šè¾“å…¥çš„çŸ©é˜µ
+//		int m:     è¡Œæ•°/åˆ—æ•°
+//		int index: èŒƒæ•°ç±»å‹ã€‚0ä¸ºæ— ç©·èŒƒæ•°ï¼Œ1ä¸º1èŒƒæ•°ï¼Œ2ä¸º2èŒƒæ•°ï¼Œ3ä¸ºFèŒƒæ•°ï¼Œé»˜è®¤ä¸º1
+// è¿”å›å€¼:
+//		double:	   èŒƒæ•°
 ///////////////////////////////////////////
 double GeoBase::Mat_Norm(double *A, int m, int index)
 {
 	////////////////////
-	// ÎŞÇî·¶ÊıµÄÇé¿ö
-	// ĞĞºÍ·¶Êı£¬¼´ËùÓĞ¾ØÕóĞĞÏòÁ¿¾ø¶ÔÖµÖ®ºÍµÄ×î´óÖµ
+	// æ— ç©·èŒƒæ•°çš„æƒ…å†µ
+	// è¡Œå’ŒèŒƒæ•°ï¼Œå³æ‰€æœ‰çŸ©é˜µè¡Œå‘é‡ç»å¯¹å€¼ä¹‹å’Œçš„æœ€å¤§å€¼
 	////////////////////
 	if(index==0)
 	{
@@ -2027,8 +2030,8 @@ double GeoBase::Mat_Norm(double *A, int m, int index)
 		return max0;
 	}
 	////////////////////
-	// 1·¶ÊıµÄÇé¿ö
-	//  ÁĞºÍ·¶Êı£¬¼´ËùÓĞ¾ØÕóÁĞÏòÁ¿¾ø¶ÔÖµÖ®ºÍµÄ×î´óÖµ
+	// 1èŒƒæ•°çš„æƒ…å†µ
+	//  åˆ—å’ŒèŒƒæ•°ï¼Œå³æ‰€æœ‰çŸ©é˜µåˆ—å‘é‡ç»å¯¹å€¼ä¹‹å’Œçš„æœ€å¤§å€¼
 	////////////////////
 	else if(index==1)
 	{
@@ -2047,8 +2050,8 @@ double GeoBase::Mat_Norm(double *A, int m, int index)
 		return max0;
 	}
 	////////////////////
-	// 2·¶ÊıµÄÇé¿ö
-	// Æ×·¶Êı£¬¼´A'A¾ØÕóµÄ×î´óÌØÕ÷ÖµµÄ¿ªÆ½·½
+	// 2èŒƒæ•°çš„æƒ…å†µ
+	// è°±èŒƒæ•°ï¼Œå³A'AçŸ©é˜µçš„æœ€å¤§ç‰¹å¾å€¼çš„å¼€å¹³æ–¹
 	////////////////////
 	else if(index==2)
 	{
@@ -2069,8 +2072,8 @@ double GeoBase::Mat_Norm(double *A, int m, int index)
 		return sqrt(value);
 	}
 	////////////////////
-	// F·¶ÊıµÄÇé¿ö
-	// Frobenius·¶Êı£¬¼´¾ØÕóÔªËØ¾ø¶ÔÖµµÄÆ½·½ºÍÔÙ¿ªÆ½·½
+	// FèŒƒæ•°çš„æƒ…å†µ
+	// FrobeniusèŒƒæ•°ï¼Œå³çŸ©é˜µå…ƒç´ ç»å¯¹å€¼çš„å¹³æ–¹å’Œå†å¼€å¹³æ–¹
 	////////////////////
 	else
 	{
@@ -2089,13 +2092,13 @@ double GeoBase::Mat_Norm(double *A, int m, int index)
 
 
 ///////////////////////////////////////////
-// ÇóÈ¡Ò»¸ö¾ØÕóµÄÌõ¼şÊı
-// ÊäÈë:
-//		double *A£ºÊäÈëµÄ¾ØÕó
-//		int m:     ½×Êı
-//		int index: ·¶ÊıÀàĞÍ¡£0ÎªÎŞÇî·¶Êı£¬1Îª1·¶Êı£¬2Îª2·¶Êı£¬3ÎªF·¶Êı£¬Ä¬ÈÏÎª1
-// ·µ»ØÖµ:
-//		double:	   ·¶Êı
+// æ±‚å–ä¸€ä¸ªçŸ©é˜µçš„æ¡ä»¶æ•°
+// è¾“å…¥:
+//		double *Aï¼šè¾“å…¥çš„çŸ©é˜µ
+//		int m:     é˜¶æ•°
+//		int index: èŒƒæ•°ç±»å‹ã€‚0ä¸ºæ— ç©·èŒƒæ•°ï¼Œ1ä¸º1èŒƒæ•°ï¼Œ2ä¸º2èŒƒæ•°ï¼Œ3ä¸ºFèŒƒæ•°ï¼Œé»˜è®¤ä¸º1
+// è¿”å›å€¼:
+//		double:	   èŒƒæ•°
 /////////////////////////////////////////// 
 double GeoBase::Mat_Cov(double *A, int m, int index)
 {
@@ -2109,23 +2112,23 @@ double GeoBase::Mat_Cov(double *A, int m, int index)
 
 
 ///////////////////////////////////////////
-// ÇóÊµ¶Ô³Æ¾ØÕóµÄÌØÕ÷Öµ¼°ÌØÕ÷ÏòÁ¿µÄÑÅ¿Ë±È·¨
-// ÀûÓÃÑÅ¸ñ±È(Jacobi)·½·¨ÇóÊµ¶Ô³Æ¾ØÕóµÄÈ«²¿ÌØÕ÷Öµ¼°ÌØÕ÷ÏòÁ¿ 
-// ÊäÈë:
-//		double *A:			³¤¶ÈÎªn*nµÄÊı×é£¬´æ·ÅÊµ¶Ô³Æ¾ØÕó
-//		int n:				¾ØÕóµÄ½×Êı
-//		double *pVec:		³¤¶ÈÎªn*nµÄÊı×é£¬·µ»ØÌØÕ÷ÏòÁ¿(°´ÁĞ´æ´¢) 
-//		double *pEigVal:	ÌØÕ÷ÖµÊı×é
-//		double eps:			¾«¶ÈÒªÇó
-//		int itenum£º		µü´ú´ÎÊı
-// ·µ»ØÖµ:
+// æ±‚å®å¯¹ç§°çŸ©é˜µçš„ç‰¹å¾å€¼åŠç‰¹å¾å‘é‡çš„é›…å…‹æ¯”æ³•
+// åˆ©ç”¨é›…æ ¼æ¯”(Jacobi)æ–¹æ³•æ±‚å®å¯¹ç§°çŸ©é˜µçš„å…¨éƒ¨ç‰¹å¾å€¼åŠç‰¹å¾å‘é‡ 
+// è¾“å…¥:
+//		double *A:			é•¿åº¦ä¸ºn*nçš„æ•°ç»„ï¼Œå­˜æ”¾å®å¯¹ç§°çŸ©é˜µ
+//		int n:				çŸ©é˜µçš„é˜¶æ•°
+//		double *pVec:		é•¿åº¦ä¸ºn*nçš„æ•°ç»„ï¼Œè¿”å›ç‰¹å¾å‘é‡(æŒ‰åˆ—å­˜å‚¨) 
+//		double *pEigVal:	ç‰¹å¾å€¼æ•°ç»„
+//		double eps:			ç²¾åº¦è¦æ±‚
+//		int itenumï¼š		è¿­ä»£æ¬¡æ•°
+// è¿”å›å€¼:
 //		bool:	   
 ///////////////////////////////////////////
 bool GeoBase::JacbiCor(double *A, int n, double *pVec, double *pEigVal, double eps, int itenum)
 {
 	double *At = new double[n*n];
 	memcpy(At, A, sizeof(double)*n*n);
-	// ³õÊ¼»¯ÌØÕ÷ÏòÁ¿
+	// åˆå§‹åŒ–ç‰¹å¾å‘é‡
 	for(int i=0; i<n; i++) 
 	{   
 		pVec[i*n+i] = 1.0f; 
@@ -2135,16 +2138,16 @@ bool GeoBase::JacbiCor(double *A, int n, double *pVec, double *pEigVal, double e
 				pVec[i*n+j]=0.0f; 
 		} 
 	} 
-	int count = 0;		//µü´ú´ÎÊı
+	int count = 0;		//è¿­ä»£æ¬¡æ•°
 	while(1)
 	{
-		//ÔÚAµÄ·Ç¶Ô½ÇÏßÉÏÕÒµ½×î´óÔªËØ
+		//åœ¨Açš„éå¯¹è§’çº¿ä¸Šæ‰¾åˆ°æœ€å¤§å…ƒç´ 
 		double max = A[1];
 		int row = 0;
 		int col = 1;
-		for (int i=0; i<n; i++)			//ĞĞ
+		for (int i=0; i<n; i++)			//è¡Œ
 		{
-			for (int j=0; j<n; j++)		//ÁĞ
+			for (int j=0; j<n; j++)		//åˆ—
 			{
 				double d = fabs(A[i*n+j]); 
 				if((i!=j) && (d>max)) 
@@ -2155,15 +2158,15 @@ bool GeoBase::JacbiCor(double *A, int n, double *pVec, double *pEigVal, double e
 				} 
 			}
 		}
-		if(max<eps)				//¾«¶È·ûºÏÒªÇó 
+		if(max<eps)				//ç²¾åº¦ç¬¦åˆè¦æ±‚ 
 			break;  
-		if(count>itenum)		//µü´ú´ÎÊı³¬¹ıÏŞÖÆ
+		if(count>itenum)		//è¿­ä»£æ¬¡æ•°è¶…è¿‡é™åˆ¶
 			break;
 		count++;
 		double pp = A[row*n + row];
 		double pq = A[row*n + col];
 		double qq = A[col*n + col];
-		//¼ÆËãĞı×ª½Ç¶È
+		//è®¡ç®—æ—‹è½¬è§’åº¦
 		double angle = 0.5*atan2(-2*pq, qq-pp);
 		double st = sin(angle);
 		double ct = cos(angle);
@@ -2195,7 +2198,7 @@ bool GeoBase::JacbiCor(double *A, int n, double *pVec, double *pEigVal, double e
 				A[w]= A[w]*ct - max*st; 
 			} 
 		}
-		//¼ÆËãÌØÕ÷ÏòÁ¿
+		//è®¡ç®—ç‰¹å¾å‘é‡
 		for(int i=0; i<n; i++) 
 		{ 
 			int u = i*n + row;		//p   
@@ -2205,12 +2208,12 @@ bool GeoBase::JacbiCor(double *A, int n, double *pVec, double *pEigVal, double e
 			pVec[w] = pVec[w]*ct - max*st; 
 		} 
 	}
-	// ÌØÕ÷Öµ¼´pMatrixÖ÷¶Ô½ÇÏßÉÏµÄÔªËØ
+	// ç‰¹å¾å€¼å³pMatrixä¸»å¯¹è§’çº¿ä¸Šçš„å…ƒç´ 
 	for(int i=0; i<n; i++) 
 	{   
 		pEigVal[i] = A[i*n+i];
 	} 
-	//Éè¶¨Õı¸ººÅ
+	//è®¾å®šæ­£è´Ÿå·
 	for(int i=0; i<n; i++) 
 	{
 		double dSumVec = 0;
@@ -2222,7 +2225,7 @@ bool GeoBase::JacbiCor(double *A, int n, double *pVec, double *pEigVal, double e
 				pVec[j*n + i] *= -1;
 		}
 	}
-	// ÄÚ´æ²Ù×÷
+	// å†…å­˜æ“ä½œ
 	memcpy(A, At, sizeof(double)*n*n);
 	if(At!=NULL)		delete []At;		At = NULL;
 	return 1;
@@ -2230,7 +2233,7 @@ bool GeoBase::JacbiCor(double *A, int n, double *pVec, double *pEigVal, double e
 
 
 ///////////////////////////////////////////
-// Áë¹À¼Æ·¨(LÇúÏßÇó½â)
+// å²­ä¼°è®¡æ³•(Læ›²çº¿æ±‚è§£)
 ///////////////////////////////////////////
 void GeoBase::GaussL(double *ATA,double *ATL,int n, double LTL)
 {
@@ -2244,7 +2247,7 @@ void GeoBase::GaussL(double *ATA,double *ATL,int n, double LTL)
 
 
 ///////////////////////////////////////////
-// LÇúÏßº¯Êı
+// Læ›²çº¿å‡½æ•°
 ///////////////////////////////////////////
 double GeoBase::L_curve(double *ATA, double *ATL, int n, double LTL)
 {
@@ -2255,7 +2258,7 @@ double GeoBase::L_curve(double *ATA, double *ATL, int n, double LTL)
 	smin_ratio  = 16*eps;
 	double *pEigVal = new double[n];
 	double *ATAex = new double[n*n];
-	// ÇóÈ¡ÌØÕ÷Öµ, ²¢»ñµÃ×î´ó×îĞ¡Öµ
+	// æ±‚å–ç‰¹å¾å€¼, å¹¶è·å¾—æœ€å¤§æœ€å°å€¼
 	JacbiCor(ATA, n, ATAex, pEigVal, 0.0000001, 100);
 	double max_eig,min_eig;
 	max_eig = sqrt(pEigVal[0]);
@@ -2265,7 +2268,7 @@ double GeoBase::L_curve(double *ATA, double *ATL, int n, double LTL)
 		max_eig = max(max_eig, sqrt(pEigVal[i]));
 		min_eig = min(min_eig, sqrt(pEigVal[i]));
 	}
-	// ¹¹½¨¸÷¸öÀëÉ¢µã
+	// æ„å»ºå„ä¸ªç¦»æ•£ç‚¹
 	double *para = new double[npoints];
 	double *g = new double[npoints];
 	memset(para, 0, npoints*sizeof(double));
@@ -2275,7 +2278,7 @@ double GeoBase::L_curve(double *ATA, double *ATL, int n, double LTL)
 	{
 		para[i] = ratio*para[i+1];
 	}	
-	// Ñ°ÕÒÇúÂÊ±ä»¯×î´óµÄµã
+	// å¯»æ‰¾æ›²ç‡å˜åŒ–æœ€å¤§çš„ç‚¹
 	lcfun(para, npoints, ATA, ATL, n, LTL, g);	
 	int gi;
 	minvector(g, npoints, gi);
@@ -2285,7 +2288,7 @@ double GeoBase::L_curve(double *ATA, double *ATL, int n, double LTL)
 	reg_min = para[min((gi+1), (npoints-1))];
 	reg_max = para[max((gi-1), 0)];
 	reg_c = fminbnd(reg_min, reg_max, ATA, ATL, n, LTL, epsreg);
-	// ÊÍ·ÅÄÚ´æ
+	// é‡Šæ”¾å†…å­˜
 	if(pEigVal!=NULL)	delete []pEigVal;	pEigVal = NULL;
 	if(ATAex!=NULL)		delete []ATAex;		ATAex = NULL;
 	if(para!=NULL)		delete []para;		para = NULL;
@@ -2294,7 +2297,7 @@ double GeoBase::L_curve(double *ATA, double *ATL, int n, double LTL)
 }
 
 ///////////////////////////////////////////
-// ÒÔÏÂÎªLÇúÏßËùÊ¹ÓÃµÄº¯Êı
+// ä»¥ä¸‹ä¸ºLæ›²çº¿æ‰€ä½¿ç”¨çš„å‡½æ•°
 ///////////////////////////////////////////
 double GeoBase::fminbnd(double reg_min,double reg_max,double *ata,double *atl,int n ,double ltl,double eps)
 {
@@ -2517,67 +2520,67 @@ int GeoBase::invers_matrix(double *m1, int n)
 
 
 ///////////////////////////////////////////
-// L0·¶ÊıÏÂÌ°À·Ëã·¨£ºÕı½»Æ¥Åä¸ú×ÙÇó½â·½·¨(OrthMatchPursuit)/ÎŞµü´ú
-// ÊäÈë£º
-//		double *A:		´«¸Ğ¾ØÕó(m*n)
-//		double *L:		Ä¿±êÏòÁ¿(m*1)
-//		int m:			´«¸Ğ¾ØÕóĞĞÊı
-//		int n:			´«¸Ğ¾ØÕóÁĞÊı
-//		double d_res:	Ä£µÄ²îÖµ
-//		double min_res:	×îĞ¡²Ğ²î
-// ·µ»ØÖµ£º
-//		int:			·ÇÁãÏµÊı¸öÊı
+// L0èŒƒæ•°ä¸‹è´ªå©ªç®—æ³•ï¼šæ­£äº¤åŒ¹é…è·Ÿè¸ªæ±‚è§£æ–¹æ³•(OrthMatchPursuit)/æ— è¿­ä»£
+// è¾“å…¥ï¼š
+//		double *A:		ä¼ æ„ŸçŸ©é˜µ(m*n)
+//		double *L:		ç›®æ ‡å‘é‡(m*1)
+//		int m:			ä¼ æ„ŸçŸ©é˜µè¡Œæ•°
+//		int n:			ä¼ æ„ŸçŸ©é˜µåˆ—æ•°
+//		double d_res:	æ¨¡çš„å·®å€¼
+//		double min_res:	æœ€å°æ®‹å·®
+// è¿”å›å€¼ï¼š
+//		int:			éé›¶ç³»æ•°ä¸ªæ•°
 ///////////////////////////////////////////
 int GeoBase::OMP_Solve(double *A, double *L, int m, int n, double *x, double d_res, double min_res)
 {
-	// »ñµÃ´«¸Ğ¾ØÕóµÄ×ªÖÃ¾ØÕó
+	// è·å¾—ä¼ æ„ŸçŸ©é˜µçš„è½¬ç½®çŸ©é˜µ
 	double *Atemp = new double[m*n];
 	double *xtemp = new double[n];
 	double *AT = new double[m*n];
 	double *ATA = new double[m*m];
 	double *ATL = new double[n];
 	Transpose(A, Atemp, m, n);
-	// ±£´æ²Ğ²îÏòÁ¿£¬³õÊ¼²Ğ²îÏòÁ¿¼´Ä¿±êÏòÁ¿
+	// ä¿å­˜æ®‹å·®å‘é‡ï¼Œåˆå§‹æ®‹å·®å‘é‡å³ç›®æ ‡å‘é‡
 	double *residual = new double[m];
 	memcpy(residual, L, sizeof(double)*m);
-	// ±£´æÑ¡Ôñ³öÀ´µÄÏµÊı
+	// ä¿å­˜é€‰æ‹©å‡ºæ¥çš„ç³»æ•°
 	vector<int> index;
 	double max_coeff, coeff, res_norm, res_norm0;
 	int indextemp, num;
 	/////////////////////////////////////////
-	// ¿ªÊ¼½øĞĞÑ­»·
+	// å¼€å§‹è¿›è¡Œå¾ªç¯
 	/////////////////////////////////////////
 	memset(xtemp, 0, sizeof(double)*n);
 	while(1)
 	{
-		// Ñ°ÕÒ×î´óÍ¶Ó°ÏòÁ¿
+		// å¯»æ‰¾æœ€å¤§æŠ•å½±å‘é‡
 		max_coeff = 0.0;
 		for(int i=0; i<n; i++)
 		{
-			// ¼ÆËãÍ¶Ó°´óĞ¡
+			// è®¡ç®—æŠ•å½±å¤§å°
 			coeff = Dot(&(Atemp[i*m]), residual, m)/Norm(residual, m);
-			// Ñ°ÕÒ×î´óÖµ
+			// å¯»æ‰¾æœ€å¤§å€¼
 			if(fabs(coeff)>fabs(max_coeff))
 			{
 				max_coeff = coeff;
 				indextemp = i;
 			}
 		}
-		// Ìí¼ÓÑ¡³öµÄÏµÊıĞòºÅ
+		// æ·»åŠ é€‰å‡ºçš„ç³»æ•°åºå·
 		index.push_back(indextemp);
-		// ¹¹½¨×Ó´«¸Ğ¾ØÕó
+		// æ„å»ºå­ä¼ æ„ŸçŸ©é˜µ
 		num = index.size();
 		memcpy(&(AT[(num-1)*m]), &(Atemp[index[(num-1)]*m]), sizeof(double)*m);
-		// ½øĞĞ×îĞ¡¶ş³ËÇó½â
+		// è¿›è¡Œæœ€å°äºŒä¹˜æ±‚è§£
 		Transpose(AT, A, num, m);
 		Multi(AT, A, ATA, num, m, num);
 		Multi(AT, L, ATL, num, m, 1);
 		GaussExt(ATA, ATL, xtemp, num);
-		// ¼ÆËãÊ£Óà²Ğ²î
+		// è®¡ç®—å‰©ä½™æ®‹å·®
 		Multi(A, xtemp, ATL, m, num, 1);
 		Minus(L, ATL, residual, m, 1);
 		res_norm = Norm(residual, m)/sqrt((double)(m));
-		// µü´ú½áÊøÌõ¼şÅĞ¶Ï
+		// è¿­ä»£ç»“æŸæ¡ä»¶åˆ¤æ–­
 		if(num>1)
 		{
 			if((num==n)||(fabs(res_norm-res_norm0)<d_res)||res_norm<min_res)
@@ -2585,13 +2588,13 @@ int GeoBase::OMP_Solve(double *A, double *L, int m, int n, double *x, double d_r
 		}
 		res_norm0 = res_norm;
 	}
-	// ½øĞĞ¸÷ÖÖ¸³Öµ
+	// è¿›è¡Œå„ç§èµ‹å€¼
 	memset(x, 0, sizeof(double)*n);
 	for(int i=0; i<num; i++)
 	{
 		x[index[i]] = xtemp[i];
 	}
-	// ÊÍ·ÅÄÚ´æ
+	// é‡Šæ”¾å†…å­˜
 	if(Atemp!=NULL)		delete []Atemp;		Atemp = NULL;
 	if(AT!=NULL)		delete []AT;		AT = NULL;
 	if(ATA!=NULL)		delete []ATA;		ATA = NULL;
@@ -2602,20 +2605,20 @@ int GeoBase::OMP_Solve(double *A, double *L, int m, int n, double *x, double d_r
 
 
 ///////////////////////////////////////////
-// L0·¶ÊıÏÂÌ°À·Ëã·¨£ºÕı½»Æ¥Åä¸ú×ÙÇó½â·½·¨(OrthMatchPursuit)/ÓĞµü´ú
-// ÊäÈë£º
-//		double *A:		´«¸Ğ¾ØÕó(m*n)
-//		double *L:		Ä¿±êÏòÁ¿(m*1)
-//		int m:			´«¸Ğ¾ØÕóĞĞÊı
-//		int n:			´«¸Ğ¾ØÕóÁĞÊı
-//		double d_res:	Ä£µÄ²îÖµ
-//		double min_res:	×îĞ¡²Ğ²î
-// ·µ»ØÖµ£º
-//		int:			·ÇÁãÏµÊı¸öÊı
+// L0èŒƒæ•°ä¸‹è´ªå©ªç®—æ³•ï¼šæ­£äº¤åŒ¹é…è·Ÿè¸ªæ±‚è§£æ–¹æ³•(OrthMatchPursuit)/æœ‰è¿­ä»£
+// è¾“å…¥ï¼š
+//		double *A:		ä¼ æ„ŸçŸ©é˜µ(m*n)
+//		double *L:		ç›®æ ‡å‘é‡(m*1)
+//		int m:			ä¼ æ„ŸçŸ©é˜µè¡Œæ•°
+//		int n:			ä¼ æ„ŸçŸ©é˜µåˆ—æ•°
+//		double d_res:	æ¨¡çš„å·®å€¼
+//		double min_res:	æœ€å°æ®‹å·®
+// è¿”å›å€¼ï¼š
+//		int:			éé›¶ç³»æ•°ä¸ªæ•°
 ///////////////////////////////////////////
 int GeoBase::OMP_Solve2(double *A, double *L, int m, int n, double *x, double d_res, double min_res)
 {
-	// »ñµÃ´«¸Ğ¾ØÕóµÄ×ªÖÃ¾ØÕó
+	// è·å¾—ä¼ æ„ŸçŸ©é˜µçš„è½¬ç½®çŸ©é˜µ
 	double *Atemp = new double[m*n];
 	double *xtemp = new double[n];
 	double *AT = new double[m*n];
@@ -2624,39 +2627,39 @@ int GeoBase::OMP_Solve2(double *A, double *L, int m, int n, double *x, double d_
 	double *Ltemp = new double[n];
 	double *Ax = new double[n];
 	Transpose(A, Atemp, m, n);
-	// ±£´æ²Ğ²îÏòÁ¿£¬³õÊ¼²Ğ²îÏòÁ¿¼´Ä¿±êÏòÁ¿
+	// ä¿å­˜æ®‹å·®å‘é‡ï¼Œåˆå§‹æ®‹å·®å‘é‡å³ç›®æ ‡å‘é‡
 	double *residual = new double[m];
 	memcpy(residual, L, sizeof(double)*m);
-	// ±£´æÑ¡Ôñ³öÀ´µÄÏµÊı
+	// ä¿å­˜é€‰æ‹©å‡ºæ¥çš„ç³»æ•°
 	vector<int> index;
 	double max_coeff, coeff, res_norm, res_norm0;
 	int indextemp, num;
 	/////////////////////////////////////////
-	// ¿ªÊ¼½øĞĞÑ­»·
+	// å¼€å§‹è¿›è¡Œå¾ªç¯
 	/////////////////////////////////////////
 	memset(xtemp, 0, sizeof(double)*n);
 	memset(x, 0, sizeof(double)*n);
 	while(1)
 	{
-		// Ñ°ÕÒ×î´óÍ¶Ó°ÏòÁ¿
+		// å¯»æ‰¾æœ€å¤§æŠ•å½±å‘é‡
 		max_coeff = 0.0;
 		for(int i=0; i<n; i++)
 		{
-			// ¼ÆËãÍ¶Ó°´óĞ¡
+			// è®¡ç®—æŠ•å½±å¤§å°
 			coeff = Dot(&(Atemp[i*m]), residual, m)/Norm(residual, m);
-			// Ñ°ÕÒ×î´óÖµ
+			// å¯»æ‰¾æœ€å¤§å€¼
 			if(fabs(coeff)>fabs(max_coeff))
 			{
 				max_coeff = coeff;
 				indextemp = i;
 			}
 		}
-		// Ìí¼ÓÑ¡³öµÄÏµÊıĞòºÅ
+		// æ·»åŠ é€‰å‡ºçš„ç³»æ•°åºå·
 		index.push_back(indextemp);
-		// ¹¹½¨×Ó´«¸Ğ¾ØÕó
+		// æ„å»ºå­ä¼ æ„ŸçŸ©é˜µ
 		num = index.size();
 		memcpy(&(AT[(num-1)*m]), &(Atemp[index[(num-1)]*m]), sizeof(double)*m);
-		// ½øĞĞ×îĞ¡¶ş³Ëµü´úÇó½â
+		// è¿›è¡Œæœ€å°äºŒä¹˜è¿­ä»£æ±‚è§£
 		double sigma0, sigma1 = FLT_MAX;
 		int iter = 0;
 		while(1)
@@ -2667,7 +2670,7 @@ int GeoBase::OMP_Solve2(double *A, double *L, int m, int n, double *x, double d_
 			Minus(L, Ax, Ltemp, m, 1);
 			Multi(AT, Ltemp, ATL, num, m, 1);
 			GaussExt(ATA, ATL, xtemp, num);
-			// ¼ÆËãÊ£Óà²Ğ²î
+			// è®¡ç®—å‰©ä½™æ®‹å·®
 			Multi(A, xtemp, ATL, m, num, 1);
 			Minus(L, ATL, residual, m, 1);
 			sigma0 = Norm(residual, m)/sqrt((double)(m));
@@ -2683,7 +2686,7 @@ int GeoBase::OMP_Solve2(double *A, double *L, int m, int n, double *x, double d_
 		Multi(A, x, ATL, m, num, 1);
 		Minus(L, ATL, residual, m, 1);
 		res_norm = Norm(residual, m)/sqrt((double)(m));
-		// µü´ú½áÊøÌõ¼şÅĞ¶Ï
+		// è¿­ä»£ç»“æŸæ¡ä»¶åˆ¤æ–­
 		if(num>1)
 		{
 			if((num==n)||(fabs(res_norm-res_norm0)<d_res)||res_norm<min_res)
@@ -2691,14 +2694,14 @@ int GeoBase::OMP_Solve2(double *A, double *L, int m, int n, double *x, double d_
 		}
 		res_norm0 = res_norm;
 	}
-	// ½øĞĞ¸÷ÖÖ¸³Öµ
+	// è¿›è¡Œå„ç§èµ‹å€¼
 	memcpy(xtemp, x, sizeof(double)*n);
 	memset(x, 0, sizeof(double)*n);
 	for(int i=0; i<num; i++)
 	{
 		x[index[i]] = xtemp[i];
 	}
-	// ÊÍ·ÅÄÚ´æ
+	// é‡Šæ”¾å†…å­˜
 	if(Atemp!=NULL)		delete []Atemp;		Atemp = NULL;
 	if(AT!=NULL)		delete []AT;		AT = NULL;
 	if(ATA!=NULL)		delete []ATA;		ATA = NULL;
