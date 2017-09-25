@@ -767,7 +767,7 @@ void WorkFlow_ZY3::OutputPxyAndGCP(string filePath, vector<MatchPoint>pMatch, ve
 	//添加随机误差
 	int num = pMatch.size();
 	double *Err = new double[2*num];
-	m_base.RandomDistribution(0, 0.1, 2 * num, 0, Err);
+	m_base.RandomDistribution(0, 0.3, 2 * num, 0, Err);
 
 	string output1 = filePath.substr(0, filePath.rfind('.')) + "_match1.pxy";
 	string output2 = filePath.substr(0, filePath.rfind('.')) + "_match2.pxy";
@@ -1097,7 +1097,7 @@ void WorkFlow_ZY3::CalcRealMatchPoint(string workpath)
 					pGCPtmp.lx = line; pGCPtmp.ly = sample;
 					pGCPtmp.rx = rline; pGCPtmp.ry = rsample;
 					pGCP.push_back(pGCPtmp);
-					kzdTmp.h = H; kzdTmp.lat = Lat; kzdTmp.lon = Lon;
+					kzdTmp.h = H; kzdTmp.lat = Lat/PI*180; kzdTmp.lon = Lon / PI * 180;
 					kzdTmp.x = line; kzdTmp.y = sample;
 					kzd.push_back(kzdTmp);
 				}
@@ -1110,20 +1110,21 @@ void WorkFlow_ZY3::CalcRealMatchPoint(string workpath)
 		//添加匹配误差
 		int num = pGCP.size();
 		double *Err1 = new double[num];	double *Err2 = new double[ num];
-		m_base.RandomDistribution(0, 0.1, num, 0, Err1);
-		m_base.RandomDistribution(0, 0.1, num, 0, Err2);
-		printf("=>Image %d's GCP has calculated\n", i + 1);
+		m_base.RandomDistribution(0, 0, num, 0, Err1);
+		m_base.RandomDistribution(0, 0, num, 0, Err2);
+		if (i % 100 == 0)
+		printf("=>Image %d's GCP has calculated\n", i);
 		string output = filePath[i].substr(0, filePath[i].rfind('.')) + "_match.pts";
 		string output2 = filePath[i].substr(0, filePath[i].rfind('.')) + ".ctl";
 		FILE *fp = fopen(output.c_str(), "w"); FILE *fp2 = fopen(output2.c_str(), "w");
-		fprintf(fp, "; %d\n", pGCP.size()); fprintf(fp2, "; %d\n", pGCP.size());
+		fprintf(fp, "; %d\n", pGCP.size()); fprintf(fp2, "%d\n", pGCP.size());
 		for (int i = 0; i < pGCP.size(); i++)
 		{
 			fprintf(fp, "%f\t%f\t%f\t%f\n", pGCP[i].ly, pGCP[i].lx, pGCP[i].ry+ Err1[i], pGCP[i].rx+ Err2[i]);
-			fprintf(fp2, "%d\t%f\t%f\t%f\t%f\n",i, kzd[i].y, kzd[i].x, kzd[i].lat, kzd[i].lon, kzd[i].h);
+			fprintf(fp2, "%d\t%f\t%f\t%f\t%f\t%f\n",i, kzd[i].y, kzd[i].x, kzd[i].lat, kzd[i].lon, kzd[i].h);
 		}
 		delete[] Err1,Err2; Err1=Err2 = NULL;
-		fclose(fp);
+		fclose(fp); fclose(fp2);
 	}
 	DEM.Destroy();
 }
@@ -1196,20 +1197,20 @@ void WorkFlow_ZY3::CalcRealAttitude(string workpath)
 	OffsetAngle Ru;	vector<OffsetAngle>RuForward, RuBackward;
 	vector<strRMS>accuracy1, accuracy2;
 	//正向计算姿态
-	for (int i = 0; i < 10; i++)
-	//for (int i = 0; i < allTime.size() - 1; i++)
+	//for (int i = 0; i < 10; i++)
+	for (int i = 0; i < filePath.size() - 1; i++)
 	{
 		model[0].InitModelArray(orbit, attitude, inner, modelinput, allTime[i].lineTimeUT);
 		if (i == 0)
 		{
-			attMeas.push_back(model[0].GetQuatCam2wgs84());
-			attModify.push_back(model[0].GetQuatCam2wgs84());
+			//attMeas.push_back(model[0].GetQuatCam2wgs84());
+			//attModify.push_back(model[0].GetQuatCam2wgs84());
 		}
 		else
 		{
-			attMeas.push_back(model[0].GetQuatCam2wgs84());
+			//attMeas.push_back(model[0].GetQuatCam2wgs84());
 			model[0].updateOffsetmatrix(Ru);
-			attModify.push_back(model[0].GetQuatCam2wgs84());
+			//attModify.push_back(model[0].GetQuatCam2wgs84());
 		}
 		model[1].InitModelArray(orbit, attitude, inner, modelinput, allTime[i + 1].lineTimeUT);
 
@@ -1249,16 +1250,17 @@ void WorkFlow_ZY3::CalcRealAttitude(string workpath)
 
 		//偏置计算前残差
 		GeoCalibration m_Cali;
-		//m_Cali.calcGCPerr(model + 1, filePath[i], "_before", accuracy1,1);
+		m_Cali.calcGCPerr(model + 1, filePath[i], "_before", accuracy1,1);
 		//m_Cali.calcRMS(model + 1, workpath + "\\before_ru.txt", pGCP, numGCP);
 
+		if(i%100==0)
 		printf("=>Modify quaternion %d Now\n", i + 1);
 		m_Cali.calcOffsetMatrix(model + 1, pGCP, numGCP, Ru);
 		RuForward.push_back(Ru);
 
 		//偏置计算后残差
-		//model[1].updateOffsetmatrix(Ru);
-		//m_Cali.calcGCPerr(model + 1, filePath[i], "_after", accuracy2,1);
+		model[1].updateOffsetmatrix(Ru);
+		m_Cali.calcGCPerr(model + 1, filePath[i], "_after", accuracy2,1);
 		//m_Cali.calcRMS(model + 1, workpath + "\\after_ru.txt" , pGCP, numGCP);
 
 		delete[]pGCP; pGCP = NULL;
@@ -1280,7 +1282,6 @@ void WorkFlow_ZY3::CalcRealAttitude(string workpath)
 	//		model[1].updateOffsetmatrix(Ru);
 	//		attModify.push_back(model[1].GetQuatCam2wgs84());
 	//	}
-
 	//	FILE *fp = fopen(filePath[i].c_str(), "r");
 	//	int num;
 	//	fscanf(fp, "%*s %d", &num);
@@ -1315,34 +1316,29 @@ void WorkFlow_ZY3::CalcRealAttitude(string workpath)
 	//		numGCP++;
 	//	}
 	//	fclose(fp);
-
 	//	//偏置计算前残差
 	//	GeoCalibration m_Cali;
 	//	//m_Cali.calcGCPerr(model, filePath[i], "_before", accuracy1,0);
 	//	//m_Cali.calcRMS(model + 1, workpath + "\\before_ru.txt", pGCP, numGCP);
-
 	//	printf("=>Modify quaternion %d Now\n", i + 1);
 	//	m_Cali.calcOffsetMatrix(model, pGCP, numGCP, Ru);
 	//	RuBackward.insert(RuBackward.begin(),Ru);
-
 	//	//偏置计算后残差
 	//	//model[0].updateOffsetmatrix(Ru);
 	//	//m_Cali.calcGCPerr(model, filePath[i], "_after", accuracy2,0);
 	//	//m_Cali.calcRMS(model + 1, workpath + "\\after_ru.txt" , pGCP, numGCP);
-
 	//	delete[]pGCP; pGCP = NULL;
 	//}
-
 	//RuFusion(RuForward, RuBackward);
-	for (int i=0;i<10;i++)
-	{
-		//model[0].InitModelArray(orbit, attitude, inner, modelinput, allTime[i].lineTimeUT);
-		model[1].InitModelArray(orbit, attitude, inner, modelinput, allTime[i+1].lineTimeUT);
-		Ru = (RuForward[i] + RuForward[i])/2.0;
-		model[1].updateOffsetmatrix(Ru);
-		GeoCalibration m_Cali;
-		m_Cali.calcGCPerr(model+1, filePath[i], "_after", accuracy2, 1);
-	}
+	//for (int i=0;i<filePath.size()-1;i++)
+	//{
+	//	//model[0].InitModelArray(orbit, attitude, inner, modelinput, allTime[i].lineTimeUT);
+	//	model[1].InitModelArray(orbit, attitude, inner, modelinput, allTime[i+1].lineTimeUT);
+	//	Ru = (RuForward[i] + RuForward[i])/2.0;
+	//	model[1].updateOffsetmatrix(Ru);
+	//	GeoCalibration m_Cali;
+	//	m_Cali.calcGCPerr(model+1, filePath[i], "_after", accuracy2, 1);
+	//}
 	
 	OutputRMS(workpath, accuracy1, accuracy2);
 
@@ -1458,7 +1454,8 @@ void WorkFlow_ZY3::CalcModifyAttitude(string workpath)
 		fclose(fp);
 
 		GeoCalibration m_Cali;
-		printf("=>Modify quaternion %d Now\n", i + 1);
+		if(i%100==0)
+		printf("=>Modify quaternion %d Now\n", i);
 		m_Cali.calcOffsetMatrix(model + 1, pGCP, numGCP, Ru);
 		delete[]pGCP; pGCP = NULL;
 	}	

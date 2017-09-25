@@ -336,8 +336,8 @@ void GeoCalibration::calcRMS(GeoModelArray* pModel,string out,StrGCP *pGCP,int n
 ////////////////////////////////////////////
 void GeoCalibration::calcGCPerr(GeoModelArray* pModel, string strImg,string out,vector<strRMS>&acc,bool isPlus1)
 {
-	string tmp1 = strImg.substr(strImg.rfind('_') - 3, 3);
-	string tmp2 = strImg.substr(0, strImg.rfind('_') - 4);
+	string tmp1 = strImg.substr(strImg.rfind('_') - 4, 4);
+	string tmp2 = strImg.substr(0, strImg.rfind('_') - 5);
 	int tmp3 = atoi(tmp1.c_str());// +1;
 	if (isPlus1==1)
 	{		tmp3 = atoi(tmp1.c_str()) +1;	}//正序递推
@@ -345,7 +345,7 @@ void GeoCalibration::calcGCPerr(GeoModelArray* pModel, string strImg,string out,
 	{		tmp3 = atoi(tmp1.c_str());	}//倒序递推
 	
 	char strgcp[512];
-	sprintf(strgcp, "%s_%03d%s",tmp2.c_str(), tmp3, ".ctl");
+	sprintf(strgcp, "%s_%04d%s",tmp2.c_str(), tmp3, ".ctl");
 	FILE* fp = fopen(strgcp, "r");
 	//string strRes = strImg.substr(0, strImg.rfind('_')) + out + "_rms.txt";
 	//FILE* fpres = fopen(strRes.c_str(), "w");
