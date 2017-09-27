@@ -28,6 +28,7 @@ public:
 	
 	void GetEOP(string eoppath);
 	void GetDEM(string dempath);
+	void GetPitch(double FWD,double BWD);
 	// 严密模型构建
 	void GenerateRigorousModel(string auxpath, string eoppath);
 	//检校模型构建
@@ -98,6 +99,7 @@ private:
 	string sEOP,sDEM;
 	static int outCount;
 	StrCamParamInput CameraInput;
+	double mFWD, mBWD;
 	//GeoModelArray *pModelArray;
 };
 

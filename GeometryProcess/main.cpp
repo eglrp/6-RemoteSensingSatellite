@@ -24,6 +24,7 @@ int main(int argc, char* argv[])
 	caminput.Xnum = 256;			caminput.Ynum = 256;
 	caminput.Xstart = -128;			caminput.Ystart = -128;
 	pflow->SetCamInput(caminput);
+	pflow->GetPitch(-22, 22);
 
 	if (atoi(argv[4]) == 1)//采用点投影法验证交会精度
 	{

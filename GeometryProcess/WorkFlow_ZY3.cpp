@@ -19,6 +19,10 @@ void WorkFlow_ZY3::GetDEM(string dempath)
 {
 	sDEM = dempath;
 }
+void WorkFlow_ZY3::GetPitch(double FWD, double BWD)
+{
+	mFWD = FWD; mBWD = BWD;
+}
 //////////////////////////////////////////////////////////////////////////
 // 成像模型构建
 //////////////////////////////////////////////////////////////////////////
@@ -531,8 +535,8 @@ void WorkFlow_ZY3::CalcFwdBwdRealMatchPoint(char* argv[])
 {
 	GeoModelLine model[2];
 	string workpath = argv[1];
-	model[0] = FwdBwdModel(argv[1], -22. / 180 * PI,1);
-	model[1] = FwdBwdModel(argv[2], 22. / 180 * PI,1);
+	model[0] = FwdBwdModel(argv[1], mFWD / 180 * PI,1);
+	model[1] = FwdBwdModel(argv[2], mBWD / 180 * PI,1);
 
 	//读取DEM
 	GeoReadImage DEM; GeoImage WarpImg;
@@ -607,8 +611,8 @@ void WorkFlow_ZY3::CalcFwdBwdIntersection(char* argv[])
 {
 	GeoModelLine model[2];
 	string workpath = argv[1];
-	model[0] = FwdBwdModel(argv[1], -22. / 180 * PI,0);
-	model[1] = FwdBwdModel(argv[2], 22. / 180 * PI,0);
+	model[0] = FwdBwdModel(argv[1], mFWD / 180 * PI,0);
+	model[1] = FwdBwdModel(argv[2], mBWD / 180 * PI,0);
 
 	//读取DEM
 	GeoReadImage DEM;
