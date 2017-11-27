@@ -37,8 +37,8 @@ void GeoTime_ZY3::ReadZY3TimeFile(vector<LineScanTime> allTime)
 		//ZY301行时计算公式
 		for (long i = 0;i < timeSize; i++)
 		{
-			m_Time[i] = allTime.at(i).lineTimeUT - 28800;
-			//m_Time[i] = allTime.at(i).lineTimeUT;
+			//m_Time[i] = allTime.at(i).lineTimeUT - 28800;
+			m_Time[i] = allTime.at(i).lineTimeUT;
 		}
 		//ZY302行时计算公式
 		//LineScanTime preUTC;

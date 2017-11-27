@@ -31,8 +31,8 @@ void GeoOrbitEarth_ZY3::ReadZY3EphFile(vector<Orbit_Ep> allEp, StrOrbitParamInpu
 		// 开始读取
 		StrOrbitPoint tmp;
 		double R[9];
-		tmp.UT = allEp.at(i).UTC - 28800;//从北京时算到格林尼治时间
-		//tmp.UT = allEp.at(i).UTC;//仿真所用的时间
+		//tmp.UT = allEp.at(i).UTC - 28800;//从北京时算到格林尼治时间
+		tmp.UT = allEp.at(i).UTC;//仿真所用的时间
 		tmp.X[0] = allEp.at(i).X, tmp.X[1] = allEp.at(i).Y, tmp.X[2] = allEp.at(i).Z;
 		tmp.X[3] = allEp.at(i).Xv, tmp.X[4] = allEp.at(i).Yv, tmp.X[5] = allEp.at(i).Zv;
 

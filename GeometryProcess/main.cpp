@@ -27,7 +27,6 @@ int main(int argc, char* argv[])
 		pflow->SetCamInput(caminput);
 		pflow->GetPitch(-35.2, 22);
 
-
 		if (atoi(argv[4]) == 1)//采用点投影法验证交会精度
 		{
 			//////////////////////////////////////////////////////////////////////////
