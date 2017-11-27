@@ -35,8 +35,8 @@ void GeoAttitude_ZY3::ReadZY3AttFile(vector<Attitude> allAtt, StrAttParamInput i
 		// 开始读取
 		StrAttPoint tmp;
 		double R[9], R1[9];
-		tmp.UT = allAtt.at(i).UTC;//对应仿真姿轨数据，以下四元数是Cbj
-		//tmp.UT = allAtt.at(i).UTC -28800;//对应真实姿轨数据
+		//tmp.UT = allAtt.at(i).UTC;//对应仿真姿轨数据，以下四元数是Cbj
+		tmp.UT = allAtt.at(i).UTC -28800;//对应真实姿轨数据
 		tmp.q[0] = allAtt.at(i).Q0,tmp.q[1] = allAtt.at(i).Q1,tmp.q[2] = allAtt.at(i).Q2,tmp.q[3] = allAtt.at(i).Q3;
 
 		m_Base.FromSecondtoYMD(m_Input.refMJD,tmp.UT,tmp.year, tmp.month, tmp.day, tmp.hour, tmp.minute, tmp.second);

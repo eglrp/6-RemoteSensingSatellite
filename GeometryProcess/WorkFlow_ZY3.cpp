@@ -73,7 +73,7 @@ void WorkFlow_ZY3::GenerateRigorousModel(string auxpath, string eoppath)
 	StrAttParamInput attitudeinput;
 	attitudeinput.DatumName = "WGS84";
 	attitudeinput.m_PolyOrder = 2;
-	attitude->ReadZY3AttFile(allAtt, attitudeinput, orbit);
+	attitude->ReadZY3AttFile(allAtt, attitudeinput, orbit, auxpath);
 
 	// 时间
 	GeoTime *time = new GeoTime_ZY3();
@@ -90,7 +90,7 @@ void WorkFlow_ZY3::GenerateRigorousModel(string auxpath, string eoppath)
 	caminput.Xstart = 0.0;
 	caminput.Ystart = -12290.48;
 	//inner->InitInnerFile("", caminput);
-	inner->ReadCamFile("E:\\2_ImageData\\ZY3-02\\1-定位精度\\503\\标定参数\\2016-07-02.cbr", caminput);//读取内方位元素
+	inner->ReadCamFile("D:\\2_ImageData\\ZY3-02\\1-定位精度\\503\\标定参数\\2016-07-02.cbr", caminput);//读取内方位元素
 
 	// 模型
 	GeoModelLine *model = new GeoModelLine();
@@ -99,7 +99,7 @@ void WorkFlow_ZY3::GenerateRigorousModel(string auxpath, string eoppath)
 	modelinput.isAttPoly = false;
 	modelinput.timeExtend = 4;
 	//model->InitExtFile("D:\\2_ImageData\\ZY3-01\\5-严密模型\\381河南\\Ru.txt");//读取外方位元素
-	model->InitExtFile("E:\\2_ImageData\\ZY3-02\\1-定位精度\\503\\标定参数\\2016-07-02GZC.txt");
+	model->InitExtFile("D:\\2_ImageData\\ZY3-02\\1-定位精度\\503\\标定参数\\2016-07-02GZC.txt");
 	model->InitModelLine(orbit, attitude, time, inner, modelinput);
 	pModel = model;
 }
@@ -771,7 +771,7 @@ void WorkFlow_ZY3::OutputPxyAndGCP(string filePath, vector<MatchPoint>pMatch, ve
 	//添加随机误差
 	int num = pMatch.size();
 	double *Err = new double[2*num];
-	m_base.RandomDistribution(0, 0.3, 2 * num, 0, Err);
+	m_base.RandomDistribution(0, 0, 2 * num, 0, Err);
 
 	string output1 = filePath.substr(0, filePath.rfind('.')) + "_match1.pxy";
 	string output2 = filePath.substr(0, filePath.rfind('.')) + "_match2.pxy";
