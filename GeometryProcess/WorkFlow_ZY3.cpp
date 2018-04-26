@@ -513,7 +513,7 @@ GeoModelLine WorkFlow_ZY3::FwdBwdModelVerify(string workpath, double omg, bool i
 	double lat, lon, h = 0, x = 1, y = 1;
 	while (x != 0 || y != 0)
 	{
-		cout << "请输入Sample和Line和h(输入两个0本程序退出)" << endl;
+		cout << "请输入lat和lon和h(输入两个0本程序退出)" << endl;
 		cin >> lat >> lon >> h;
 		model.FromLatLon2XY(lat/ 180 * PI,lon / 180 * PI,h,x,y);
 		cout << "xy像素分别是" << endl;
@@ -795,8 +795,8 @@ void WorkFlow_ZY3::OutputPxyAndGCP(string filePath, vector<MatchPoint>pMatch, ve
 void WorkFlow_ZY3::CalcFwdBwdRPC(char * argv[])
 {
 	GeoModelLine model[2];
-	model[0] = FwdBwdModel(argv[1], -22. / 180 * PI, 0);
-	model[1] = FwdBwdModel(argv[2], 22. / 180 * PI, 0);
+	model[0] = FwdBwdModel(argv[1], mFWD / 180 * PI, 0);
+	model[1] = FwdBwdModel(argv[2], mBWD / 180 * PI, 0);
 
 	GeoModelRFM rpcModel;
 	rpcModel.GenRPCFile(model, 0, 8000, 20, 20, 10);
@@ -1073,9 +1073,9 @@ void WorkFlow_ZY3::CalcRealMatchPoint(string workpath)
 		vector<MatchPoint>pGCP;	MatchPoint pGCPtmp;
 		vector<StrGCP>kzd; StrGCP kzdTmp;
 		double line, sample, rline, rsample, H = 0, Lat, Lon;
-		for (line = 700; line < 1000; )
+		for (line = 0; line < CameraInput.Xnum; )//这里的范围根据小面阵大小修改
 		{
-			for (sample = 10; sample < 1000;)
+			for (sample = 10; sample < CameraInput.Ynum;)
 			{
 				model[0].FromXY2LatLon(line, sample, H, Lat, Lon);
 				int j = 0;
@@ -1096,7 +1096,7 @@ void WorkFlow_ZY3::CalcRealMatchPoint(string workpath)
 					continue;
 
 				model[1].FromLatLon2XY(Lat, Lon, H, rline, rsample);
-				if (rline>0&& rline<1000&&rsample>0&&rsample<1000)
+				if (rline>0&& rline<CameraInput.Xnum&&rsample>0&&rsample<CameraInput.Ynum)
 				{
 					pGCPtmp.lx = line; pGCPtmp.ly = sample;
 					pGCPtmp.rx = rline; pGCPtmp.ry = rsample;

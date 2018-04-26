@@ -75,11 +75,11 @@ void GeoModelLine::ReCalPosAndAtt()
 	m_cam2GPSSet.X[1] = -m_GPSSet.X[1] + m_camSet.X[1];
 	m_cam2GPSSet.X[2] = -m_GPSSet.X[2] + m_camSet.X[2];
 	// 从测姿坐标系到本体坐标系的旋转矩阵
-	//m_att->get_ROff(m_body2att.R);
+	m_att->get_ROff(m_body2att.R);
 	//m_base.Transpose(m_body2att.R, 3, 3);
 	// 从相机到本体的旋转矩阵
 	m_cam->get_ROff(m_cam2body.R);
-	//m_base.Transpose(m_cam2body.R,3,3);
+	m_base.Transpose(m_cam2body.R,3,3);
 	// 真实姿态和轨道
 	for(int i=0;i<m_xnum;i++)
 	{

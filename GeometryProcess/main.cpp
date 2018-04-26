@@ -13,19 +13,23 @@ int main(int argc, char* argv[])
 {
 	string argv2 = "C:\\Users\\wcsgz\\Documents\\2-CProject\\6-严密模型\\ExtDlls\\EOP00.txt";
 	string strDEM = "C:\\Users\\wcsgz\\Documents\\5-工具软件\\几何精度检校v5.0\\全球DEM.tif";
-	if (argc==4)
+	if (argc==5)
 	{		
 		WorkFlow_ZY3 *pflow = new WorkFlow_ZY3();
 		pflow->GetEOP(argv2); pflow->GetDEM(strDEM);
 
 		//设置小面阵相机参数
 		StrCamParamInput caminput;
-		caminput.f = 1.524;
+		caminput.f = 2.578125;
 		caminput.Xsize = 5.5 / 1e6;		caminput.Ysize = 5.5 / 1e6;
-		caminput.Xnum = 256;			caminput.Ynum = 256;
-		caminput.Xstart = -128;			caminput.Ystart = -128;
+		////高分七号1
+		caminput.Xnum = 4096;			caminput.Ynum = 4096;
+		caminput.Xstart = -2048;			caminput.Ystart = -2048;
+		//高分七号2
+		//caminput.Xnum = 1000;			caminput.Ynum = 1000;
+		//caminput.Xstart = -500;			caminput.Ystart = -500;
 		pflow->SetCamInput(caminput);
-		pflow->GetPitch(-35.2, 22);
+		pflow->GetPitch(-26, 5);
 
 		if (atoi(argv[4]) == 1)//采用点投影法验证交会精度
 		{
@@ -56,10 +60,10 @@ int main(int argc, char* argv[])
 		else if (atoi(argv[4]) == 2)//采用立体平差程序给出结果
 		{
 			//对小面阵处理
-			//pflow->CalcRealMatchPoint(argv[3]);//根据不带误差的模型生产一定数量控制点,目前可以在无差点上加系统差
-			//pflow->CalcModifyAttitude(argv[3]);//根据第一帧和匹配点递推姿态
+			pflow->CalcRealMatchPoint(argv[3]);//根据不带误差的模型生产一定数量控制点,目前可以在无差点上加系统差
+			pflow->CalcModifyAttitude(argv[3]);//根据第一帧和匹配点递推姿态
 			//对前后视处理
-			//pflow->FwdBwdModelVerify(argv[1], -22. / 180 * PI, 1);//验证模型精度
+			//pflow->FwdBwdModelVerify(argv[2], 5. / 180 * PI, 1);//验证模型精度
 			pflow->CalcFwdBwdRealMatchPoint(argv);//根据前后视不带误差模型计算真实匹配点
 			//pflow->CalcFwdBwdRPC(argv);
 			pflow->Calc3DAccuracyByAdjustment(argv);//解求精度

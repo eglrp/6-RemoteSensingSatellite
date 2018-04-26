@@ -1462,9 +1462,13 @@ double GeoBase::GaussRand2(double mean, double sigma)
 }
 
 #include <time.h>
-////////////////////////////////////////////////////////
-// 生成随机误差
-////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//功能：产生一组符合正态分布的随机数
+//输入：mean:均值，sigma:方差，n:随机数量，randCount:输入0每组随机数不一样
+//输出：a:生成n组随机数组a
+//注意：randCount一般为0，解决了timetemp一直为0的情况
+//日期：2016.10.12 by HWC  2018.01.10 update by GZC
+//////////////////////////////////////////////////////////////////////////
 void GeoBase::RandomDistribution(double mean, double sigma, int n, long randCount, double *a)
 {
 	// TODO: Add your implementation code here
